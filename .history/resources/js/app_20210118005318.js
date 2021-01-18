@@ -33,6 +33,5 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
 
 const app = new Vue({
     vuetify: Vuetify,
-    router,
     el: '#app',
 });
