@@ -28,5 +28,8 @@ mix.webpackConfig(webpackConfig);
  */
 
 mix.js('resources/js/app.js', 'public/js')
-    .vue()
+    //Removed .vue because of getting following error: 
+    //AssertionError [ERR_ASSERTION]: mix.js() is missing required parameter 1: entry
+    //This is used for laravel-mix ^6, but not all packages are compatible with webpack 5.  
+    //.vue()
     .sass('resources/sass/app.scss', 'public/css');

@@ -17,7 +17,7 @@
         "cross-env": "^7.0",
         "deepmerge": "^4.2.2",
         "jquery": "^3.2",
-        "laravel-mix": "^5.0.1",
+        "laravel-mix": "^5.0.9",
         "lodash": "^4.17.19",
         "popper.js": "^1.12",
         "resolve-url-loader": "^2.3.1",
