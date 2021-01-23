@@ -4,9 +4,9 @@
             <section>
                 <v-parallax :src="imageLink.sub_main" height="600">
                     <v-layout column align-center justify-center class="white--text">
-                        <h1 class="white--text mb-2 display-1 text-xs-center" style="font-weight: 900; text-shadow: 3px 2px #000000">The social network for epic content</h1>
-                        <div class="white--text subheading mb-3 text-xs-center" style="font-weight: 900; text-shadow: 2px 2px #000000">Unlesh your creativity without limitations</div>
-                        <v-btn class="blue lighten-2 mt-5" dark large href="/pre-made-themes">
+                        <h1 class="white--text mb-2 display-1 text-xs-center" style="font-weight: 900; text-shadow: 3px 2px #000000">The Raquet Club</h1>
+                        <div class="white--text subheading mb-3 text-xs-center" style="font-weight: 900; text-shadow: 2px 2px #000000">Lorem ipsum dolor sit amet, consectetur adipiscing elit</div>
+                        <v-btn class="blue lighten-2 mt-5" dark large href="#">
                             Get Started
                         </v-btn>
                     </v-layout>
@@ -34,39 +34,39 @@
                                 <v-flex xs12 md4>
                                     <v-card class="elevation-0 transparent">
                                         <v-card-text class="text-xs-center">
-                                            <v-icon x-large class="blue--text text--lighten-2">public</v-icon>
+                                            <v-icon x-large class="blue--text text--lighten-2">mdi-earth</v-icon>
                                         </v-card-text>
                                         <v-card-title primary-title class="layout justify-center">
                                             <div class="headline text-xs-center">Reach the world</div>
                                         </v-card-title>
                                         <v-card-text>
-                                            Show your stuff to the whole community of Endorfine not only to your mum or your friends. We love making good content viral. In this moment Endorfine is used by artists who are not famous but that want to share their works to the world. Unfortunately with other social networks this is hard, slow and sometime expensive.
+                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                                         </v-card-text>
                                     </v-card>
                                 </v-flex>
                                 <v-flex xs12 md4>
                                     <v-card class="elevation-0 transparent">
                                         <v-card-text class="text-xs-center">
-                                            <v-icon x-large class="blue--text text--lighten-2">flash_on</v-icon>
+                                            <v-icon x-large class="blue--text text--lighten-2">mdi-flash</v-icon>
                                         </v-card-text>
                                         <v-card-title primary-title class="layout justify-center">
                                             <div class="headline">Fast feedback</div>
                                         </v-card-title>
                                         <v-card-text>
-                                            Time is important, we don't want you to waste it. Here you can get a massive feedback from real users in minutes. And if your stuff is appreciated you won't only get positive feedback but also lovely and sincere fans <3
+                                            Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.
                                         </v-card-text>
                                     </v-card>
                                 </v-flex>
                                 <v-flex xs12 md4>
                                     <v-card class="elevation-0 transparent">
                                         <v-card-text class="text-xs-center">
-                                            <v-icon x-large class="blue--text text--lighten-2">share</v-icon>
+                                            <v-icon x-large class="blue--text text--lighten-2">mdi-share</v-icon>
                                         </v-card-text>
                                         <v-card-title primary-title class="layout justify-center">
                                             <div class="headline text-xs-center">Create new connections</div>
                                         </v-card-title>
                                         <v-card-text>
-                                            Imagine if you can directly speak with the world's population. Don't you think it would be easier to find nice people to interact with? Endorfine is both local and global and help you to connect without limitations with people from your city, your state and your universe!
+                                            At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores.
                                         </v-card-text>
                                     </v-card>
                                 </v-flex>
@@ -79,9 +79,9 @@
             <section>
                 <v-parallax :src="imageLink.main" height="380">
                     <v-layout column align-center justify-center>
-                        <div class="headline white--text mb-3 text-xs-center">Endorfine is a social network that allows everyone to reach a huge audience with a tap </div>
-                        <em>With the power of Endorfine you don't need to be famous or post pics of cute cats in order to get visibility</em>
-                        <v-btn class="blue lighten-2 mt-5" dark large href="/pre-made-themes">
+                        <div class="headline white--text mb-3 text-xs-center"> Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore </div>
+                        <em>cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus,</em>
+                        <v-btn class="blue lighten-2 mt-5" dark large href="/">
                             Get more info
                         </v-btn>
                     </v-layout>
