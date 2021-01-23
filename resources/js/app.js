@@ -26,6 +26,7 @@ import router from "./router"
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 Vue.component('landingpage-component', require('./components/LandingPageComponent.vue').default);
 Vue.component('footer-component', require('./components/FooterComponent.vue').default);
+Vue.component('app-component', require('./components/AppComponent.vue').default);
 // Vue.component('app-component', require('./components/AppComponent.vue').default);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
