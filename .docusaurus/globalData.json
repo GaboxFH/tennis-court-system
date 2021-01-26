@@ -1,0 +1,52 @@
+{
+  "docusaurus-plugin-content-docs": {
+    "default": {
+      "path": "/tennis-court-system/",
+      "versions": [
+        {
+          "name": "current",
+          "label": "Next",
+          "isLast": true,
+          "path": "/tennis-court-system/",
+          "mainDocId": "gettingStarted",
+          "docs": [
+            {
+              "id": "api",
+              "path": "/tennis-court-system/api",
+              "sidebar": "someSidebar"
+            },
+            {
+              "id": "doc1",
+              "path": "/tennis-court-system/doc1",
+              "sidebar": "someSidebar"
+            },
+            {
+              "id": "fdreservations",
+              "path": "/tennis-court-system/fdreservations",
+              "sidebar": "someSidebar"
+            },
+            {
+              "id": "gettingStarted",
+              "path": "/tennis-court-system/",
+              "sidebar": "someSidebar"
+            },
+            {
+              "id": "github",
+              "path": "/tennis-court-system/github",
+              "sidebar": "someSidebar"
+            },
+            {
+              "id": "mdx",
+              "path": "/tennis-court-system/mdx"
+            },
+            {
+              "id": "userreservations",
+              "path": "/tennis-court-system/userreservations",
+              "sidebar": "someSidebar"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

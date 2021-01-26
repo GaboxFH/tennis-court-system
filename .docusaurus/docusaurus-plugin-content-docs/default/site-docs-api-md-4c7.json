@@ -1,0 +1,21 @@
+{
+  "unversionedId": "api",
+  "id": "api",
+  "isDocsHomePage": false,
+  "title": "Api Documentation",
+  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In ac euismod odio, eu consequat dui. Nullam molestie consectetur risus id imperdiet. Proin sodales ornare turpis, non mollis massa ultricies id. Nam at nibh scelerisque, feugiat ante non, dapibus tortor. Vivamus volutpat diam quis tellus elementum bibendum. Praesent semper gravida velit quis aliquam. Etiam in cursus neque. Nam lectus ligula, malesuada et mauris a, bibendum faucibus mi. Phasellus ut interdum felis. Phasellus in odio pulvinar, porttitor urna eget, fringilla lectus. Aliquam sollicitudin est eros. Mauris consectetur quam vitae mauris interdum hendrerit. Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+  "source": "@site/docs\\api.md",
+  "slug": "/api",
+  "permalink": "/tennis-court-system/api",
+  "editUrl": "https://github.com/facebook/docusaurus/edit/master/website/docs/api.md",
+  "version": "current",
+  "sidebar": "someSidebar",
+  "previous": {
+    "title": "GitHub deployment flow",
+    "permalink": "/tennis-court-system/github"
+  },
+  "next": {
+    "title": "FD Reservations",
+    "permalink": "/tennis-court-system/fdreservations"
+  }
+}

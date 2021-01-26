@@ -1,0 +1,17 @@
+{
+  "title": "Recent posts",
+  "items": [
+    {
+      "title": "Welcome",
+      "permalink": "/tennis-court-system/blog/welcome"
+    },
+    {
+      "title": "Hello",
+      "permalink": "/tennis-court-system/blog/hello-world"
+    },
+    {
+      "title": "Hola",
+      "permalink": "/tennis-court-system/blog/hola"
+    }
+  ]
+}

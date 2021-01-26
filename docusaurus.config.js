@@ -1,7 +1,7 @@
 module.exports = {
   title: 'My Site',
   tagline: 'The tagline of my site',
-  url: 'https://gaboxfh.github.io/tennis-court-system/',
+  url: 'https://gaboxfh.github.io/',
   baseUrl: '/tennis-court-system/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',

@@ -1,0 +1,17 @@
+{
+  "unversionedId": "userreservations",
+  "id": "userreservations",
+  "isDocsHomePage": false,
+  "title": "User Reservations",
+  "description": "User Reservations",
+  "source": "@site/docs\\userReservations.md",
+  "slug": "/userreservations",
+  "permalink": "/tennis-court-system/userreservations",
+  "editUrl": "https://github.com/facebook/docusaurus/edit/master/website/docs/userReservations.md",
+  "version": "current",
+  "sidebar": "someSidebar",
+  "previous": {
+    "title": "FD Reservations",
+    "permalink": "/tennis-court-system/fdreservations"
+  }
+}

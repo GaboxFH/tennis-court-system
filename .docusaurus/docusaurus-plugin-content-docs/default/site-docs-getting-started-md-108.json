@@ -1,0 +1,22 @@
+{
+  "unversionedId": "gettingStarted",
+  "id": "gettingStarted",
+  "isDocsHomePage": false,
+  "title": "Getting Started",
+  "description": "You can write content using GitHub-flavored Markdown syntax.",
+  "source": "@site/docs\\gettingStarted.md",
+  "slug": "/",
+  "permalink": "/tennis-court-system/",
+  "editUrl": "https://github.com/facebook/docusaurus/edit/master/website/docs/gettingStarted.md",
+  "version": "current",
+  "sidebar_label": "Getting Started",
+  "sidebar": "someSidebar",
+  "previous": {
+    "title": "Style Guide",
+    "permalink": "/tennis-court-system/doc1"
+  },
+  "next": {
+    "title": "GitHub deployment flow",
+    "permalink": "/tennis-court-system/github"
+  }
+}

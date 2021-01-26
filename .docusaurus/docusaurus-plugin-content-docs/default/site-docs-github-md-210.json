@@ -1,0 +1,21 @@
+{
+  "unversionedId": "github",
+  "id": "github",
+  "isDocsHomePage": false,
+  "title": "GitHub deployment flow",
+  "description": "Development Process",
+  "source": "@site/docs\\github.md",
+  "slug": "/github",
+  "permalink": "/tennis-court-system/github",
+  "editUrl": "https://github.com/facebook/docusaurus/edit/master/website/docs/github.md",
+  "version": "current",
+  "sidebar": "someSidebar",
+  "previous": {
+    "title": "Getting Started",
+    "permalink": "/tennis-court-system/"
+  },
+  "next": {
+    "title": "Api Documentation",
+    "permalink": "/tennis-court-system/api"
+  }
+}

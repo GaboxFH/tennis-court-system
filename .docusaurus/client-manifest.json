@@ -1,0 +1,484 @@
+{
+  "entrypoints": [
+    "main"
+  ],
+  "origins": {
+    "1": [
+      0,
+      2,
+      3,
+      4,
+      7,
+      15,
+      23,
+      27,
+      32,
+      33,
+      1
+    ],
+    "2": [
+      0,
+      1,
+      3,
+      4,
+      15,
+      23,
+      27,
+      32,
+      33,
+      2
+    ],
+    "3": [
+      0,
+      1,
+      2,
+      15,
+      23,
+      27,
+      3
+    ],
+    "styles": [
+      1,
+      2,
+      3,
+      4,
+      7,
+      15,
+      23,
+      27,
+      30,
+      31,
+      32,
+      33,
+      0
+    ],
+    "@theme/BlogTagsListPage": [
+      0,
+      1,
+      2,
+      4
+    ],
+    "~blog/default\\tennis-court-system-blog-tags-hello-b8e.json": [
+      5
+    ],
+    "@site/docs\\gettingStarted.md": [
+      6
+    ],
+    "@theme/DocItem": [
+      0,
+      1,
+      7
+    ],
+    "@site/docs\\github.md": [
+      8
+    ],
+    "@site/blog\\2019-05-28-hola.md?truncated=true": [
+      9
+    ],
+    "~blog/default\\tennis-court-system-blog-tags-tags-a72.json": [
+      10
+    ],
+    "~blog/default\\tennis-court-system-blog-tags-hola-d10.json": [
+      11
+    ],
+    "@site/docs\\mdx.md": [
+      12
+    ],
+    "@site/docs\\api.md": [
+      13
+    ],
+    "~blog/default\\tennis-court-system-blog-tags-facebook-9fb.json": [
+      14
+    ],
+    "@theme/BlogTagsPostsPage": [
+      0,
+      1,
+      2,
+      3,
+      15
+    ],
+    "~blog/default\\tennis-court-system-blog-e52.json": [
+      16
+    ],
+    "@site/docs\\doc1.md": [
+      17
+    ],
+    "@site/blog\\2019-05-29-hello-world.md": [
+      18
+    ],
+    "@site/docs\\fdrRservations.md": [
+      19
+    ],
+    "@site/docs\\userReservations.md": [
+      20
+    ],
+    "@site/blog\\2019-05-30-welcome.md?truncated=true": [
+      21
+    ],
+    "C:\\Users\\gfernandez\\aplusdev\\tennis-court-system\\.docusaurus\\docusaurus-plugin-content-blog\\default\\blog-post-list-prop-default.json": [
+      22
+    ],
+    "@theme/BlogListPage": [
+      0,
+      1,
+      2,
+      3,
+      23
+    ],
+    "@site/blog\\2019-05-30-welcome.md": [
+      24
+    ],
+    "@site/blog\\2019-05-28-hola.md": [
+      25
+    ],
+    "@site/blog\\2019-05-29-hello-world.md?truncated=true": [
+      26
+    ],
+    "@theme/BlogPostPage": [
+      0,
+      1,
+      2,
+      3,
+      27
+    ],
+    "~blog/default\\tennis-court-system-blog-tags-docusaurus-dc6.json": [
+      28
+    ],
+    "~docs/default\\version-current-metadata-prop-751.json": [
+      29
+    ],
+    "main": [
+      0,
+      31,
+      30
+    ],
+    "runtime~main": [
+      0,
+      30,
+      31
+    ],
+    "@theme/DocPage": [
+      0,
+      1,
+      2,
+      33
+    ],
+    "@theme/NotFound": [
+      0,
+      1,
+      2,
+      33
+    ]
+  },
+  "assets": {
+    "0": {
+      "css": [
+        {
+          "file": "styles.7480404a.css",
+          "hash": "29452065848061085deb",
+          "publicPath": "/tennis-court-system/styles.7480404a.css"
+        }
+      ],
+      "js": [
+        {
+          "file": "styles.42d8d8f2.js",
+          "hash": "29452065848061085deb",
+          "publicPath": "/tennis-court-system/styles.42d8d8f2.js"
+        }
+      ]
+    },
+    "1": {
+      "js": [
+        {
+          "file": "1.8aca20a8.js",
+          "hash": "e34d6f6fb3e431fcb38c",
+          "publicPath": "/tennis-court-system/1.8aca20a8.js"
+        }
+      ]
+    },
+    "2": {
+      "js": [
+        {
+          "file": "2.e2fa6f98.js",
+          "hash": "d28cfa7f8764edab1f2d",
+          "publicPath": "/tennis-court-system/2.e2fa6f98.js"
+        }
+      ]
+    },
+    "3": {
+      "js": [
+        {
+          "file": "3.31ffc424.js",
+          "hash": "5bf3266b496995ce3941",
+          "publicPath": "/tennis-court-system/3.31ffc424.js"
+        }
+      ]
+    },
+    "4": {
+      "js": [
+        {
+          "file": "01a85c17.f9be7350.js",
+          "hash": "dbd8dd7f9377e502b9d3",
+          "publicPath": "/tennis-court-system/01a85c17.f9be7350.js"
+        }
+      ]
+    },
+    "5": {
+      "js": [
+        {
+          "file": "043dc542.5b1e2973.js",
+          "hash": "cc1f5404969b01b1855f",
+          "publicPath": "/tennis-court-system/043dc542.5b1e2973.js"
+        }
+      ]
+    },
+    "6": {
+      "js": [
+        {
+          "file": "1086ebd5.5ace4696.js",
+          "hash": "7edbe7aea4cbc0ef6c6e",
+          "publicPath": "/tennis-court-system/1086ebd5.5ace4696.js"
+        }
+      ]
+    },
+    "7": {
+      "js": [
+        {
+          "file": "17896441.e0fe519f.js",
+          "hash": "2ff20f09e252263062f8",
+          "publicPath": "/tennis-court-system/17896441.e0fe519f.js"
+        }
+      ]
+    },
+    "8": {
+      "js": [
+        {
+          "file": "2103f3e8.3ecc07c3.js",
+          "hash": "6dba943c0e3cf9fffa85",
+          "publicPath": "/tennis-court-system/2103f3e8.3ecc07c3.js"
+        }
+      ]
+    },
+    "9": {
+      "js": [
+        {
+          "file": "2738c48a.38275624.js",
+          "hash": "85081c7a83c7dc8f5849",
+          "publicPath": "/tennis-court-system/2738c48a.38275624.js"
+        }
+      ]
+    },
+    "10": {
+      "js": [
+        {
+          "file": "2c94099b.f9dafe92.js",
+          "hash": "205630c11efcbaec4d0e",
+          "publicPath": "/tennis-court-system/2c94099b.f9dafe92.js"
+        }
+      ]
+    },
+    "11": {
+      "js": [
+        {
+          "file": "3c13c9c8.6ee92df2.js",
+          "hash": "99e380ff077383126cf5",
+          "publicPath": "/tennis-court-system/3c13c9c8.6ee92df2.js"
+        }
+      ]
+    },
+    "12": {
+      "js": [
+        {
+          "file": "45acc928.ce4d0050.js",
+          "hash": "8c8a3c0693ffb7df5158",
+          "publicPath": "/tennis-court-system/45acc928.ce4d0050.js"
+        }
+      ]
+    },
+    "13": {
+      "js": [
+        {
+          "file": "4c7ad221.9a24e1e7.js",
+          "hash": "b4bcc99e7ee32910df48",
+          "publicPath": "/tennis-court-system/4c7ad221.9a24e1e7.js"
+        }
+      ]
+    },
+    "14": {
+      "js": [
+        {
+          "file": "4eb38698.7da0e340.js",
+          "hash": "00b8bc289c172a04de60",
+          "publicPath": "/tennis-court-system/4eb38698.7da0e340.js"
+        }
+      ]
+    },
+    "15": {
+      "js": [
+        {
+          "file": "6875c492.1b1bef49.js",
+          "hash": "3caf8ef368c7ffce6234",
+          "publicPath": "/tennis-court-system/6875c492.1b1bef49.js"
+        }
+      ]
+    },
+    "16": {
+      "js": [
+        {
+          "file": "6ec2c3b0.060d4645.js",
+          "hash": "b1eeff4ff6c6b9a89ce3",
+          "publicPath": "/tennis-court-system/6ec2c3b0.060d4645.js"
+        }
+      ]
+    },
+    "17": {
+      "js": [
+        {
+          "file": "7366bc9d.20f65ef0.js",
+          "hash": "d59c1156dc386b1aff5a",
+          "publicPath": "/tennis-court-system/7366bc9d.20f65ef0.js"
+        }
+      ]
+    },
+    "18": {
+      "js": [
+        {
+          "file": "843d79fe.f87dd6fe.js",
+          "hash": "433fa847075a4da302dc",
+          "publicPath": "/tennis-court-system/843d79fe.f87dd6fe.js"
+        }
+      ]
+    },
+    "19": {
+      "js": [
+        {
+          "file": "86249fa7.3bb4f1f8.js",
+          "hash": "0ba7a95b0abcae3ef875",
+          "publicPath": "/tennis-court-system/86249fa7.3bb4f1f8.js"
+        }
+      ]
+    },
+    "20": {
+      "js": [
+        {
+          "file": "9989a3c6.a92e5b6a.js",
+          "hash": "531497992300f97f1061",
+          "publicPath": "/tennis-court-system/9989a3c6.a92e5b6a.js"
+        }
+      ]
+    },
+    "21": {
+      "js": [
+        {
+          "file": "99caf125.bd3dcf63.js",
+          "hash": "7ac2aa1bbe687398bfef",
+          "publicPath": "/tennis-court-system/99caf125.bd3dcf63.js"
+        }
+      ]
+    },
+    "22": {
+      "js": [
+        {
+          "file": "9bd785a4.1c90b167.js",
+          "hash": "2bca68d90261bd14a042",
+          "publicPath": "/tennis-court-system/9bd785a4.1c90b167.js"
+        }
+      ]
+    },
+    "23": {
+      "js": [
+        {
+          "file": "a6aa9e1f.8d42d113.js",
+          "hash": "b9ab1882344f217027a7",
+          "publicPath": "/tennis-court-system/a6aa9e1f.8d42d113.js"
+        }
+      ]
+    },
+    "24": {
+      "js": [
+        {
+          "file": "a9ae89f1.b36af6d4.js",
+          "hash": "07b95d8a5c64ae8b36a5",
+          "publicPath": "/tennis-court-system/a9ae89f1.b36af6d4.js"
+        }
+      ]
+    },
+    "25": {
+      "js": [
+        {
+          "file": "aeda19be.1aca0ac9.js",
+          "hash": "68ff781d9017970040ff",
+          "publicPath": "/tennis-court-system/aeda19be.1aca0ac9.js"
+        }
+      ]
+    },
+    "26": {
+      "js": [
+        {
+          "file": "c0a4ca73.83c7cee4.js",
+          "hash": "9e791620b908c7a7d9d3",
+          "publicPath": "/tennis-court-system/c0a4ca73.83c7cee4.js"
+        }
+      ]
+    },
+    "27": {
+      "js": [
+        {
+          "file": "ccc49370.b9571b33.js",
+          "hash": "d1168cc96a74bfa69e4f",
+          "publicPath": "/tennis-court-system/ccc49370.b9571b33.js"
+        }
+      ]
+    },
+    "28": {
+      "js": [
+        {
+          "file": "f171c9bb.b5431d60.js",
+          "hash": "00b3dfaeedf43d50959a",
+          "publicPath": "/tennis-court-system/f171c9bb.b5431d60.js"
+        }
+      ]
+    },
+    "29": {
+      "js": [
+        {
+          "file": "f976f453.c410f3bb.js",
+          "hash": "686ff849baeeee26eaf8",
+          "publicPath": "/tennis-court-system/f976f453.c410f3bb.js"
+        }
+      ]
+    },
+    "30": {
+      "js": [
+        {
+          "file": "main.e316c7a1.js",
+          "hash": "c3b8e9156a0d7259a903",
+          "publicPath": "/tennis-court-system/main.e316c7a1.js"
+        }
+      ]
+    },
+    "31": {
+      "js": [
+        {
+          "file": "runtime~main.f931143d.js",
+          "hash": "acaedc7250db3f4ee5bc",
+          "publicPath": "/tennis-court-system/runtime~main.f931143d.js"
+        }
+      ]
+    },
+    "33": {
+      "js": [
+        {
+          "file": "32.7f124067.js",
+          "hash": "480e98fa07331c6954dd",
+          "publicPath": "/tennis-court-system/32.7f124067.js"
+        },
+        {
+          "file": "33.2d70802b.js",
+          "hash": "7ed1b97d5858fdf92557",
+          "publicPath": "/tennis-court-system/33.2d70802b.js"
+        }
+      ]
+    }
+  }
+}

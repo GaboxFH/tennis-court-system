@@ -1,0 +1,21 @@
+{
+  "unversionedId": "fdreservations",
+  "id": "fdreservations",
+  "isDocsHomePage": false,
+  "title": "FD Reservations",
+  "description": "FD Reservations",
+  "source": "@site/docs\\fdrRservations.md",
+  "slug": "/fdreservations",
+  "permalink": "/tennis-court-system/fdreservations",
+  "editUrl": "https://github.com/facebook/docusaurus/edit/master/website/docs/fdrRservations.md",
+  "version": "current",
+  "sidebar": "someSidebar",
+  "previous": {
+    "title": "Api Documentation",
+    "permalink": "/tennis-court-system/api"
+  },
+  "next": {
+    "title": "User Reservations",
+    "permalink": "/tennis-court-system/userreservations"
+  }
+}
