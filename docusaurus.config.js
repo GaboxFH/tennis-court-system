@@ -1,12 +1,12 @@
 module.exports = {
   title: 'My Site',
   tagline: 'The tagline of my site',
-  url: 'https://your-docusaurus-test-site.com',
-  baseUrl: '/',
+  url: 'https://gaboxfh.github.io/tennis-court-system/',
+  baseUrl: '/tennis-court-system/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
-  organizationName: 'seniorprojectuf', // Usually your GitHub org/user name.
+  organizationName: 'gaboxfh', // Usually your GitHub org/user name.
   projectName: 'tennis-court-system', // Usually your repo name.
   themeConfig: {
     navbar: {
