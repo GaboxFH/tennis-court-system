@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
+//TODO: Review roles and permissions that will be needed for the business logic of the app
 class CreateRolesPermissions extends Command
 {
     /**
