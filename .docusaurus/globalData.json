@@ -16,8 +16,18 @@
               "sidebar": "someSidebar"
             },
             {
+              "id": "databaseDesign",
+              "path": "/tennis-court-system/databaseDesign",
+              "sidebar": "someSidebar"
+            },
+            {
               "id": "doc1",
               "path": "/tennis-court-system/doc1",
+              "sidebar": "someSidebar"
+            },
+            {
+              "id": "fdreservations",
+              "path": "/tennis-court-system/fdreservations",
               "sidebar": "someSidebar"
             },
             {
@@ -38,6 +48,11 @@
             {
               "id": "mdx",
               "path": "/tennis-court-system/mdx"
+            },
+            {
+              "id": "rolesAndPermissions",
+              "path": "/tennis-court-system/rolesAndPermissions",
+              "sidebar": "someSidebar"
             },
             {
               "id": "userreservations",

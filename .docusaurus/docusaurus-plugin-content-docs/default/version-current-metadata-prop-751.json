@@ -34,6 +34,16 @@
           },
           {
             "type": "link",
+            "label": "Roles and Permissions",
+            "href": "/tennis-court-system/rolesAndPermissions"
+          },
+          {
+            "type": "link",
+            "label": "Database Design",
+            "href": "/tennis-court-system/databaseDesign"
+          },
+          {
+            "type": "link",
             "label": "Api Documentation",
             "href": "/tennis-court-system/api"
           }
@@ -60,10 +70,12 @@
   },
   "permalinkToSidebar": {
     "/tennis-court-system/api": "someSidebar",
+    "/tennis-court-system/databaseDesign": "someSidebar",
     "/tennis-court-system/doc1": "someSidebar",
     "/tennis-court-system/fdreservations": "someSidebar",
     "/tennis-court-system/": "someSidebar",
     "/tennis-court-system/github": "someSidebar",
+    "/tennis-court-system/rolesAndPermissions": "someSidebar",
     "/tennis-court-system/userreservations": "someSidebar"
   }
 }

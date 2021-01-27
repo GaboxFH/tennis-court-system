@@ -1,7 +1,7 @@
 export default {
   "title": "My Site",
   "tagline": "The tagline of my site",
-  "url": "https://gaboxfh.github.io/tennis-court-system/",
+  "url": "https://gaboxfh.github.io/",
   "baseUrl": "/tennis-court-system/",
   "onBrokenLinks": "throw",
   "onBrokenMarkdownLinks": "warn",
@@ -48,7 +48,7 @@ export default {
       "@docusaurus/preset-classic",
       {
         "docs": {
-          "sidebarPath": "C:\\Users\\gfernandez\\aplusdev\\tennis-court-system\\sidebars.js",
+          "sidebarPath": "C:\\Users\\gfernandez\\aplusdev\\tennis-court-system-docs\\sidebars.js",
           "routeBasePath": "/",
           "editUrl": "https://github.com/facebook/docusaurus/edit/master/website/"
         },
@@ -57,7 +57,7 @@ export default {
           "editUrl": "https://github.com/facebook/docusaurus/edit/master/website/blog/"
         },
         "theme": {
-          "customCss": "C:\\Users\\gfernandez\\aplusdev\\tennis-court-system\\src\\css\\custom.css"
+          "customCss": "C:\\Users\\gfernandez\\aplusdev\\tennis-court-system-docs\\src\\css\\custom.css"
         }
       }
     ]
