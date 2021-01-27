@@ -81,12 +81,14 @@
         </v-app-bar>
 
         <v-main>
-            <!--  -->
+            <example-component></example-component>
         </v-main>
     </v-app>
 </template>
 
 <script>
+import ExampleComponent from "./ExampleComponent";
+
 export default {
     data: () => ({ drawer: null }),
 
