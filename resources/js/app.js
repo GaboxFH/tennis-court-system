@@ -12,6 +12,9 @@ import Vuetify from "../plugins/vuetify"
 
 import router from "./router"
 
+import Permissions from './mixins/Permissions';
+Vue.mixin(Permissions);
+
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
