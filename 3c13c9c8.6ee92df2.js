@@ -1,1 +1,0 @@
-(window.webpackJsonp=window.webpackJsonp||[]).push([[11],{79:function(s){s.exports=JSON.parse('{"allTagsPath":"/tennis-court-system/blog/tags","slug":"hola","name":"hola","count":1,"permalink":"/tennis-court-system/blog/tags/hola"}')}}]);

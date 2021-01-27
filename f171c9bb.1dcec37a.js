@@ -1,0 +1,1 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[29],{98:function(s){s.exports=JSON.parse('{"allTagsPath":"/tennis-court-system/blog/tags","slug":"docusaurus","name":"docusaurus","count":3,"permalink":"/tennis-court-system/blog/tags/docusaurus"}')}}]);
