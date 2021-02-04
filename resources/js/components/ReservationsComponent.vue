@@ -24,7 +24,7 @@
             <v-toolbar
                 flat
             >
-                <v-toolbar-title>My CRUD</v-toolbar-title>
+                <v-toolbar-title>My Reservations</v-toolbar-title>
                 <v-divider
                     class="mx-4"
                     inset
@@ -168,6 +168,9 @@
 
 <script>
 export default {
+
+    props: ['reservations'],
+
     data: () => ({
         dialog: false,
         dialogDelete: false,
@@ -182,7 +185,6 @@ export default {
             { text: 'Court', value: 'court' },
             { text: 'Actions', value: 'actions', sortable: false },
         ],
-        reservations: [],
         editedIndex: -1,
         editedItem: {
             name: '',
