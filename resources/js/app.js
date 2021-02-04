@@ -41,5 +41,6 @@ Vue.component('adminpanel-component', require('./components/AdminPanelComponent.
 
 const app = new Vue({
     vuetify: Vuetify,
+    router,
     el: '#app',
 });

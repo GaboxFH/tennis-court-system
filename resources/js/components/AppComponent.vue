@@ -21,7 +21,7 @@
                 dense
                 nav
             >
-                <v-list-item>
+                <v-list-item link to="/">
                     <v-list-item-icon>
                         <v-icon>mdi-calendar</v-icon>
                     </v-list-item-icon>
@@ -31,7 +31,7 @@
                     </v-list-item-content>
                 </v-list-item>
 
-                <v-list-item>
+                <v-list-item link to="/adminpanel">
                     <v-list-item-icon>
                         <v-icon>mdi-newspaper-variant</v-icon>
                     </v-list-item-icon>
@@ -81,7 +81,8 @@
         </v-app-bar>
 
         <v-main>
-            <example-component></example-component>
+            <router-view></router-view>
+<!--            <reservations-component></reservations-component>-->
         </v-main>
     </v-app>
 </template>
