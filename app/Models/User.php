@@ -18,6 +18,10 @@ class User extends Authenticatable
     //Added this to make guard used by spatie be api instead of web.
     protected $guard_name = 'api';
 
+
+    public function reservations() {
+        return $this->belongsToMany(Reservation::class);
+    }
     /**
      * The attributes that are mass assignable.
      *
