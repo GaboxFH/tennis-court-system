@@ -81,8 +81,9 @@
         </v-app-bar>
 
         <v-main>
-            <router-view></router-view>
-<!--            <reservations-component></reservations-component>-->
+            <router-view>
+                :reservations="reservations"
+            </router-view>
         </v-main>
     </v-app>
 </template>
@@ -91,7 +92,11 @@
 import ExampleComponent from "./ExampleComponent";
 
 export default {
-    data: () => ({ drawer: null }),
+    data: () => ({
+        drawer: null,
+        reservations: [],
+
+    }),
 
     methods: {
 
@@ -100,9 +105,24 @@ export default {
                 .then(response => {
                     window.location.href = "login"
                 })
-        }
+        },
 
-    }
+        getReservations() {
+            axios.get('api/reservations')
+                .then(response => {
+                    this.reservations = response.data
+                })
+                .catch(error => {
+                    console.log(error);
+                })
+
+        },
+
+    },
+
+    created() {
+        this.getReservations();
+    },
 
 }
 </script>
