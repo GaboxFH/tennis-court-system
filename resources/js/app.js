@@ -30,7 +30,9 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
 Vue.component('landingpage-component', require('./components/LandingPageComponent.vue').default);
 Vue.component('footer-component', require('./components/FooterComponent.vue').default);
 Vue.component('app-component', require('./components/AppComponent.vue').default);
-// Vue.component('app-component', require('./components/AppComponent.vue').default);
+Vue.component('reservations-component', require('./components/ReservationsComponent.vue').default);
+Vue.component('adminpanel-component', require('./components/AdminPanelComponent.vue').default);
+
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
