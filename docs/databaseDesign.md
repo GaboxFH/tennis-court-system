@@ -4,7 +4,9 @@ title: Database Design
 ---
 
 ## Database Design
+### Reservations and Users
 Reservations currently have these attributes: title, date, court, user_id
+
 Users currently have have these attributes: name, email, password, password, remember_token, email_verified_at
 
 There exists a many-to-many relationship between the Users and Reservations tables. 
@@ -21,7 +23,7 @@ The onDelete('cascade') command achieves this.
 Learn about inserting and removing data to pivot table
 https://5balloons.info/pivot-table-and-many-to-many-relationship-in-laraval/
 
-### Working with the Database in Laravel
+## Working with the Database in Laravel
 ```php artisan migrate:refresh```
 This combines the migrate and rollback commands into one command.
 As a result, the tables will be updated. However, the data that was in the table will be deleted. Therefore, if the data is important, the table should be backed up before a refresh is done.
