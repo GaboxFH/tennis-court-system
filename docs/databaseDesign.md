@@ -37,3 +37,18 @@ There are two choices to do this:
 
 If a column needs to be modified (not changed or deleted), it requires a package doctrine/dbal. append ->change() to a column.
 with foreign keys, this gets more tricky. The foreign key needs to be dropped first before a change is made.
+
+There is currently a factory created for the Reservation and User models. To create testing data, use Tinker.
+
+To start the Tinker REPL, run:
+
+```php artisan tinker```
+
+In the Tinker REPL, create a test User by running:
+
+```User::factory()->create()```
+
+To create several test data, enter an integer as an argument in an appended 'count()' function.
+
+```User::factory()->count(5)->create()```
+
