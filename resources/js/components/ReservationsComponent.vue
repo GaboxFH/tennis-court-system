@@ -267,7 +267,7 @@ export default {
 
         save() {
             if (this.editedIndex > -1) {
-                Object.assign(this.items[this.editedIndex], this.editedItem)
+                Object.assign(this.reservations[this.editedIndex], this.editedItem)
 
                 let item = JSON.parse(JSON.stringify(this.editedItem))
 
@@ -279,17 +279,7 @@ export default {
 
 
             } else {
-                // this.items.push(this.editedItem)
-
                 let item = JSON.parse(JSON.stringify(this.editedItem))
-
-                // console.log("This is right after the axios get request: " + this.manager[0]['first_name']);
-                //
-                // item["user_id"] = this.user.id
-                // item["requestor"] = this.user.first_name + " " + this.user.last_name
-                //
-                // // console.log("This is your this.manager.first_name " + this.manager.first_name)
-                // item["approver"] = this.manager[0]['first_name'] + " " + this.manager[0]['last_name']
 
                 let newCompTimePayload = {
                     item

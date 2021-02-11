@@ -41,7 +41,6 @@ class ReservationController extends Controller
         $newItem->title = $request->item["title"];
         $newItem->date = $request->item["date"];
         $newItem->court = $request->item["court"];
-//        $newItem->title = "Testing";
         $newItem->save();
 
         return $newItem;
@@ -79,13 +78,13 @@ class ReservationController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $existingItem = CompTimeItem::find($id);
+        $existingItem = Reservation::find($id);
 
         if($existingItem){
-            $existingItem->user_id = $request->item["user_id"];
+//            $existingItem->user_id = $request->item["user_id"];
             $existingItem->title = $request->item["title"];
-            $existingItem->date = $request->item["court"];
-            $existingItem->court = $request->item["user_id"];
+            $existingItem->date = $request->item["date"];
+            $existingItem->court = $request->item["court"];
             $existingItem->save();
         }
 
