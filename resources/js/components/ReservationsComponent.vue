@@ -256,15 +256,6 @@ export default {
             })
         },
 
-        // save () {
-        //     if (this.editedIndex > -1) {
-        //         Object.assign(this.reservations[this.editedIndex], this.editedItem)
-        //     } else {
-        //         this.reservations.push(this.editedItem)
-        //     }
-        //     this.close()
-        // },
-
         save() {
             if (this.editedIndex > -1) {
                 Object.assign(this.reservations[this.editedIndex], this.editedItem)
