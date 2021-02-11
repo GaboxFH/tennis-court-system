@@ -21,3 +21,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::get('/reservations', [ReservationController::class, 'index']);
+
+Route::prefix('/reservation')->group( function() {
+    Route::post('/store', [ReservationController::class, 'store']);
+    Route::put('/{id}', [ReservationController::class, 'update']);
+    Route::delete('/{id}', [ReservationController::class, 'destroy']);
+});
+

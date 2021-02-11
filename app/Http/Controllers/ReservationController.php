@@ -35,7 +35,17 @@ class ReservationController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $newItem = new Reservation;
+//        $newItem->user_id = $request->item["user_id"];
+        $newItem->user_id = 1;
+        $newItem->title = $request->item["title"];
+        $newItem->date = $request->item["date"];
+        $newItem->court = $request->item["court"];
+//        $newItem->title = "Testing";
+        $newItem->save();
+
+        return $newItem;
+
     }
 
     /**
@@ -67,9 +77,21 @@ class ReservationController extends Controller
      * @param  \App\Models\Reservation  $reservation
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Reservation $reservation)
+    public function update(Request $request, $id)
     {
-        //
+        $existingItem = CompTimeItem::find($id);
+
+        if($existingItem){
+            $existingItem->user_id = $request->item["user_id"];
+            $existingItem->title = $request->item["title"];
+            $existingItem->date = $request->item["court"];
+            $existingItem->court = $request->item["user_id"];
+            $existingItem->save();
+        }
+
+        return "Item not found.";
+
+
     }
 
     /**
@@ -78,8 +100,15 @@ class ReservationController extends Controller
      * @param  \App\Models\Reservation  $reservation
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Reservation $reservation)
+    public function destroy($id)
     {
-        //
+        $existingItem = Reservation::find($id);
+
+        if($existingItem){
+            $existingItem->delete();
+            return "Item successfully deleted.";
+        }
+
+        return "Item not found.";
     }
 }

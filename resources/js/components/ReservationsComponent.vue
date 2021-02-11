@@ -60,9 +60,38 @@
                                         md="4"
                                     >
                                         <v-text-field
-                                            v-model="editedItem.name"
-                                            label="Dessert name"
+                                            v-model="editedItem.title"
+                                            label="Title"
                                         ></v-text-field>
+                                    </v-col>
+
+                                    <v-col
+                                        cols="12"
+                                        sm="6"
+                                        md="4"
+                                    >
+                                        <v-menu
+                                            v-model="menu"
+                                            :close-on-content-click="false"
+                                            :nudge-right="40"
+                                            transition="scale-transition"
+                                            offset-y
+                                            min-width="auto"
+                                        >
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <v-text-field
+                                                    v-model="editedItem.date"
+                                                    label="Date"
+                                                    readonly
+                                                    v-bind="attrs"
+                                                    v-on="on"
+                                                ></v-text-field>
+                                            </template>
+                                            <v-date-picker
+                                                v-model="editedItem.date"
+                                                @input="menu = false"
+                                            ></v-date-picker>
+                                        </v-menu>
                                     </v-col>
                                     <v-col
                                         cols="12"
@@ -70,40 +99,11 @@
                                         md="4"
                                     >
                                         <v-text-field
-                                            v-model="editedItem.calories"
-                                            label="Calories"
+                                            v-model="editedItem.court"
+                                            label="Court"
                                         ></v-text-field>
                                     </v-col>
-                                    <v-col
-                                        cols="12"
-                                        sm="6"
-                                        md="4"
-                                    >
-                                        <v-text-field
-                                            v-model="editedItem.fat"
-                                            label="Fat (g)"
-                                        ></v-text-field>
-                                    </v-col>
-                                    <v-col
-                                        cols="12"
-                                        sm="6"
-                                        md="4"
-                                    >
-                                        <v-text-field
-                                            v-model="editedItem.carbs"
-                                            label="Carbs (g)"
-                                        ></v-text-field>
-                                    </v-col>
-                                    <v-col
-                                        cols="12"
-                                        sm="6"
-                                        md="4"
-                                    >
-                                        <v-text-field
-                                            v-model="editedItem.protein"
-                                            label="Protein (g)"
-                                        ></v-text-field>
-                                    </v-col>
+
                                 </v-row>
                             </v-container>
                         </v-card-text>
@@ -174,6 +174,8 @@ export default {
     data: () => ({
         dialog: false,
         dialogDelete: false,
+        menu: false,
+        date: new Date().toISOString().substr(0, 10),
         headers: [
             {
                 text: 'Title',
@@ -187,24 +189,21 @@ export default {
         ],
         editedIndex: -1,
         editedItem: {
-            name: '',
-            calories: 0,
-            fat: 0,
-            carbs: 0,
-            protein: 0,
+            title: '',
+            date: '',
+            court: '',
+
         },
         defaultItem: {
-            name: '',
-            calories: 0,
-            fat: 0,
-            carbs: 0,
-            protein: 0,
+            title: '',
+            date: '',
+            court: '',
         },
     }),
 
     computed: {
         formTitle () {
-            return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
+            return this.editedIndex === -1 ? 'New Reservation' : 'Edit Reservation'
         },
     },
 
@@ -230,11 +229,14 @@ export default {
         deleteItem (item) {
             this.editedIndex = this.reservations.indexOf(item)
             this.editedItem = Object.assign({}, item)
+            console.log(this.editedIndex)
+            console.log(item.id)
             this.dialogDelete = true
         },
 
         deleteItemConfirm () {
             this.reservations.splice(this.editedIndex, 1)
+            axios.delete('api/reservation/' + this.editedItem.id)
             this.closeDelete()
         },
 
@@ -254,14 +256,55 @@ export default {
             })
         },
 
-        save () {
+        // save () {
+        //     if (this.editedIndex > -1) {
+        //         Object.assign(this.reservations[this.editedIndex], this.editedItem)
+        //     } else {
+        //         this.reservations.push(this.editedItem)
+        //     }
+        //     this.close()
+        // },
+
+        save() {
             if (this.editedIndex > -1) {
-                Object.assign(this.reservations[this.editedIndex], this.editedItem)
+                Object.assign(this.items[this.editedIndex], this.editedItem)
+
+                let item = JSON.parse(JSON.stringify(this.editedItem))
+
+                let editReservationPayload = {
+                    item
+                }
+
+                axios.put('api/reservation/' + item.id, editReservationPayload)
+
+
             } else {
-                this.reservations.push(this.editedItem)
+                // this.items.push(this.editedItem)
+
+                let item = JSON.parse(JSON.stringify(this.editedItem))
+
+                // console.log("This is right after the axios get request: " + this.manager[0]['first_name']);
+                //
+                // item["user_id"] = this.user.id
+                // item["requestor"] = this.user.first_name + " " + this.user.last_name
+                //
+                // // console.log("This is your this.manager.first_name " + this.manager.first_name)
+                // item["approver"] = this.manager[0]['first_name'] + " " + this.manager[0]['last_name']
+
+                let newCompTimePayload = {
+                    item
+                }
+
+                // console.log(item)
+
+                axios.post('api/reservation/store', newCompTimePayload)
+
             }
             this.close()
+
+            this.$emit('refresh-list')
         },
+
     },
 }
 </script>

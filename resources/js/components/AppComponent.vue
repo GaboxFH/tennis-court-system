@@ -41,7 +41,7 @@
                     </v-list-item-content>
                 </v-list-item>
 
-                <v-list-item>
+                <v-list-item link to="/help">
                     <v-list-item-icon>
                         <v-icon>mdi-help-box</v-icon>
                     </v-list-item-icon>
@@ -83,6 +83,7 @@
         <v-main>
             <router-view
                 :reservations="reservations"
+                @refresh-list="getReservations"
             >
 
             </router-view>
