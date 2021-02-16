@@ -41,13 +41,13 @@
                     </v-list-item-content>
                 </v-list-item>
 
-                <v-list-item link to="/help">
+                <v-list-item link to="/users">
                     <v-list-item-icon>
-                        <v-icon>mdi-help-box</v-icon>
+                        <v-icon>mdi-account</v-icon>
                     </v-list-item-icon>
 
                     <v-list-item-content>
-                        <v-list-item-title>Help</v-list-item-title>
+                        <v-list-item-title>Members</v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
 

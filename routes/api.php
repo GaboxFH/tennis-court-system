@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,3 +29,4 @@ Route::prefix('/reservation')->group( function() {
     Route::delete('/{id}', [ReservationController::class, 'destroy']);
 });
 
+Route::get('/users', [UserController::class, 'index']);
