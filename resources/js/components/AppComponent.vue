@@ -21,7 +21,7 @@
                 dense
                 nav
             >
-                <v-list-item>
+                <v-list-item link to="/">
                     <v-list-item-icon>
                         <v-icon>mdi-calendar</v-icon>
                     </v-list-item-icon>
@@ -31,7 +31,7 @@
                     </v-list-item-content>
                 </v-list-item>
 
-                <v-list-item>
+                <v-list-item link to="/adminpanel">
                     <v-list-item-icon>
                         <v-icon>mdi-newspaper-variant</v-icon>
                     </v-list-item-icon>
@@ -41,7 +41,7 @@
                     </v-list-item-content>
                 </v-list-item>
 
-                <v-list-item>
+                <v-list-item link to="/help">
                     <v-list-item-icon>
                         <v-icon>mdi-help-box</v-icon>
                     </v-list-item-icon>
@@ -81,7 +81,12 @@
         </v-app-bar>
 
         <v-main>
-            <example-component></example-component>
+            <router-view
+                :reservations="reservations"
+                @refresh-list="getReservations"
+            >
+
+            </router-view>
         </v-main>
     </v-app>
 </template>
@@ -90,7 +95,11 @@
 import ExampleComponent from "./ExampleComponent";
 
 export default {
-    data: () => ({ drawer: null }),
+    data: () => ({
+        drawer: null,
+        reservations: [],
+
+    }),
 
     methods: {
 
@@ -99,9 +108,24 @@ export default {
                 .then(response => {
                     window.location.href = "login"
                 })
-        }
+        },
 
-    }
+        getReservations() {
+            axios.get('api/reservations')
+                .then(response => {
+                    this.reservations = response.data
+                })
+                .catch(error => {
+                    console.log(error);
+                })
+
+        },
+
+    },
+
+    created() {
+        this.getReservations();
+    },
 
 }
 </script>
