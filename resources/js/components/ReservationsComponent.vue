@@ -29,6 +29,11 @@
       }"
     >
       <v-container fluid>
+        <v-form
+            ref="form"
+            v-model="valid"
+            lazy-validation
+        >
         <h4>Find Available Courts</h4>
         <div class="pa-3">
           <v-row align="center">
@@ -37,7 +42,9 @@
                 :items="courtType"
                 label="Select Court Type"
                 v-model="selectedCourt"
+                :rules="[v => !!v || 'Court Type is required']"
                 background-color="grey lighten-5"
+                required
               ></v-select>
             </v-col>
 
@@ -48,6 +55,7 @@
                 transition="scale-transition"
                 offset-y
                 min-width="auto"
+                required
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-text-field
@@ -59,11 +67,14 @@
                     clearable
                     append-icon="mdi-calendar pr-4"
                     background-color="grey lighten-5"
+                    required
+                    :rules="[v => !!v || 'Date is required']"
                   ></v-text-field>
                 </template>
                 <v-date-picker
                   v-model="selectedDate"
                   @input="menu = false"
+                  required
                 ></v-date-picker>
               </v-menu>
             </v-col>
@@ -73,7 +84,9 @@
                 :items="startTime"
                 label="Start Time"
                 v-model="selectedStartTime"
+                :rules="[v => !!v || 'Start Time is required']"
                 background-color="grey lighten-5"
+                required
               ></v-select>
             </v-col>
 
@@ -82,19 +95,25 @@
                 :items="duration"
                 label="Duration"
                 v-model="selectedDuration"
+                :rules="[v => !!v || 'Court Type is required']"
                 background-color="grey lighten-5"
+                required
               ></v-select>
             </v-col>
           </v-row>
         </div>
         <v-row>
-          <v-btn color="primary" class="mb-2" @click="find()" v-on:click="seen = true">Find</v-btn>
+          <v-btn color="primary" class="mb-2" 
+            @click="find()"
+            :disabled="!valid"
+          >Find</v-btn>
         </v-row>
+        </v-form>
       </v-container>
     </div>
 
-    <v-list>
-        <v-subheader v-if="seen"><b>You Selected:</b> {{selectedCourt}} on {{selectedDate}} at {{selectedStartTime}} for {{selectedDuration}} </v-subheader>
+    <v-list v-if="seen">
+        <v-subheader><b>You Selected:</b> {{selectedCourt}} on {{selectedDate}} at {{selectedStartTime}} for {{selectedDuration}} </v-subheader>
         <v-list-item-group
             v-model="selectedItem"
         >
@@ -226,7 +245,6 @@
 
 <script>
 import ReservationList from "./ReservationList";
-
 export default {
   components: { ReservationList },
 
@@ -234,6 +252,7 @@ export default {
 
   data: () => ({
     
+    valid: false,
     courtType: ["Soft Court", "Hard Court"],
     dialog: false,
     dialogDelete: false,
@@ -267,6 +286,14 @@ export default {
     selectedDate: null,
     selectedStartTime: null,
     selectedDuration: null,
+    selectedReservation: [
+        {
+            selectedCourt: null,
+            selectedDate: null,
+            selectedStartTime: null,
+            SelectedDuration: null
+        }
+    ],
     selectedItem: 1,
     startTime: [
       "5:00AM", "5:30AM", "6:00AM", "6:30AM","7:00AM","7:30AM","8:00AM","8:30AM",
@@ -332,8 +359,16 @@ export default {
   created() {},
 
   methods: {
-    find() {
 
+    find() {
+        if (this.$refs.form.validate()) {
+            this.seen = !this.seen;
+            this.selectedReservation.selectedCourt = this.selectedCourt;
+            this.selectedReservation.selectedDate = this.selectedDate;
+            this.selectedReservation.selectedStartTime = this.selectedStartTime;
+            this.selectedReservation.selectedDuration = this.selectedDuration;
+            console.log(this.selectedReservation);
+        }
     },
     editItem(item) {
       this.editedIndex = this.reservations.indexOf(item);
