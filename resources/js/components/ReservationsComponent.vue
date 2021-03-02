@@ -69,12 +69,15 @@
                     background-color="grey lighten-5"
                     required
                     :rules="[v => !!v || 'Date is required']"
+                    @click="log"
                   ></v-text-field>
                 </template>
                 <v-date-picker
                   v-model="selectedDate"
                   @input="menu = false"
                   required
+                  :min="date"
+                  :max="dateWeek"
                 ></v-date-picker>
               </v-menu>
             </v-col>
@@ -259,6 +262,7 @@ export default {
     duration: ["30 mins", "1 hr", "1-1/2 hr", "2 hrs", "2-1/2 hrs"],
     menu: false,
     date: new Date().toISOString().substr(0, 10),
+    dateWeek: new Date(new Date().setDate(new Date().getDate() + 7)).toISOString().substr(0, 10),
     headers: [
       {
         text: "Title",
@@ -298,26 +302,9 @@ export default {
     startTime: [
       "5:00AM", "5:30AM", "6:00AM", "6:30AM","7:00AM","7:30AM","8:00AM","8:30AM",
       "9:00AM","9:30AM","10:00AM","10:30AM","11:00AM","11:30AM","12:00PM","12:30PM",
-      "1:00PM","1:30PM",
-      "2:00PM",
-      "2:30PM",
-      "3:00PM",
-      "3:30PM",
-      "4:00PM",
-      "4:30PM",
-      "5:00PM",
-      "5:30PM",
-      "6:00PM",
-      "6:30PM",
-      "7:00PM",
-      "7:30PM",
-      "8:00PM",
-      "8:30PM",
-      "9:00PM",
-      "9:30PM",
-      "10:00PM",
-      "10:30PM",
-      "11:00PM",
+      "1:00PM","1:30PM","2:00PM","2:30PM","3:00PM","3:30PM","4:00PM","4:30PM","5:00PM",
+      "5:30PM","6:00PM","6:30PM","7:00PM","7:30PM","8:00PM","8:30PM","9:00PM","9:30PM",
+      "10:00PM","10:30PM","11:00PM",
     ],
     foundReservations: [
       {
@@ -345,6 +332,10 @@ export default {
     formTitle() {
       return this.editedIndex === -1 ? "New Reservation" : "Edit Reservation";
     },
+    // dateWeek() {
+    //     console.log(new Date(new Date().setDate(new Date().getDate() + i)).toISOString().substr(0, 10))
+    //     return new Date(new Date().setDate(new Date().getDate() + i)).toISOString().substr(0, 10);
+    // }
   },
 
   watch: {
@@ -359,7 +350,9 @@ export default {
   created() {},
 
   methods: {
-
+    log() {
+        console.log(this.date, this.dateWeek);
+    },
     find() {
         if (this.$refs.form.validate()) {
             this.seen = !this.seen;
@@ -367,7 +360,7 @@ export default {
             this.selectedReservation.selectedDate = this.selectedDate;
             this.selectedReservation.selectedStartTime = this.selectedStartTime;
             this.selectedReservation.selectedDuration = this.selectedDuration;
-            console.log(this.selectedReservation);
+            console.log(this.date, this.dateWeek);
         }
     },
     editItem(item) {
