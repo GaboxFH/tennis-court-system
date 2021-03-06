@@ -24,7 +24,7 @@
             <v-toolbar
                 flat
             >
-                <v-toolbar-title>My users</v-toolbar-title>
+                <v-toolbar-title>Club Members</v-toolbar-title>
                 <v-divider
                     class="mx-4"
                     inset
@@ -46,6 +46,11 @@
                             New User
                         </v-btn>
                     </template>
+                    <v-form
+                        ref="form"
+                        v-model="valid"
+                        lazy-validation
+                    >
                     <v-card>
                         <v-card-title>
                             <span class="headline">{{ formTitle }}</span>
@@ -53,35 +58,26 @@
 
                         <v-card-text>
                             <v-container>
-                                <v-row>
-                                    <v-col
-                                        cols="12"
-                                        sm="6"
-                                        md="4"
-                                    >
+                                <v-row no-gutters>
+                                    <v-col>
                                         <v-text-field
                                             :rules="nameRules"
                                             v-model="editedItem.name"
                                             label="Name"
                                         ></v-text-field>
                                     </v-col>
-
-                                    <v-col
-                                        cols="12"
-                                        sm="6"
-                                        md="4"
-                                    >
+                                </v-row>
+                                <v-row no-gutters>
+                                    <v-col>
                                         <v-text-field
                                           :rules="phoneRules"
                                           v-model="editedItem.phone"
                                           label="Phone"
                                         ></v-text-field>
                                     </v-col>
-                                    <v-col
-                                        cols="12"
-                                        sm="6"
-                                        md="4"
-                                    >
+                                </v-row>
+                                <v-row no-gutters>
+                                    <v-col>
                                         <v-text-field
                                             :rules="emailRules"
                                             v-model="editedItem.email"
@@ -103,14 +99,16 @@
                                 Cancel
                             </v-btn>
                             <v-btn
-                                color="blue darken-1"
-                                text
-                                @click="save"
+                                :disabled="!valid"
+                                color="primary"
+                                class="mr-4 px-6"   
+                                @click="validateForm"
                             >
                                 Save
                             </v-btn>
                         </v-card-actions>
                     </v-card>
+                    </v-form>
                 </v-dialog>
                 <v-dialog v-model="dialogDelete" max-width="500px">
                     <v-card>
@@ -159,16 +157,15 @@ export default {
     data: () => ({
         dialog: false,
         dialogDelete: false,
-        menu: false,
+        valid: true,
         nameRules: [
           v => !!v || 'Field is required',
         ],
         phoneRules: [
-          v => /^(\+\d{1,2}\s?)?1?\-?\.?\s?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/.test(v) || 'Phone number must be valid'
+            v => /((^(\+\d{1,2}\s?)?1?\-?\.?\s?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$)|^$)/.test(v) || 'Phone number must be valid'
         ],
         emailRules: [
-          v => !!v || 'E-mail is required',
-          v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
+            v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
         ],
         headers: [
             {
@@ -197,13 +194,14 @@ export default {
 
     computed: {
         formTitle () {
-            return this.editedIndex === -1 ? 'New Reservation' : 'Edit Reservation'
+            return this.editedIndex === -1 ? 'Add a Member' : 'Edit Member Info'
         },
     },
 
     watch: {
         dialog (val) {
             val || this.close()
+            this.$refs.form.resetValidation()
         },
         dialogDelete (val) {
             val || this.closeDelete()
@@ -215,6 +213,11 @@ export default {
     },
 
     methods: {
+        validateForm() {
+            if(this.$refs.form.validate()){
+                this.save()
+            }
+        },
         getUsers() {
             axios.get('api/users')
                 .then(response => {
@@ -240,7 +243,7 @@ export default {
 
         deleteItemConfirm () {
             this.users.splice(this.editedIndex, 1)
-            axios.delete('api/reservation/' + this.editedItem.id)
+            axios.delete('api/user/' + this.editedItem.id)
             this.closeDelete()
         },
 
@@ -266,11 +269,11 @@ export default {
 
                 let item = JSON.parse(JSON.stringify(this.editedItem))
 
-                let editReservationPayload = {
+                let editUserPayload = {
                     item
                 }
 
-                axios.put('api/user/' + item.id, editReservationPayload)
+                axios.put('api/user/' + item.id, editUserPayload)
 
 
             } else {
@@ -288,8 +291,8 @@ export default {
             }
             
             this.close()
-
             this.$emit('refresh-users')
+
         },
 
     },
