@@ -217,9 +217,20 @@ export default {
     },
 
     created () {
+        this.getReservations();    
     },
 
     methods: {
+        getReservations() {
+            axios.get('api/reservations')
+                .then(response => {
+                    this.reservations = response.data
+                })
+                .catch(error => {
+                    console.log(error);
+                })
+
+        },
         editItem (item) {
             this.editedIndex = this.reservations.indexOf(item)
             this.editedItem = Object.assign({}, item)

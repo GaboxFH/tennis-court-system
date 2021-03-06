@@ -84,6 +84,8 @@
             <router-view
                 :reservations="reservations"
                 @refresh-list="getReservations"
+                :users="users"
+                @refresh-users="getUsers"
             >
 
             </router-view>
@@ -98,6 +100,7 @@ export default {
     data: () => ({
         drawer: null,
         reservations: [],
+        users: [],
 
     }),
 
@@ -120,11 +123,21 @@ export default {
                 })
 
         },
+        getUsers() {
+            axios.get('api/users')
+                .then(response => {
+                    this.users = response.data
+                })
+                .catch(error => {
+                    console.log(error);
+                })
+        },
 
     },
 
     created() {
-        this.getReservations();
+        // this.getReservations();
+        // this.getUsers();
     },
 
 }
