@@ -9,13 +9,13 @@
             <p>Welcome.</p>
 
             <p>Added phone number and basic vuetify validation. Still needs database validation to check that email is unique if email is changed. Also maybe add are you sure for email and phone changes. </p>
-            <p>{{this.editedItem[0].access}}</p>
+            <p>{{ this.editedItem[0].access }}</p>
 
 
         </v-container>
 
     <v-data-table
-        :headers="headers"
+        :headers="computedHeaders"
         :items="users"
         :footer-props="{
             'items-per-page-options': [25, 50, 75, 100, 125, 150]
@@ -39,12 +39,12 @@
                 ></v-divider>
                 <v-text-field
                     v-model="search"
+                    class="pr-7"
                     append-icon="mdi-magnify"
                     label="Search"
                     single-line
                     hide-details
                 ></v-text-field>
-                <v-spacer></v-spacer>
                 <v-dialog
                     v-model="dialog"
                     max-width="600px"
@@ -297,12 +297,15 @@ export default {
         phoneRules1 () { return this.editedItem[1].phoneError },
         emailRules () { return this.editedItem[0].emailError },
         emailRules1 () { return this.editedItem[1].emailError },
+        computedHeaders () {
+            // logic for hiding columns
+            return this.headers
+        }
     },
 
     watch: {
         dialog (val) {
             val || this.close()
-            
         },
         dialogDelete (val) {
             val || this.closeDelete()
@@ -389,8 +392,8 @@ export default {
         deleteItem (item) {
             this.editedIndex = this.users.indexOf(item)
             this.editedItem[0] = Object.assign({}, item)
-            console.log(this.editedIndex)
-            console.log(item.id)
+            // console.log(this.editedIndex)
+            // console.log(item.id)
             this.dialogDelete = true
         },
 
@@ -426,12 +429,25 @@ export default {
                 }
                 axios.put('api/user/' + item.id, editUserPayload)
             } else { //new user(s)
+                //random unique member_id
+                var numIsNew = false
+                var randNum = 0
+                while(!numIsNew){
+                    numIsNew = true
+                    randNum = Math.floor(Math.random() * Math.floor(100000)) + 1   
+                    for (var i = 0; i< this.users.length; i++) {
+                        if(this.users[i].membership_id==randNum){
+                            numIsNew = false
+                        }
+                    }
+                }
                 var numOfFields = this.editedItem[0].access === 'Family' ? 2 : 1
                 for(var i=0; i<numOfFields; i++){
                     let item = JSON.parse(JSON.stringify(this.editedItem[i]))
                     let newCompTimePayload = {
                         item
                     }
+                    item.membership_id = randNum
                     item.password = "password123"
                     axios.post('api/user/store', newCompTimePayload)
                 }

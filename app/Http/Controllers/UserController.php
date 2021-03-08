@@ -21,6 +21,7 @@ class UserController extends Controller
         $existingUser = User::find($id);
 
         if($existingUser){
+            $existingUser->membership_id = $request->item["membership_id"];
             $existingUser->name = $request->item["name"];
             $existingUser->phone = $request->item["phone"];
             $existingUser->email = $request->item["email"];
@@ -39,6 +40,7 @@ class UserController extends Controller
         // ]);
 
         User::create([
+            'membership_id' => $request->item["membership_id"],
             'name' => $request->item["name"],
             'phone' => $request->item["phone"],
             'email' => $request->item["email"],
