@@ -9,7 +9,7 @@
             <p>Welcome.</p>
 
             <p>Added phone number and basic vuetify validation. Still needs database validation to check that email is unique if email is changed. Also maybe add are you sure for email and phone changes. </p>
-
+            <p>{{this.editedItem[0].access}}</p>
 
 
         </v-container>
@@ -47,7 +47,7 @@
                 <v-spacer></v-spacer>
                 <v-dialog
                     v-model="dialog"
-                    max-width="500px"
+                    max-width="600px"
                 >
                     <template v-slot:activator="{ on, attrs }">
                         <v-btn
@@ -66,18 +66,37 @@
                         lazy-validation
                     >
                     <v-card>
-                        <v-card-title>
+                        <v-card-title
+                            class="ma-0 pa-0"
+                        >
                             <span class="headline">{{ formTitle }}</span>
+                            <v-spacer></v-spacer>
+                            <v-overflow-btn
+                                v-if="editedItem[0].access"
+                                class="t-5"
+                                :items="membership_types"
+                                messages="Access Level"
+                                v-model="editedItem[0].access"
+                                dense
+                            ></v-overflow-btn>
                         </v-card-title>
-
-                        <v-card-text>
-                            <v-container>
+                        
+                        <v-card-text
+                            class="ma-0 pa-0"
+                        >
+                            <v-container 
+                            fluid
+                            class="ma-0 pa-0"
+                            >
+                                <v-header
+                                    class="h4"
+                                >Member 1</v-header>
                                 <v-row no-gutters>
                                     <v-col>
                                         <v-text-field
                                             :error-messages="nameRules"
-                                            v-model="editedItem.name"
-                                            @keydown="nameMsg"
+                                            v-model="editedItem[0].name"
+                                            @keydown="nameMsg(0)"
                                             label="Name"
                                         ></v-text-field>
                                     </v-col>
@@ -86,8 +105,8 @@
                                     <v-col>
                                         <v-text-field
                                           :error-messages="phoneRules"
-                                          v-model="editedItem.phone"
-                                          @keydown="phoneMsg"
+                                          v-model="editedItem[0].phone"
+                                          @keydown="phoneMsg(0)"
                                           label="Phone"
                                         ></v-text-field>
                                     </v-col>
@@ -96,13 +115,50 @@
                                     <v-col>
                                         <v-text-field
                                             :error-messages="emailRules"
-                                            v-model="editedItem.email"
-                                            @keydown="emailMsg"
+                                            v-model="editedItem[0].email"
+                                            @keydown="emailMsg(0)"
                                             label="Email"
                                         ></v-text-field>
                                     </v-col>
-
                                 </v-row>
+                                <div v-if="editedItem[0].access==='Family'"
+                                class="ma-0 pa-0"
+                                >
+                                <v-header
+                                    class="h4"
+                                >Member 2</v-header>
+                                <v-row no-gutters>
+                                    <v-col>
+                                        <v-text-field
+                                            :error-messages="nameRules1"
+                                            v-model="editedItem[1].name"
+                                            @keydown="nameMsg(1)"
+                                            label="Name"
+                                        ></v-text-field>
+                                    </v-col>
+                                </v-row>
+                                <v-row no-gutters>
+                                    <v-col>
+                                        <v-text-field
+                                          :error-messages="phoneRules1"
+                                          v-model="editedItem[1].phone"
+                                          @keydown="phoneMsg(1)"
+                                          label="Phone"
+                                        ></v-text-field>
+                                    </v-col>
+                                </v-row>
+                                <v-row no-gutters>
+                                    <v-col>
+                                        <v-text-field
+                                            :error-messages="emailRules1"
+                                            v-model="editedItem[1].email"
+                                            @keydown="emailMsg(1)"
+                                            label="Email"
+                                        ></v-text-field>
+                                    </v-col>
+                                </v-row>
+                                </div>
+
                             </v-container>
                         </v-card-text>
 
@@ -124,6 +180,8 @@
                                 Save
                             </v-btn>
                         </v-card-actions>
+                        
+                        
                     </v-card>
                     </v-form>
                 </v-dialog>
@@ -172,17 +230,10 @@ export default {
     props: ['users'],
 
     data: () => ({
-        rowsPerPageItems: [10, 20, 30, 40],
-        pagination: {
-            rowsPerPage: 20
-        },
+        membership_types: ['Single', 'Family', 'Tennis Pro', 'Admin'],
         dialog: false,
         dialogDelete: false,
         valid: true,
-        nameError: false,
-        phoneError: false,
-        emailError: -1,
-        submitForm: true,
         search: '',
         headers: [
             {
@@ -196,41 +247,56 @@ export default {
             { text: 'Actions', value: 'actions', sortable: false },
         ],
         editedIndex: -1,
-        editedItem: {
+        submitForm: true,
+        editedItem: [{
             name: '',
             phone: '',
             email: '',
-
+            access: 'Single',
+            nameError: undefined,
+            phoneError: undefined,
+            emailError: undefined,
         },
-        defaultItem: {
+        {
             name: '',
             phone: '',
             email: '',
+            access: 'Single',
+            nameError: undefined,
+            phoneError: undefined,
+            emailError: undefined,
+        }],
+        defaultItem: [{
+            name: '',
+            phone: '',
+            email: '',
+            access: 'Single',
+            nameError: undefined,
+            phoneError: undefined,
+            emailError: undefined,
         },
+        {
+            name: '',
+            phone: '',
+            email: '',
+            access: 'Single',
+            nameError: undefined,
+            phoneError: undefined,
+            emailError: undefined,
+        }],
     }),
 
     computed: {
         formTitle () {
             return this.editedIndex === -1 ? 'Add a Member' : 'Edit Member Info'
         },
-        nameRules () {
-            return this.nameError ? ['Field is required'] : undefined
-        },
-        phoneRules () {
-            return this.phoneError ? ['Invalid phone number'] : undefined
-        },
-        emailRules () {
-            if(this.emailError == 2){
-                return ['Invalid email']
-            }
-            else if(this.emailError == 1){
-                return ['Field is required']
-            }
-            else if(this.emailError == 0){
-                return ['Email already exists']
-            } 
-            return undefined
-        },
+        //computed cant accecpt parameters :(
+        nameRules () { return this.editedItem[0].nameError },
+        nameRules1 () { return this.editedItem[1].nameError },
+        phoneRules () { return this.editedItem[0].phoneError },
+        phoneRules1 () { return this.editedItem[1].phoneError },
+        emailRules () { return this.editedItem[0].emailError },
+        emailRules1 () { return this.editedItem[1].emailError },
     },
 
     watch: {
@@ -248,61 +314,63 @@ export default {
     },
 
     methods: {
-        
         validateForm() {
             this.submitForm = true
-            // check name
-            if(!this.editedItem.name){
-                this.nameError = true
-                this.submitForm = false
-            }
-            // check phone
-            if(this.editedItem.phone){
-                const validNumRegExp = new RegExp('^[0-9]*$')
-                if(!validNumRegExp.test(this.editedItem.phone)){
-                    this.phoneError = true
+            var numOfFields = this.editedItem[0].access === 'Family' ? 2 : 1
+            for(var i=0; i<numOfFields; i++){
+                // check name
+                if(!this.editedItem[i].name){
+                    this.editedItem[i].nameError = "Field is required"
                     this.submitForm = false
                 }
-            }
-            // check email is valid and unique
-            if(this.editedItem.email){
-                if(this.editedIndex > -1){// edit
-                    for (var i = 0; i < this.users.length; i++) {
-                        if(this.users[i].email === this.editedItem.email && i!=this.editedIndex){
-                            this.emailError = 0
-                            this.submitForm = false
-                        }
-                    }                    
-                } else{//new email
-                    const validEmailRegExp = new RegExp('@.*?\.')
-                    if(!validEmailRegExp.test(this.editedItem.email)){
-                        this.emailError = 2
+                // check phone
+                if(this.editedItem[i].phone){
+                    const validNumRegExp = new RegExp('^[0-9]*$')
+                    if(!validNumRegExp.test(this.editedItem[i].phone)){
+                        this.editedItem[i].phoneError = "Invalid phone"
                         this.submitForm = false
                     }
-                    for (var i = 0; i < this.users.length; i++) {
-                        if(this.users[i].email === this.editedItem.email){
-                            this.emailError = 0
-                            this.submitForm = false
-                        }
-                    }   
                 }
-            }
-            else{
-                this.emailError = 1
-                this.submitForm = false
+                // check email is valid and unique
+                if(this.editedItem[i].email){
+                    const validEmailRegExp = new RegExp('@.*?\.')
+                    if(!validEmailRegExp.test(this.editedItem[i].email)){
+                        this.editedItem[i].emailError = "Invalid email"
+                        this.submitForm = false
+                    }
+                    else if(this.editedIndex > -1){// edit
+                        for (var j = 0; j< this.users.length; j++) {
+                            if(this.users[j].email === this.editedItem[i].email && j!=this.editedIndex){
+                                this.editedItem[i].emailError = "Email already exists"
+                                this.submitForm = false
+                            }
+                        }                    
+                    } else{//new email
+                        for (var j = 0; j < this.users.length; j++) {
+                            if(this.users[j].email === this.editedItem[i].email){
+                                this.editedItem[i].emailError = "Email already exists"
+                                this.submitForm = false
+                            }
+                        }   
+                    }
+                }
+                else{
+                    this.editedItem[i].emailError = "Field is required"
+                    this.submitForm = false
+                }
+                if(i==1 && this.editedItem[0].email === this.editedItem[1].email){
+                    this.editedItem[0].emailError = "Email must be unique"
+                    this.editedItem[1].emailError = "Email must be unique"
+                    this.submitForm = false
+                }
             }
             if(!this.submitForm){return}
             // save if no errors
             this.save()
         },
-        nameMsg() { this.nameError = false },
-        phoneMsg() { this.phoneError = false },
-        emailMsg() { this.emailError = -1 },
-        resetErrorMsgs() {
-            this.nameError = false
-            this.phoneError = false
-            this.emailError = -1
-        },
+        nameMsg(x) { this.editedItem[x].nameError = undefined },
+        phoneMsg(x) { this.editedItem[x].phoneError = undefined },
+        emailMsg(x) { this.editedItem[x].emailError = undefined },
         getUsers() {
             axios.get('api/users')
                 .then(response => {
@@ -314,13 +382,13 @@ export default {
         },
         editItem (item) {
             this.editedIndex = this.users.indexOf(item)
-            this.editedItem = Object.assign({}, item)
+            this.editedItem[0] = Object.assign({}, item)
             this.dialog = true
         },
 
         deleteItem (item) {
             this.editedIndex = this.users.indexOf(item)
-            this.editedItem = Object.assign({}, item)
+            this.editedItem[0] = Object.assign({}, item)
             console.log(this.editedIndex)
             console.log(item.id)
             this.dialogDelete = true
@@ -328,12 +396,11 @@ export default {
 
         deleteItemConfirm () {
             this.users.splice(this.editedIndex, 1)
-            axios.delete('api/user/' + this.editedItem.id)
+            axios.delete('api/user/' + this.editedItem[0].id)
             this.closeDelete()
         },
 
         close () {
-            this.resetErrorMsgs()
             this.dialog = false
             this.$nextTick(() => {
                 this.editedItem = Object.assign({}, this.defaultItem)
@@ -351,20 +418,23 @@ export default {
         },
 
         save() {
-            if (this.editedIndex > -1) {
-                Object.assign(this.users[this.editedIndex], this.editedItem)
-                let item = JSON.parse(JSON.stringify(this.editedItem))
+            if (this.editedIndex > -1) { //edit
+                Object.assign(this.users[this.editedIndex], this.editedItem[0])
+                let item = JSON.parse(JSON.stringify(this.editedItem[0]))
                 let editUserPayload = {
                     item
                 }
                 axios.put('api/user/' + item.id, editUserPayload)
-            } else {
-                let item = JSON.parse(JSON.stringify(this.editedItem))
-                let newCompTimePayload = {
-                    item
+            } else { //new user(s)
+                var numOfFields = this.editedItem[0].access === 'Family' ? 2 : 1
+                for(var i=0; i<numOfFields; i++){
+                    let item = JSON.parse(JSON.stringify(this.editedItem[i]))
+                    let newCompTimePayload = {
+                        item
+                    }
+                    item.password = "password123"
+                    axios.post('api/user/store', newCompTimePayload)
                 }
-                item.password = "password123"
-                axios.post('api/user/store', newCompTimePayload)
             }
             this.close()
         },
