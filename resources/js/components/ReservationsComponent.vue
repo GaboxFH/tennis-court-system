@@ -285,52 +285,9 @@ export default {
       date: "",
       court: "",
     },
-    seen: false,
-    selectedCourt: null,
-    selectedDate: null,
-    selectedStartTime: null,
-    selectedDuration: null,
-    selectedReservation: [
-        {
-            selectedCourt: null,
-            selectedDate: null,
-            selectedStartTime: null,
-            SelectedDuration: null
-        }
-    ],
-    selectedItem: 1,
-    startTime: [
-      "5:00AM", "5:30AM", "6:00AM", "6:30AM","7:00AM","7:30AM","8:00AM","8:30AM",
-      "9:00AM","9:30AM","10:00AM","10:30AM","11:00AM","11:30AM","12:00PM","12:30PM",
-      "1:00PM","1:30PM","2:00PM","2:30PM","3:00PM","3:30PM","4:00PM","4:30PM","5:00PM",
-      "5:30PM","6:00PM","6:30PM","7:00PM","7:30PM","8:00PM","8:30PM","9:00PM","9:30PM",
-      "10:00PM","10:30PM","11:00PM",
-    ],
-    foundReservations: [
-      {
-        startTime: "6:00",
-        endTime: "6:30",
-        courtType: "Soft Court",
-        courtNumber: 1,
-      },
-      {
-        startTime: "6:00",
-        endTime: "6:30",
-        courtType: "Soft Court",
-        courtNumber: 2,
-      },
-      {
-        startTime: "6:00",
-        endTime: "6:30",
-        courtType: "Soft Court",
-        courtNumber: 3,
-      },
-    ],
-  }),
 
-  computed: {
-    formTitle() {
-      return this.editedIndex === -1 ? "New Reservation" : "Edit Reservation";
+    created () {
+        this.getReservations();    
     },
     // dateWeek() {
     //     console.log(new Date(new Date().setDate(new Date().getDate() + i)).toISOString().substr(0, 10))
@@ -350,6 +307,16 @@ export default {
   created() {},
 
   methods: {
+    getReservations() {
+        axios.get('api/reservations')
+            .then(response => {
+                this.reservations = response.data
+            })
+            .catch(error => {
+                console.log(error);
+            })
+
+    },
     log() {
         console.log(this.date, this.dateWeek);
     },

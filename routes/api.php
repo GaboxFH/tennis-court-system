@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\Auth\RegisterController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,3 +30,10 @@ Route::prefix('/reservation')->group( function() {
     Route::delete('/{id}', [ReservationController::class, 'destroy']);
 });
 
+Route::get('/users', [UserController::class, 'index']);
+
+Route::prefix('/user')->group( function() {
+    Route::post('/store', [UserController::class, 'store']);
+    Route::put('/{id}', [UserController::class, 'update']);
+    Route::delete('/{id}', [UserController::class, 'destroy']);
+});

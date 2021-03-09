@@ -6,7 +6,7 @@ Vue.use(VueRouter)
 
 import AdminPanel from "../components/AdminPanelComponent"
 import Reservations from "../components/ReservationsComponent"
-import Example from "../components/ExampleComponent"
+import Users from "../components/UsersComponent"
 
 let routes = [
     {
@@ -23,9 +23,9 @@ let routes = [
         path: "/adminpanel"
     },
     {
-        component: Example,
-        name: "example",
-        path: "/help"
+        component: Users,
+        name: "users",
+        path: "/users"
     },
 
 ];
