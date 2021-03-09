@@ -1,3 +1,39 @@
+Skip to content
+Search or jump to…
+
+Pulls
+Issues
+Marketplace
+Explore
+ 
+@noahred16 
+Learn Git and GitHub without any code!
+Using the Hello World guide, you’ll start a branch, write comments, and open a pull request.
+
+
+GaboxFH
+/
+tennis-court-system
+Private
+1
+0
+0
+Code
+Issues
+Pull requests
+Actions
+Projects
+Wiki
+Security
+Insights
+tennis-court-system/resources/js/components/UsersComponent.vue
+@noahred16
+noahred16 membership_id added to users database
+Latest commit f9e368c 2 hours ago
+ History
+ 1 contributor
+459 lines (436 sloc)  16.9 KB
+  
 <template>
 
     <v-container
@@ -66,9 +102,7 @@
                         lazy-validation
                     >
                     <v-card>
-                        <v-card-title
-                            class="ma-0 pa-0"
-                        >
+                        <v-card-title>
                             <span class="headline">{{ formTitle }}</span>
                             <v-spacer></v-spacer>
                             <v-overflow-btn
@@ -81,12 +115,9 @@
                             ></v-overflow-btn>
                         </v-card-title>
                         
-                        <v-card-text
-                            class="ma-0 pa-0"
-                        >
+                        <v-card-text>
                             <v-container 
                             fluid
-                            class="ma-0 pa-0"
                             >
                                 <v-header
                                     class="h4"
@@ -121,9 +152,7 @@
                                         ></v-text-field>
                                     </v-col>
                                 </v-row>
-                                <div v-if="editedItem[0].access==='Family'"
-                                class="ma-0 pa-0"
-                                >
+                                <div v-if="editedItem[0].access==='Family'">
                                 <v-header
                                     class="h4"
                                 >Member 2</v-header>
@@ -162,7 +191,9 @@
                             </v-container>
                         </v-card-text>
 
-                        <v-card-actions>
+                        <v-card-actions
+                            class="pb-5"
+                        >
                             <v-spacer></v-spacer>
                             <v-btn
                                 color="blue darken-1"
@@ -226,9 +257,7 @@
 
 <script>
 export default {
-
     props: ['users'],
-
     data: () => ({
         membership_types: ['Single', 'Family', 'Tennis Pro', 'Admin'],
         dialog: false,
@@ -266,26 +295,25 @@ export default {
             phoneError: undefined,
             emailError: undefined,
         }],
-        defaultItem: [{
-            name: '',
-            phone: '',
-            email: '',
-            access: 'Single',
-            nameError: undefined,
-            phoneError: undefined,
-            emailError: undefined,
-        },
-        {
-            name: '',
-            phone: '',
-            email: '',
-            access: 'Single',
-            nameError: undefined,
-            phoneError: undefined,
-            emailError: undefined,
-        }],
+        // defaultItem: [{
+        //     name: '',
+        //     phone: '',
+        //     email: '',
+        //     access: 'Single',
+        //     nameError: undefined,
+        //     phoneError: undefined,
+        //     emailError: undefined,
+        // },
+        // {
+        //     name: '',
+        //     phone: '',
+        //     email: '',
+        //     access: 'Single',
+        //     nameError: undefined,
+        //     phoneError: undefined,
+        //     emailError: undefined,
+        // }],
     }),
-
     computed: {
         formTitle () {
             return this.editedIndex === -1 ? 'Add a Member' : 'Edit Member Info'
@@ -302,7 +330,6 @@ export default {
             return this.headers
         }
     },
-
     watch: {
         dialog (val) {
             val || this.close()
@@ -311,11 +338,9 @@ export default {
             val || this.closeDelete()
         },
     },
-
     created () {
         this.getUsers();
     },
-
     methods: {
         validateForm() {
             this.submitForm = true
@@ -388,7 +413,6 @@ export default {
             this.editedItem[0] = Object.assign({}, item)
             this.dialog = true
         },
-
         deleteItem (item) {
             this.editedIndex = this.users.indexOf(item)
             this.editedItem[0] = Object.assign({}, item)
@@ -396,30 +420,57 @@ export default {
             // console.log(item.id)
             this.dialogDelete = true
         },
-
         deleteItemConfirm () {
             this.users.splice(this.editedIndex, 1)
             axios.delete('api/user/' + this.editedItem[0].id)
             this.closeDelete()
         },
-
         close () {
+            var defaultItem= [{
+                name: '',
+                phone: '',
+                email: '',
+                access: 'Single',
+                nameError: undefined,
+                phoneError: undefined,
+                emailError: undefined,
+            },
+            {
+                name: '',
+                phone: '',
+                email: '',
+                access: 'Single',
+                nameError: undefined,
+                phoneError: undefined,
+                emailError: undefined,
+            }]
             this.dialog = false
-            this.$nextTick(() => {
-                this.editedItem = Object.assign({}, this.defaultItem)
-                this.editedIndex = -1
-            })
-            this.$emit('refresh-users')
+            this.editedItem = defaultItem
+            this.editedIndex = -1
         },
-
         closeDelete () {
+            var defaultItem= [{
+                name: '',
+                phone: '',
+                email: '',
+                access: 'Single',
+                nameError: undefined,
+                phoneError: undefined,
+                emailError: undefined,
+            },
+            {
+                name: '',
+                phone: '',
+                email: '',
+                access: 'Single',
+                nameError: undefined,
+                phoneError: undefined,
+                emailError: undefined,
+            }]
             this.dialogDelete = false
-            this.$nextTick(() => {
-                this.editedItem = Object.assign({}, this.defaultItem)
-                this.editedIndex = -1
-            })
+            this.editedItem = defaultItem
+            this.editedIndex = -1
         },
-
         save() {
             if (this.editedIndex > -1) { //edit
                 Object.assign(this.users[this.editedIndex], this.editedItem[0])
@@ -453,6 +504,7 @@ export default {
                 }
             }
             this.close()
+            this.$emit('refresh-users')
         },
     },
 }
