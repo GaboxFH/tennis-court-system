@@ -25,6 +25,8 @@ class ReservationFactory extends Factory
             'title' => $this->faker->word,
             'date' => $this->faker->dateTime($max = 'now', $timezone = null),
             'court' => $this->faker->randomDigit,
+            'startTime' => $this->faker->time(),
+            'duration' => $this->faker->time(),
             'user_id' => 1,
         ];
     }
