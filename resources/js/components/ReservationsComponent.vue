@@ -1,24 +1,17 @@
 <template>
   <v-container class="pa-6 ma-auto" fluid>
     <div class="d-flex flex-column justify-space-between align-center">
-      <v-img
-        lazy-src="https://picsum.photos/10/6"
-        max-height="300"
-        max-width="500"
-        src="https://picsum.photos/500/300"
-      >
-      </v-img>
+      <img src="../TennisCourtMap.png" alt="Map of the Tennis Courts" style="width:70%">
     </div>
     <v-container>
-      <p>Welcome</p>
+      <h3>Welcome</h3>
 
       <p>
-        Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-        accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab
-        illo inventore veritatis et quasi architecto beatae vitae dicta sunt
-        explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut
-        odit aut fugit, sed quia consequuntur magni dolores eos qui ratione
-        voluptatem sequi nesciunt.
+        As a member, you will be able to make a reservation a minimum of 48 hours ahead.
+        After you find a reservation, you can set whether the game will be singles or doubles.
+        Bringing along a guest? Please follow the Guest Play policy and register the guest's name
+        as part of the reservation. If the Guest has already played in the current calendar month, 
+        the reservation will be rejected.
       </p>
 
       
@@ -28,28 +21,27 @@
         backgroundColor: '#E0E0E0',
       }"
     >
-      <v-container fluid>
-        <v-form
-            ref="form"
-            v-model="valid"
-            lazy-validation
-        >
+    <v-container>
+      <v-form
+        ref="form"
+        v-model="valid"
+        lazy-validation
+      >
         <h4>Find Available Courts</h4>
-        <div class="pa-3">
-          <v-row align="center">
-            <v-col class="d-flex ma-0 pa-0" cols="12" sm="3">
-              <v-select
+        <v-row align="start" justify="center"> 
+          <v-col align="center" cols="3">
+            <v-select
                 :items="courtType"
                 label="Select Court Type"
                 v-model="selectedCourt"
                 :rules="[v => !!v || 'Court Type is required']"
                 background-color="grey lighten-5"
                 required
+                outlined
               ></v-select>
-            </v-col>
-
-            <v-col class="d-flex ma-0 pa-0" cols="12" sm="3">
-              <v-menu
+          </v-col>
+          <v-col align="center" cols="2">
+            <v-menu
                 v-model="menu"
                 :close-on-content-click="false"
                 transition="scale-transition"
@@ -70,49 +62,50 @@
                     required
                     :rules="[v => !!v || 'Date is required']"
                     @click="log"
+                    outlined
                   ></v-text-field>
                 </template>
                 <v-date-picker
                   v-model="selectedDate"
                   @input="menu = false"
                   required
-                  :min="date"
-                  :max="dateWeek"
+                  :min="date2days"
                 ></v-date-picker>
               </v-menu>
-            </v-col>
-
-            <v-col class="d-flex ma-0 pa-0" cols="12" sm="3">
-              <v-select
+          </v-col>
+          <v-col align="center" cols="2">
+            <v-select
                 :items="startTime"
                 label="Start Time"
                 v-model="selectedStartTime"
                 :rules="[v => !!v || 'Start Time is required']"
                 background-color="grey lighten-5"
                 required
+                outlined
               ></v-select>
-            </v-col>
-
-            <v-col class="d-flex ma-0 pa-0" cols="12" sm="3">
-              <v-select
+          </v-col>
+          <v-col align="center" cols="2">
+            <v-select
                 :items="duration"
                 label="Duration"
                 v-model="selectedDuration"
                 :rules="[v => !!v || 'Court Type is required']"
                 background-color="grey lighten-5"
                 required
+                outlined
               ></v-select>
-            </v-col>
-          </v-row>
-        </div>
-        <v-row>
-          <v-btn color="primary" class="mb-2" 
-            @click="find()"
-            :disabled="!valid"
-          >Find</v-btn>
+          </v-col>
+          <v-col align="start" cols="2" justify="start">
+            <v-btn 
+              x-large 
+              color="primary"
+              @click="find()"
+              :disabled="!valid"
+            >Find</v-btn>
+          </v-col>
         </v-row>
-        </v-form>
-      </v-container>
+      </v-form>
+    </v-container>
     </div>
 
     <v-list v-if="seen">
@@ -254,7 +247,7 @@ export default {
   props: ["reservations"],
 
   data: () => ({
-    
+    startTime: ["6:30 AM"],
     valid: false,
     courtType: ["Soft Court", "Hard Court"],
     dialog: false,
@@ -262,7 +255,7 @@ export default {
     duration: ["30 mins", "1 hr", "1-1/2 hr", "2 hrs", "2-1/2 hrs"],
     menu: false,
     date: new Date().toISOString().substr(0, 10),
-    dateWeek: new Date(new Date().setDate(new Date().getDate() + 7)).toISOString().substr(0, 10),
+    date2days: new Date(new Date().setDate(new Date().getDate() + 2)).toISOString().substr(0, 10),
     headers: [
       {
         text: "Title",
@@ -293,6 +286,12 @@ export default {
     //     console.log(new Date(new Date().setDate(new Date().getDate() + i)).toISOString().substr(0, 10))
     //     return new Date(new Date().setDate(new Date().getDate() + i)).toISOString().substr(0, 10);
     // }
+  }),
+
+  computed: {
+    formTitle() {
+      return this.editedIndex === -1 ? 'New Reservation' : 'Edit Reservation'
+    },
   },
 
   watch: {

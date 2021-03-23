@@ -6,12 +6,10 @@
         >
             <v-list-item>
                 <v-list-item-content>
-                    <v-list-item-title class="title">
-                        Dashboard
-                    </v-list-item-title>
-                    <v-list-item-subtitle>
-                        The Raquet Club
-                    </v-list-item-subtitle>
+                    <img
+                        style="width:100%"
+                        src="../racquetclub_logo.png"
+                    ><img>
                 </v-list-item-content>
             </v-list-item>
 
@@ -77,7 +75,7 @@
         <v-app-bar app>
             <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
-            <v-toolbar-title>Reservation System</v-toolbar-title>
+            <v-toolbar-title>Reserve a Court</v-toolbar-title>
         </v-app-bar>
 
         <v-main>
@@ -101,7 +99,6 @@ export default {
         drawer: null,
         reservations: [],
         users: [],
-
     }),
 
     methods: {
