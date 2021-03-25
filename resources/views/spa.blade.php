@@ -9,7 +9,10 @@
 
     <title>{{ config('app.name', 'Laravel') }}</title>
 
-    <!-- Scripts -->
+    <!-- Scripts + pass user info into bootstrap/app script-->
+    @if(Auth::user()->access == "Admin")
+        <script>var userAccess = "{{ Auth::user()->access }}";</script>
+    @endif
     <script src="{{ asset('js/app.js') }}" defer></script>
 
     <!-- Fonts -->
