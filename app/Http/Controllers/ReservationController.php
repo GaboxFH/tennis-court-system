@@ -35,15 +35,27 @@ class ReservationController extends Controller
      */
     public function store(Request $request)
     {
-        $newItem = new Reservation;
-//        $newItem->user_id = $request->item["user_id"];
-        $newItem->user_id = 1;
-        $newItem->title = $request->item["title"];
-        $newItem->date = $request->item["date"];
-        $newItem->court = $request->item["court"];
-        $newItem->save();
+        Reservation::create([
+            'method' => $request->item["method"],
+            'start_datetime' => $request->item["start_datetime"],
+            'end_datetime' => $request->item["end_datetime"],
+            'court' => $request->item["court"],
+            'num_of_members' => $request->item["num_of_members"],
+            'num_of_guests' => $request->item["num_of_guests"],
+            'user_id' => $request->item["user_id"],
+        ]);
+        
+        return "Reservation not created";
 
-        return $newItem;
+//         $newItem = new Reservation;
+// //        $newItem->user_id = $request->item["user_id"];
+//         $newItem->user_id = 1;
+//         $newItem->title = $request->item["title"];
+//         $newItem->date = $request->item["date"];
+//         $newItem->court = $request->item["court"];
+//         $newItem->save();
+
+//         return $newItem;
 
     }
 
@@ -111,3 +123,33 @@ class ReservationController extends Controller
         return "Item not found.";
     }
 }
+
+
+// Schema::create('reservations', function (Blueprint $table) {
+//     $table->id();
+//     $table->string('method');
+//     $table->datetime('start_datetime');
+//     $table->datetime('end_datetime');
+//     $table->integer('court');
+//     $table->integer('num_of_members');
+//     $table->integer('num_of_guests');
+//     $table->integer('user_id');
+//     $table->timestamps();
+// });
+
+// Online (Member)
+// Online (Member)
+// Call (admin)
+// Walk in (admin)
+// Tennis Pro (TP)
+
+// Reservation::create([
+//     'method' => "Call",
+//     'start_datetime' => "2021-03-25 09:00:00",
+//     'end_datetime' => "2021-03-25 11:00:00",
+//     'court' => 5,
+//     'num_of_members' => 2,
+//     'num_of_guests' => 0,
+//     'user_id' => 2,
+// ]);
+
