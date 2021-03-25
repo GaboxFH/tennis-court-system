@@ -9,7 +9,8 @@
             <p>Welcome.</p>
 
             <p>Added phone number and basic vuetify validation. Still needs database validation to check that email is unique if email is changed. Also maybe add are you sure for email and phone changes. </p>
-            <p>{{ this.editedItem[0].access }}</p>
+            <!-- <p>{{ this.users[0].access }}</p> -->
+            <!-- <p>{{ this.editedItem[0].access }}</p> -->
 
 
         </v-container>
@@ -22,6 +23,7 @@
         }"
         :items-per-page="50"
         :search="search"
+        :mobile-breakpoint="0"
         dense
         sort-by="updated_at"
         sort-desc
@@ -66,13 +68,11 @@
                         lazy-validation
                     >
                     <v-card>
-                        <v-card-title
-                            class="ma-0 pa-0"
-                        >
+                        <v-card-title>
                             <span class="headline">{{ formTitle }}</span>
                             <v-spacer></v-spacer>
                             <v-overflow-btn
-                                v-if="editedItem[0].access"
+                                v-if="editedIndex==-1"
                                 class="t-5"
                                 :items="membership_types"
                                 messages="Access Level"
@@ -81,16 +81,11 @@
                             ></v-overflow-btn>
                         </v-card-title>
                         
-                        <v-card-text
-                            class="ma-0 pa-0"
-                        >
+                        <v-card-text>
                             <v-container 
                             fluid
-                            class="ma-0 pa-0"
                             >
-                                <v-header
-                                    class="h4"
-                                >Member 1</v-header>
+                                <h4>Member 1</h4>
                                 <v-row no-gutters>
                                     <v-col>
                                         <v-text-field
@@ -104,16 +99,6 @@
                                 <v-row no-gutters>
                                     <v-col>
                                         <v-text-field
-                                          :error-messages="phoneRules"
-                                          v-model="editedItem[0].phone"
-                                          @keydown="phoneMsg(0)"
-                                          label="Phone"
-                                        ></v-text-field>
-                                    </v-col>
-                                </v-row>
-                                <v-row no-gutters>
-                                    <v-col>
-                                        <v-text-field
                                             :error-messages="emailRules"
                                             v-model="editedItem[0].email"
                                             @keydown="emailMsg(0)"
@@ -121,12 +106,18 @@
                                         ></v-text-field>
                                     </v-col>
                                 </v-row>
-                                <div v-if="editedItem[0].access==='Family'"
-                                class="ma-0 pa-0"
-                                >
-                                <v-header
-                                    class="h4"
-                                >Member 2</v-header>
+                                <v-row no-gutters>
+                                    <v-col>
+                                        <v-text-field
+                                          :error-messages="phoneRules"
+                                          v-model="editedItem[0].phone"
+                                          @keydown="phoneMsg(0)"
+                                          label="Phone (optional)"
+                                        ></v-text-field>
+                                    </v-col>
+                                </v-row>
+                                <div v-if="editedItem[0].access==='Family'">
+                                <h4>Member 2</h4>
                                 <v-row no-gutters>
                                     <v-col>
                                         <v-text-field
@@ -140,20 +131,20 @@
                                 <v-row no-gutters>
                                     <v-col>
                                         <v-text-field
-                                          :error-messages="phoneRules1"
-                                          v-model="editedItem[1].phone"
-                                          @keydown="phoneMsg(1)"
-                                          label="Phone"
+                                            :error-messages="emailRules1"
+                                            v-model="editedItem[1].email"
+                                            @keydown="emailMsg(1)"
+                                            label="Email"
                                         ></v-text-field>
                                     </v-col>
                                 </v-row>
                                 <v-row no-gutters>
                                     <v-col>
                                         <v-text-field
-                                            :error-messages="emailRules1"
-                                            v-model="editedItem[1].email"
-                                            @keydown="emailMsg(1)"
-                                            label="Email"
+                                          :error-messages="phoneRules1"
+                                          v-model="editedItem[1].phone"
+                                          @keydown="phoneMsg(1)"
+                                          label="Phone (optional)"
                                         ></v-text-field>
                                     </v-col>
                                 </v-row>
@@ -162,7 +153,7 @@
                             </v-container>
                         </v-card-text>
 
-                        <v-card-actions>
+                        <v-card-actions class="pb-5">
                             <v-spacer></v-spacer>
                             <v-btn
                                 color="blue darken-1"
@@ -215,9 +206,11 @@
         </template>
         <template v-slot:no-data>
             <v-btn
+                class="my-5"
                 color="primary"
+                @click="reload"
             >
-                Reset
+                Load Table
             </v-btn>
         </template>
     </v-data-table>
@@ -230,6 +223,7 @@ export default {
     props: ['users'],
 
     data: () => ({
+        club_list: [],
         membership_types: ['Single', 'Family', 'Tennis Pro', 'Admin'],
         dialog: false,
         dialogDelete: false,
@@ -299,7 +293,31 @@ export default {
         emailRules1 () { return this.editedItem[1].emailError },
         computedHeaders () {
             // logic for hiding columns
-            return this.headers
+            var headers = [
+            { text: 'Member ID', value: 'membership_id' },
+            { text: 'Type', value: 'access' },
+            {
+                text: 'Name',
+                align: 'start',
+                sortable: true,
+                value: 'name',
+            },
+            { text: 'Phone', value: 'phone' },
+            { text: 'Email', value: 'email' },
+            { text: 'Last Active', value: 'updated_at'},
+            { text: 'Actions', value: 'actions', sortable: false },
+            ]
+            var xsHeader = [headers[2],headers[6]]
+            var smHeader = [headers[2],headers[3],headers[4],headers[6]]
+            switch (this.$vuetify.breakpoint.name) {
+                case 'xs': return xsHeader
+                case 'sm': return smHeader
+                case 'md': return headers
+                case 'lg': return headers
+                case 'xl': return headers
+            }
+            // return this.headers
+            // return headers
         }
     },
 
@@ -313,7 +331,8 @@ export default {
     },
 
     created () {
-        this.getUsers();
+        // this.getUsers();
+        this.$emit('refresh-users')
     },
 
     methods: {
@@ -383,6 +402,9 @@ export default {
                     console.log(error);
                 })
         },
+        reload() {
+            this.$emit('refresh-users')
+        },
         editItem (item) {
             this.editedIndex = this.users.indexOf(item)
             this.editedItem[0] = Object.assign({}, item)
@@ -444,11 +466,14 @@ export default {
                 var numOfFields = this.editedItem[0].access === 'Family' ? 2 : 1
                 for(var i=0; i<numOfFields; i++){
                     let item = JSON.parse(JSON.stringify(this.editedItem[i]))
+                    item.membership_id = randNum
+                    item.password = "password123"
+                    item.access = this.editedItem[0].access
                     let newCompTimePayload = {
                         item
                     }
-                    item.membership_id = randNum
-                    item.password = "password123"
+                    console.log(newCompTimePayload)
+
                     axios.post('api/user/store', newCompTimePayload)
                 }
             }

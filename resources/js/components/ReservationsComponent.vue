@@ -293,7 +293,7 @@ export default {
     //     console.log(new Date(new Date().setDate(new Date().getDate() + i)).toISOString().substr(0, 10))
     //     return new Date(new Date().setDate(new Date().getDate() + i)).toISOString().substr(0, 10);
     // }
-  },
+  }),
 
   watch: {
     dialog(val) {

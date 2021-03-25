@@ -22,7 +22,7 @@
 
 <body>
 <div id="app">
-    <app-component></app-component>
+    <app-component :session_data="{{ Auth::user() }}"></app-component>
 </div>
 </body>
 </html>

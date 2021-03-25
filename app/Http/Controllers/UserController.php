@@ -38,9 +38,10 @@ class UserController extends Controller
         //     'phone' => 'required',
         //     'email' => ['min:7', 'max:10']
         // ]);
-
+        
         User::create([
             'membership_id' => $request->item["membership_id"],
+            'access' => $request->item["access"],
             'name' => $request->item["name"],
             'phone' => $request->item["phone"],
             'email' => $request->item["email"],
@@ -67,3 +68,14 @@ class UserController extends Controller
         return "Item not found.";
     }
 }
+
+
+// User::create([
+//     'membership_id' => 5915,
+//     'access' => 'Admin',
+//     'name' => 'Noah Smith',
+//     'phone' => '7278716624',
+//     'email' => 'nosmith16@gmail.com',
+//     'password' => Hash::make('password123')
+// ]);
+
