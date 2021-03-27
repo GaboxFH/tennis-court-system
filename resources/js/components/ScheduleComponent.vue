@@ -1,334 +1,545 @@
-
 <template>
-  
-  <v-row class="fill-height">
-    <v-col>
-      {{ this.appointments }}
-      <v-sheet height="64">
-        <v-toolbar
-          flat
-        >
-          <v-btn
-            outlined
-            class="mr-4"
-            color="grey darken-2"
-            @click="setToday"
-          >
-            Today
-          </v-btn>
-          <v-btn
-            fab
-            text
-            small
-            color="grey darken-2"
-            @click="prev"
-          >
-            <v-icon small>
-              mdi-chevron-left
-            </v-icon>
-          </v-btn>
-          <v-btn
-            fab
-            text
-            small
-            color="grey darken-2"
-            @click="next"
-          >
-            <v-icon small>
-              mdi-chevron-right
-            </v-icon>
-          </v-btn>
-          <v-toolbar-title v-if="$refs.calendar">
-            {{ $refs.calendar.title }} 
-          </v-toolbar-title>
-          <v-spacer></v-spacer>
-          <div v-if="fullScreen==false">
-          <v-btn-toggle
-            class="mx-6"
-            v-model="scheduleView"
-            rounded
-            dense
-            mandatory
-            btn-toggle-btn-height="170px"
-          >
-            <v-btn>1-8</v-btn>
-            <v-btn>9-16</v-btn>
-          </v-btn-toggle>
-          </div>
-        </v-toolbar>
-      </v-sheet>
-      <v-sheet>
-        <v-calendar
-          ref="calendar"
-          v-model="focus"
-          color="primary"
-          type="category"
-          category-show-all
-          interval-minutes="30"
-          first-interval="16"
-          interval-height="30"
-          interval-width="50"
-          :interval-style="intervalStyle"
-          :show-interval-label="showIntervalLabel"
-          :categories="computedCategories"
-          :events="computerEvents"
-          :event-color="getEventColor"
-          @change="fetchEvents"
-          @click:time-category="newReservation"
-          @mousemove:time="extendReservation"
+    <v-container fluid class="pa-0 ma-0">
+    <v-row>
+        <v-col>
+            Testing
+        </v-col>
+    </v-row>
+    <v-row class="fill-height pt-3">
+        <v-col align="left">
+            <v-btn
+                outlined
+                class="ml-4 mr-2"
+                color="grey darken-2"
+                @click="setToday"
+            >
+                Today
+            </v-btn>
+            <v-btn
+                fab
+                text
+                small
+                color="grey darken-2"
+                @click="prev"
+            >
+                <v-icon small>
+                mdi-chevron-left
+                </v-icon>
+            </v-btn>
+            <v-btn
+                fab
+                text
+                small
+                color="grey darken-2"
+                @click="next"
+            >
+                <v-icon small>
+                mdi-chevron-right
+                </v-icon>
+            </v-btn>
+        </v-col>
+        <v-col align="center" style="position: relative; left: 24px;"> 
+            <v-toolbar-title v-if="$refs.calendar">
+                {{ computedDate }}
+            </v-toolbar-title>
+        </v-col>
+        <v-col align="right">  
+            
 
+        </v-col>
+    </v-row>
+    <v-row>
+        <v-col align="center">
+            <div v-if="fullScreen==false">
+            <v-btn-toggle
+                style="position: relative; left: 24px;"
+                class="mx-6"
+                v-model="scheduleView"
+                rounded
+                dense
+                mandatory
+                btn-toggle-btn-height="170px"
+            >
+                <v-btn @click="getReservations">1-8</v-btn>
+                <v-btn @click="getReservations">9-16</v-btn>
+            </v-btn-toggle>
+            </div>
+        </v-col>
+    </v-row>
+    <v-row class="pl-15 pr-4 pt-2 pb-2">
+        <v-col v-for="n in computedCategories" v-bind:key="n" align="center" class="pa-0 ma-0">
+            <!-- <div v-if="n%2==0" style="background-color:tomato;">{{ n }}</div>
+            <div v-else style="background-color:orange;">{{ n }}</div> -->
+            <div>{{ n }}</div>
+        </v-col>
+    </v-row>
+    <v-row>
+        <v-col>
+        <v-sheet>
+            <v-calendar
+            ref="calendar"
+            v-model="focus"
+            color="primary"
+            type="category"
+            category-show-all
+            interval-minutes="30"
+            first-interval="16"
+            interval-height="30"
+            interval-width="48"
+            hide-header
+            :interval-style="intervalStyle"
+            :show-interval-label="showIntervalLabel"
+            :categories="computedCategories"
+            :events="computedEvents"
+            :event-color="getEventColor"
+            @mousedown:time-category="newReservation"
+            @mousemove:time-category="mouseMove"
+            @mouseup:event="endDrag"
+            @click:event="showEvent"
+            >
+            </v-calendar>
+            <v-menu
+                v-model="selectedOpen"
+                :close-on-content-click="false"
+                :activator="selectedElement"
+                offset-x
+            >
+                <v-card
+                color="grey lighten-4"
+                min-width="350px"
+                flat
+                >
+                <v-toolbar
+                    :color="selectedEvent.color"
+                    dark
+                >
+                    <v-toolbar-title class="font-weight-medium">{{ selectedEvent.name }}</v-toolbar-title>
+                    <v-spacer></v-spacer>
+
+                    <div v-if="editEvent">
+                    <v-btn @click="closeCard" icon>
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                    </div>
+
+                    <div v-else>
+                    <v-btn @click="editEvent = true" icon>
+                        <v-icon>mdi-pencil</v-icon>
+                    </v-btn>
+                    <v-btn @click="deleteEvent" icon>
+                        <v-icon>mdi-delete</v-icon>
+                    </v-btn>
+                    </div>
+                </v-toolbar>
+                <div class="ma-2">
+                    
+                    <v-text-field 
+                    v-if="selectedEvent.method == 'USTA' || selectedEvent.method == 'Admin Event'"
+                        v-model="selectedEvent.title"
+                        :disabled="!editEvent"
+                        label="Reservation Title">
+
+                    </v-text-field>
+                    
+                    <v-select
+                        v-model="selectedEvent.method"
+                        :items="method_type"
+                        :disabled="!editEvent"
+                        label="Reservation Type"
+                    ></v-select>
+                    <v-autocomplete
+                        v-model="selectedEvent.host"
+                        :disabled="!editEvent"
+                        :items="computedHost"
+                        label="Host"
+                    >
+                        <template v-slot:selection="data">
+                            <v-chip
+                                :disabled="!editEvent"
+                                v-bind="data.attrs"
+                                :input-value="data.selected"
+                                @click="data.select"
+                            >
+                                {{ data.item }}
+                            </v-chip>
+                        </template>
+                    </v-autocomplete>
+                    <v-autocomplete
+                        v-model="selectedEvent.participants"
+                        :disabled="!editEvent"
+                        :items="computedMembers"
+                        chips
+                        label="Participants"
+                        multiple
+                    >
+                    <template v-slot:selection="data">
+                        <v-chip
+                            v-bind="data.attrs"
+                            :disabled="!editEvent"
+                            :input-value="data.selected"
+                            close
+                            @click="data.select"
+                            @click:close="remove(data.item)"
+                        >
+                            {{ data.item }}
+                        </v-chip>
+                    </template>
+                    </v-autocomplete>
+                </div>
+                
+                <v-card-actions>
+                    <div v-if="editEvent">
+                    <v-btn
+                    text
+                    color="secondary"
+                    @click="editEvent = false"
+                    >
+                    Cancel
+                    </v-btn>
+                    <v-btn
+                    text
+                    color="secondary"
+                    @click="selectedOpen = false"
+                    >
+                    Save
+                    </v-btn>
+                    </div>
+                </v-card-actions>
+                </v-card>
+            </v-menu>
+        </v-sheet>
+        </v-col>
+    </v-row>
+    <v-row>
+        <v-dialog
+            v-model="areyousure"
+            persistent
+            max-width="290"
         >
-          <template v-slot:day-body="{ date, week }">
-            <div
-              class="v-current-time"
-              :class="{ first: date === week[0].date }"
-            ></div>
-          </template>
-        </v-calendar>
-        
-      </v-sheet>
-    </v-col>
-  </v-row>
+            <v-card>
+                <v-card-title>
+                    Are you sure you want to delete this reseravtion?
+                </v-card-title>
+                <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn
+                color="green darken-1"
+                text
+                @click="areyousure = false"
+                >
+                Yes
+                </v-btn>
+                <v-btn
+                color="green darken-1"
+                text
+                @click="areyousure = false"
+                >
+                No
+                </v-btn>
+            </v-card-actions>
+            </v-card>
+        </v-dialog>
+    </v-row>
+    </v-container>
 </template>
 
 
 <script>
-const stylings = {
-  default (interval) {
-    return undefined
-  },
-  workday (interval) {
-    const inactive = 
-      (interval.hour < 10 ||
-      interval.hour >= 20) && interval.category.categoryName == 3 
-    const startOfHour = interval.minute === 0
-    const dark = this.dark
-    const mid = dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
+export default {
+    props: ['reservations','users'],
 
-    return {
-      backgroundColor: inactive ? (dark ? 'rgba(0,0,0,0.4)' : 'rgba(0,0,0,0.05)') : undefined,
-      borderTop: startOfHour ? undefined : '1px dashed ' + mid
-    }
-  },
-  past (interval) {
-    return {
-      backgroundColor: interval.past ? (this.dark ? 'rgba(0,0,0,0.4)' : 'rgba(0,0,0,0.05)') : undefined
-    }
-  }
-}
-  export default {
     data: () => ({
-      focus: '',
-      appointments: [],
-      events: [],
-      styleInterval: 'workday',
-      scheduleView: 0,
-      fullScreen: false,
-      // dragEvent: null,
-      createEvent: null,
-      createStart: null,
-      extendOriginal: null,
+        focus: '',
+        appointments: [],
+        members: [],
+        cal_events: [],
+        styleInterval: 'workday',
+        scheduleView: 0,
+        fullScreen: false,
+        // dragEvent: null,
+        createEvent: null,
+        clickStart: false,
 
-      startClick: undefined,
-      endClick: false,
+        createStart: null,
+        extendOriginal: null,
 
-      colors: ['blue', 'indigo', 'deep-purple', 'cyan', 'green', 'orange', 'grey darken-1'],
-      // names: ['Meeting', 'Holiday', 'PTO', 'Travel', 'Event', 'Birthday', 'Conference', 'Party'],
-      categories: ['1', '2', '3','4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16']
+        startClick: undefined,
+        endClick: false,
+        currentDate: [],
+
+        selectedEvent: {},
+        selectedElement: null,
+        selectedOpen: false,
+        editEvent: false,
+        new_endtime: '',
+
+        areyousure: false,
+
+        method_type: ['Admin Event', 'Call', 'Walk-In', 'Tennis Pro', 'USTA'],
+        colors: ['blue', 'indigo', 'deep-purple', 'cyan', 'green', 'orange', 'grey darken-1'],
+        // names: ['Meeting', 'Holiday', 'PTO', 'Travel', 'Event', 'Birthday', 'Conference', 'Party'],
+        categories: ['1', '2', '3','4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16']
     }),
     computed: {
+        computedDate () {
+            console.log(new Date())
+            if(this.$refs.calendar.value != ''){
+                return this.$refs.calendar.value
+            } else {
+                return "Today"
+            }
+        },
+        computedHost () {
+            return this.members.map(({ name }) => name)
+        },
+        computedMembers () {
+            var members_no_host = this.members.map(({ name }) => name)
+            const index = members_no_host.indexOf(this.selectedEvent.host)
+            if (index >= 0) members_no_host.splice(index, 1)
+            return members_no_host
+        },
         computedCategories () {
             var categories = []
             if(this.$vuetify.breakpoint.name == 'xs' || this.$vuetify.breakpoint.name == 'sm' || this.$vuetify.breakpoint.name == 'md') {
-            this.fullScreen = false
-            if(this.scheduleView == 0){
-                categories = ['1', '2', '3','4', '5', '6', '7', '8']
+                this.fullScreen = false
+                if(this.scheduleView == 0){
+                    categories = ['1', '2', '3','4', '5', '6', '7', '8']
+                } else {
+                    categories = ['9', '10', '11', '12', '13', '14', '15', '16']
+                }
             } else {
-                categories = ['9', '10', '11', '12', '13', '14', '15', '16']
-            }
-            }
-            else {
-            this.fullScreen = true
-            categories = ['1', '2', '3','4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16']
+                this.fullScreen = true
+                categories = ['1', '2', '3','4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16']
             }
             // console.log(categories)
             return categories
         },
-        computerEvents () {
-            const cal_events = []
-            for(var i=0; i<this.appointments.length; i++){
-                console.log(this.appointments[i])
-                cal_events.push({
-                    // name: this.appointments[0].user_id---name,
-                    name: "Member",
-                    start: this.appointments[i].start_datetime,
-                    end: this.appointments[i].end_datetime,
-                    // color: this.colors[this.rnd(0, this.colors.length - 1)],
-                    color: "blue",
-                    timed: true,
-                    category: this.categories[this.appointments[i].court-1],
-                })
+        computedEvents () {
+            var color = "blue"
+
+            if(!this.clickStart && this.appointments.length != 0){
+                this.cal_events = []
+                for(var i=0; i<this.appointments.length; i++){
+                    console.log(this.appointments[i])
+                    if(this.appointments[i].method == "Admin Event"){ color = "cyan" }
+                    else if(this.appointments[i].method == "Call" || this.appointments[i].method == "Walk-In"){ color = "blue" }
+                    else if(this.appointments[i].method == "Tennis Pro"){ color = "green" }
+                    else if(this.appointments[i].method == "USTA"){ color = "lime" }
+                    else{ color = "red" }
+                    this.cal_events.push({
+                        id: this.appointments[i].id,
+                        title: this.appointments[i].title,
+                        method: this.appointments[i].method,
+                        host: "Noah Smith", //this.appointments[i].user_id, should get hosts name
+                        participants: this.appointments[i].participants,
+                        num_of_members: this.appointments[i].num_of_members,
+                        num_of_guests: this.appointments[i].num_of_guests,
+                        user_id: this.appointments[i].user_id,
+                        name: this.appointments[i].title,
+                        start: this.appointments[i].start_datetime,
+                        end: this.appointments[i].end_datetime,
+                        // color: this.colors[this.rnd(0, this.colors.length - 1)],
+                        color: color,
+                        timed: true,
+                        category: this.categories[this.appointments[i].court-1],
+                    })
+                }
+                // this.refresh = false
             }
-            
-            // cal_events.push({
-            //     // name: this.names[this.rnd(0, this.names.length - 1)],
-            //     name: "name",
-            //     start: "2021-03-25 10:00:00",
-            //     end: "2021-03-25 12:00:00",
-            //     // color: this.colors[this.rnd(0, this.colors.length - 1)],
-            //     color: "blue",
-            //     timed: true,
-            //     category: this.categories[1],
-            // })
-            return cal_events
+            return this.cal_events
         },
         intervalStyle () {
+            const stylings = {
+                default (interval) {
+                    return undefined
+                },
+                workday (interval) {
+                    const inactive = 
+                    (interval.hour < 8 ||
+                    interval.hour >= 20) //&& interval.category.categoryName == 3 
+                    const startOfHour = interval.minute === 0
+                    const dark = this.dark
+                    const mid = dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
+
+                    return {
+                    backgroundColor: inactive ? (dark ? 'rgba(0,0,0,0.4)' : 'rgba(0,0,0,0.05)') : undefined,
+                    borderTop: startOfHour ? undefined : '1px dashed ' + mid
+                    }
+                },
+                past (interval) {
+                    return {
+                    backgroundColor: interval.past ? (this.dark ? 'rgba(0,0,0,0.4)' : 'rgba(0,0,0,0.05)') : undefined
+                    }
+                }
+            }
             return stylings['workday'].bind(this)
             
             // return stylings[ this.styleInterval ].bind(this)
             // return stylings['workday'].bind(this)
         },
     },
+    watch: {
+        selectedOpen (val) {
+            val || (this.editEvent = false)
+        },
+        reservations (val) {
+            this.appointments=val
+            console.log(val)
+        },
+        users (val) {
+            this.members=val
+            console.log(val)
+        },
+    },
     created () {
-        this.getReservations()
-        console.log(this.appointments)
+        // this.getReservations()
+        // this.getUsers();
+        this.$emit('refresh-schedule')
+        this.$emit('refresh-users')
+        // .then(response => {
+        // this.appointments = this.reservations
+                // })
+        // .then(
+        //     if(this.appointments.length == 0){
+        //         this.appointments = this.reservations
+        //     }       
+        // ) 
+        
+        // this.reloadEvents()
     },
     mounted () {
-      this.$refs.calendar.checkChange()
+        this.$refs.calendar.checkChange()
     },
     methods: {
-      newReservation (tms) {
-        if(this.startClick == undefined) {
-          const selectedDate = this.roundTime(this.toTime(tms))
-          // console.log(new Date(this.roundTime(this.toTime(tms))))
-          // console.log(tms.category.categoryName-1)
-          // console.log(this.scheduleView)
-          // console.log(this.events)
-          var timeConflict = false
-          for(var i=0; i<this.events.length; i++) {
-            if(selectedDate >= this.events[i].start && selectedDate < this.events[i].end && tms.category.categoryName == this.events[i].category){
-              timeConflict = true
-            }
-          }
-          if(!timeConflict) {
-            this.startClick = selectedDate
+        newReservation (tms) {
+            if (!this.selectedOpen) {
+                console.log(tms)
+                const time_clicked = this.roundTime(this.toTime(tms))
+                var timeConflict = false
+                // console.log(time_clicked)
+                // console.log(new Date(this.cal_events[1].start).getTime())
+                // console.log(this.cal_events)
+                for(var i=0; i<this.cal_events.length; i++) {
+                    if(time_clicked >= new Date(this.cal_events[i].start).getTime() && time_clicked < new Date(this.cal_events[i].end).getTime() && tms.category.categoryName == this.cal_events[i].category){
+                        timeConflict = true
+                    }
+                }
+                if(!timeConflict){
+                    this.clickStart = true
 
-            this.createEvent = {
-              name: 'New Event',
-              color: "red darken-4",
-              start: selectedDate,
-              end: selectedDate+30*1000*60,
-              timed: true,
-              category: this.categories[tms.category.categoryName-1],
-            }
-            
-            this.events.push(this.createEvent)
-            // this.createEvent = null
-          }
-        } else {
-          if(this.createEvent.category != tms.category.categoryName){
-            this.createEvent = null
-            this.startClick = undefined
-            this.events.pop()
-          } else {
-            this.createEvent.color = "red"
-            // this.createEvent.end = this.createEvent.end+60*1000*60
-            console.log("skiz")
-            this.createEvent = null
-            this.startClick = undefined
-          }
-        }
-        
-        // console.log(conflict)
-        },
-        extendReservation (tms) {
-            if(this.startClick){
-            // console.log(new Date(this.roundTime(this.toTime(tms))))
-            // if(this.createEvent.category == tms.category.categoryName) {
-                this.createEvent.end = this.roundTime(this.toTime(tms)+30*1000*60)
-            //   console.log("here")
-            // } else {
-                // this.startClick = false
-                // this.events.pop()
-            // }
-            // console.log(this.createEvent.category)
+                    this.createEvent = {
+                        title: "Noah Smith", //should be admin name
+                        method: "Call",
+                        host: "Noah Smith", //should be admin name
+                        participants: ["Kenia Rangel"],
+                        num_of_members: 1,
+                        num_of_guests: 0,
+                        user_id: 1, //should be admin id
+                        name: "Noah Smith", //should be admin name
+                        start: time_clicked,
+                        end: time_clicked+30*1000*60,
+                        color: "blue",
+                        timed: true,
+                        category: tms.category.categoryName
+                    }
+                    this.cal_events.push(this.createEvent)
+
+                    let item = JSON.parse(JSON.stringify(this.createEvent))
+                    item.start = this.convertDate(new Date(item.start))
+                    item.end = this.convertDate(new Date(item.end))
+
+                    let newCompTimePayload = {
+                        item
+                    }
+                    // console.log(newCompTimePayload)
+                    this.editEvent = true
+                    axios.post('api/reservation/store', newCompTimePayload)
+                }
             }
         },
-        // startTime (tms) {
-            
-        //   const mouse = this.toTime(tms)
-        //   console.log("createEvent: ")
-        //   // console.log(new Date(mouse))
-        //   // console.log(tms.category.categoryName-1)
-        //   if (this.dragEvent && this.dragTime === null) {
-        //     const start = this.dragEvent.start
-        //     console.log("createEvent1: ")
-        //     this.dragTime = mouse - start
-        //   } else {
-            
-        //     this.createStart = this.roundTime(mouse)
-        //     this.createEvent = {
-        //       // name: `Event #${this.events.length}`,
-        //       name: 'New Event',
-        //       color: "red",
-        //       start: this.createStart,
-        //       // end: this.createStart,
-        //       end: this.createStart+30*1000*60,
-        //       timed: true,
-        //       category: this.categories[tms.category.categoryName-1],
-        //     }
-            
-        //     this.events.push(this.createEvent)
-        //   }
-        // },
-        // mouseMove (tms) {
-        //   const mouse = this.toTime(tms)
-            
-        //   if (this.dragEvent && this.dragTime !== null) {
-        //     const start = this.dragEvent.start
-        //     const end = this.dragEvent.end
-        //     const duration = end - start
-        //     const newStartTime = mouse - this.dragTime
-        //     const newStart = this.roundTime(newStartTime)
-        //     const newEnd = newStart + duration
+        mouseMove (tms){
+            if(this.clickStart){
+                console.log(this.cal_events[this.cal_events.length-1])
+                this.new_endtime = this.roundTime(this.toTime(tms))+30*1000*60
+                var timeConflict = false
+                // if(tms.category.categoryName == this.cal_events[this.cal_events.length-1].category){
+                    if(this.cal_events[this.cal_events.length-1].end != this.new_endtime && this.new_endtime >= (this.cal_events[this.cal_events.length-1].start+30*1000*60)){
+                        
+                        for(var i=0; i<this.cal_events.length-1; i++) {
+                            if(this.cal_events[this.cal_events.length-1].category == this.cal_events[i].category
+                            && (new Date(this.cal_events[i].start).getTime() < this.new_endtime
+                            && new Date(this.cal_events[i].end).getTime() >  this.cal_events[this.cal_events.length-1].start)
+                            ){
+                                timeConflict = true
+                            }
+                        }
+                        if(!timeConflict){
+                            this.cal_events[this.cal_events.length-1].end = this.new_endtime
+                            
+                            let item = JSON.parse(JSON.stringify(this.cal_events[this.cal_events.length-1]))
+                            item.start = this.convertDate(new Date(item.start))
+                            item.end = this.convertDate(new Date(item.end))
+                            let newCompTimePayload = {
+                                item
+                            }
+                            console.log(newCompTimePayload)
 
-        //     this.dragEvent.start = newStart
-        //     this.dragEvent.end = newEnd
-        //     console.log("mouseMove1: ")
-        //   } else if (this.createEvent && this.createStart !== null) {
-        //     const mouseRounded = this.roundTime(mouse, false)
-        //     const min = Math.min(mouseRounded, this.createStart)
-        //     const max = Math.max(mouseRounded, this.createStart)
+                            axios.put('api/reservation/adminupdate', newCompTimePayload)
+                        }
+                        // this.cal_events[this.cal_events.length-1].end = new_endtime
+                    }
+                    // console.log(tms.time)
+                // }
+                // console.log(tms.category.categoryName)
+            }
+        },
+        endDrag ({ nativeEvent, event }){
+            this.getReservations()
+            this.clickStart = false
+            // this.cal_events[this.cal_events.length-1].end = this.new_endtime
+            this.showEvent({ nativeEvent, event })
+        },
+        deleteEvent (){
+            this.areyousure = true
+            console.log(this.selectedEvent)
+        },
 
-        //     this.createEvent.start = min
-        //     this.createEvent.end = max
-        //     console.log("mouseMove2: ")
-        //   }
-        // },
-        // endDrag () {
-        //   this.dragTime = null
-        //   this.dragEvent = null
-        //   this.createEvent = null
-        //   this.createStart = null
-        //   this.extendOriginal = null
-        // },
-        // cancelDrag () {
-        //   if (this.createEvent) {
-        //     if (this.extendOriginal) {
-        //       this.createEvent.end = this.extendOriginal
-        //     } else {
-        //       const i = this.events.indexOf(this.createEvent)
-        //       if (i !== -1) {
-        //         this.events.splice(i, 1)
-        //       }
-        //     }
-        //   }
-
-        //   this.createEvent = null
-        //   this.createStart = null
-        //   this.dragTime = null
-        //   this.dragEvent = null
-        // },
+        showEvent ({ nativeEvent, event }) {
+            const open = () => {
+                this.selectedEvent = event
+                this.selectedEvent.participants = 
+                // this.selectedEvent.start_time = this.selectedEvent.start.slice(11, 16)
+                // this.selectedEvent.end_time = this.selectedEvent.end.slice(11, 16)
+                this.selectedElement = nativeEvent.target
+                
+                console.log("event")
+                console.log(this.selectedEvent)
+                console.log("element")
+                console.log(this.selectedElement)
+                setTimeout(() => {
+                    this.selectedOpen = true
+                }, 10)
+            }
+            if (this.selectedOpen) {
+                this.selectedOpen = false
+                setTimeout(open, 10)
+            } else {
+                open()
+            }
+            nativeEvent.stopPropagation()
+        },
+        editEventFields (){
+            this.editEvent = true
+        },
+        closeCard () {
+            this.editEvent = false
+            this.selectedOpen = false
+        },
+        remove (item) {
+            // console.log(item)
+            const index = this.selectedEvent.participants.indexOf(item)
+            if (index >= 0) this.selectedEvent.participants.splice(index, 1)
+        },
         toTime (tms) {
             return new Date(tms.year, tms.month - 1, tms.day, tms.hour, tms.minute).getTime()
         },
@@ -355,57 +566,31 @@ const stylings = {
         next () {
             this.$refs.calendar.next()
         },
-        fetchEvents ({ start, end }) {
-            const events = []
-            // console.log("start " +end.date)
-            // const min = new Date(`${start.date}T00:08:00`)
-            // const max = new Date(`${end.date}T13:59:59`)
-            
-            // const days = (max.getTime() - min.getTime()) / 86400000
-            // const eventCount = this.rnd(days, days + 20)
-
-            // for (let i = 0; i < 16; i++) {
-            //   // const allDay = this.rnd(0, 3) === 0
-            
-            //   // const firstTimestamp = this.rnd(min.getTime(), max.getTime())
-            //   // const firstTimestamp = new Date("2021-03-16T10:30:00").getTime()
-            //   // const first = new Date(firstTimestamp - (firstTimestamp % 900000))
-            //   const first = new Date("2021-03-25T10:00:00")
-            //   first.setHours(first.getHours() + this.rnd(0,6))
-            //   // first.setHours(first.getHours() + 4);
-            //   // first = first + (1000*60*30)
-            //   // const secondTimestamp = this.rnd(2, allDay ? 288 : 8) * 900000
-            //   // const secondTimestamp = this.rnd(2, allDay ? 288 : 8) * 900000
-            //   // const second = new Date(first.getTime() + secondTimestamp)
-            //   const second = new Date(first)
-            //   second.setMinutes(first.getMinutes() + 30*this.rnd(1,5));
-
-            //   events.push({
-            //     // name: this.names[this.rnd(0, this.names.length - 1)],
-            //     name: "name",
-            //     start: first,
-            //     end: second,
-            //     color: this.colors[this.rnd(0, this.colors.length - 1)],
-            //     // color: "blue",
-            //     timed: true,
-            //     category: this.categories[i],
-            //   })
-            // }
-            // console.log(this.appointments)
-            this.events = events
+        reloadEvents (){
+            this.$emit('refresh-schedule')
         },
         getReservations() {
+            this.appointments = []
             axios.get('api/reservations')
-            .then(response => {
-                this.appointments = response.data
-            })
-            .catch(error => {
-                console.log(error);
-            })
+                .then(response => {
+                    this.appointments = response.data
+                })
+                .catch(error => {
+                    console.log(error)
+                })
         },
         rnd (a, b) {
             return Math.floor((b - a + 1) * Math.random()) + a
         },
+        convertDate(dt){
+            return `${
+                dt.getFullYear().toString().padStart(4, '0')}/${
+                (dt.getMonth()+1).toString().padStart(2, '0')}/${
+                dt.getDate().toString().padStart(2, '0')} ${
+                dt.getHours().toString().padStart(2, '0')}:${
+                dt.getMinutes().toString().padStart(2, '0')}:${
+                dt.getSeconds().toString().padStart(2, '0')}`
+        }
     },
   }
 

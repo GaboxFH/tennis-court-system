@@ -93,7 +93,7 @@
         <v-main>
             <router-view
                 :reservations="reservations"
-                @refresh-list="getReservations"
+                @refresh-schedule="getReservations"
                 :users="users"
                 @refresh-users="getUsers"
             >

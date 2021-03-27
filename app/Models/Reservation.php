@@ -11,6 +11,7 @@ class Reservation extends Model
 
     public $table = 'reservations';
     protected $fillable = [
+        'title',
         'method', 
         'start_datetime', 
         'end_datetime', 

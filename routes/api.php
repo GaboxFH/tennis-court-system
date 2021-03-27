@@ -24,17 +24,19 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 
 Route::get('/reservations', [ReservationController::class, 'index']);
+Route::get('/reservation_users', [ReservationController::class, 'reservation_users']);
 
 Route::prefix('/reservation')->group( function() {
     Route::post('/store', [ReservationController::class, 'store']);
-    Route::put('/{id}', [ReservationController::class, 'update']);
+    Route::put('/adminupdate', [ReservationController::class, 'adminupdate']);
+    Route::put('/update', [ReservationController::class, 'update']);
     Route::delete('/{id}', [ReservationController::class, 'destroy']);
 });
 
 
 Route::get('/actions', [ActionController::class, 'index']);
 
-Route::prefix('/actions')->group( function() {
+Route::prefix('/action')->group( function() {
     Route::post('/store', [ActionController::class, 'store']);
     Route::put('/update', [ActionController::class, 'update']);
     Route::delete('/destroy', [ActionController::class, 'destroy']);

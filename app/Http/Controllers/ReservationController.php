@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Reservation;
+use App\Models\Reservation_User;
 use Illuminate\Http\Request;
 
 class ReservationController extends Controller
@@ -16,6 +17,12 @@ class ReservationController extends Controller
     {
         return Reservation::orderBy('created_at', 'DESC')->get();
     }
+
+    public function reservation_users(Request $request)
+    {
+        return Reservation_User::where('reservation_id', $request->item["id"]);
+    }
+
 
     /**
      * Show the form for creating a new resource.
@@ -36,27 +43,17 @@ class ReservationController extends Controller
     public function store(Request $request)
     {
         Reservation::create([
+            'title' => $request->item["title"],
             'method' => $request->item["method"],
-            'start_datetime' => $request->item["start_datetime"],
-            'end_datetime' => $request->item["end_datetime"],
-            'court' => $request->item["court"],
+            'start_datetime' => $request->item["start"],
+            'end_datetime' => $request->item["end"],
+            'court' => $request->item["category"],
             'num_of_members' => $request->item["num_of_members"],
             'num_of_guests' => $request->item["num_of_guests"],
             'user_id' => $request->item["user_id"],
         ]);
         
         return "Reservation not created";
-
-//         $newItem = new Reservation;
-// //        $newItem->user_id = $request->item["user_id"];
-//         $newItem->user_id = 1;
-//         $newItem->title = $request->item["title"];
-//         $newItem->date = $request->item["date"];
-//         $newItem->court = $request->item["court"];
-//         $newItem->save();
-
-//         return $newItem;
-
     }
 
     /**
@@ -88,21 +85,68 @@ class ReservationController extends Controller
      * @param  \App\Models\Reservation  $reservation
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        $existingItem = Reservation::find($id);
+        $existingItem = Reservation::find($request->item["id"]);
 
         if($existingItem){
 //            $existingItem->user_id = $request->item["user_id"];
             $existingItem->title = $request->item["title"];
-            $existingItem->date = $request->item["date"];
-            $existingItem->court = $request->item["court"];
+            $existingItem->method = $request->item["method"];
+            $existingItem->start_datetime = $request->item["start"];
+            $existingItem->end_datetime = $request->item["end"];
+            $existingItem->court = $request->item["category"];
+            $existingItem->num_of_members = $request->item["num_of_members"];
+            $existingItem->num_of_guests = $request->item["num_of_guests"];
+            $existingItem->user_id = $request->item["user_id"];
             $existingItem->save();
         }
 
         return "Item not found.";
 
+        // Reservation::create([
+        //     'title' => $request->item["title"],
+        //     'method' => $request->item["method"],
+        //     'start_datetime' => $request->item["start"],
+        //     'end_datetime' => $request->item["end"],
+        //     'court' => $request->item["category"],
+        //     'num_of_members' => $request->item["num_of_members"],
+        //     'num_of_guests' => $request->item["num_of_guests"],
+        //     'user_id' => $request->item["user_id"],
+        // ]);
+    }
 
+    public function adminupdate(Request $request)
+    {
+        $existingItem = Reservation::where('start_datetime', $request->item["start"])
+                                    ->where('court', $request->item["category"])
+                                    ->update(['end_datetime' => $request->item["end"]]);
+
+//         if($existingItem){
+// //            $existingItem->user_id = $request->item["user_id"];
+//             $existingItem->title = $request->item["title"];
+//             $existingItem->method = $request->item["method"];
+//             $existingItem->start_datetime = $request->item["start"];
+//             $existingItem->end_datetime = $request->item["end"];
+//             $existingItem->court = $request->item["category"];
+//             $existingItem->num_of_members = $request->item["num_of_members"];
+//             $existingItem->num_of_guests = $request->item["num_of_guests"];
+//             $existingItem->user_id = $request->item["user_id"];
+//             $existingItem->save();
+//         }
+
+        return "Item not found.";
+
+        // Reservation::create([
+        //     'title' => $request->item["title"],
+        //     'method' => $request->item["method"],
+        //     'start_datetime' => $request->item["start"],
+        //     'end_datetime' => $request->item["end"],
+        //     'court' => $request->item["category"],
+        //     'num_of_members' => $request->item["num_of_members"],
+        //     'num_of_guests' => $request->item["num_of_guests"],
+        //     'user_id' => $request->item["user_id"],
+        // ]);
     }
 
     /**
@@ -144,10 +188,11 @@ class ReservationController extends Controller
 // Tennis Pro (TP)
 
 // Reservation::create([
+//     'title' => "Kenia Rangel",
 //     'method' => "Call",
-//     'start_datetime' => "2021-03-25 09:00:00",
-//     'end_datetime' => "2021-03-25 11:00:00",
-//     'court' => 5,
+//     'start_datetime' => "2021-03-26 10:00:00",
+//     'end_datetime' => "2021-03-26 12:00:00",
+//     'court' => 3,
 //     'num_of_members' => 2,
 //     'num_of_guests' => 0,
 //     'user_id' => 2,
