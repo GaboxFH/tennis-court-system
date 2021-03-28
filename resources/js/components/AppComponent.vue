@@ -6,10 +6,10 @@
         >
             <v-list-item>
                 <v-list-item-content>
-                    <img
+                    <v-img
                         style="width:100%"
-                        src="../racquetclub_logo.png"
-                    ><img>
+                        src="/public/images/racquetclub_logo.png"
+                    ></v-img>
                 </v-list-item-content>
             </v-list-item>
 
@@ -46,6 +46,16 @@
 
                     <v-list-item-content>
                         <v-list-item-title>Members</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+
+                <v-list-item link to="/report">
+                    <v-list-item-icon>
+                        <v-icon>mdi-file-chart</v-icon>
+                    </v-list-item-icon>
+
+                    <v-list-item-content>
+                        <v-list-item-title>Data Report</v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
 
