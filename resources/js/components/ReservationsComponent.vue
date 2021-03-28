@@ -1,7 +1,7 @@
 <template>
   <v-container class="pa-6 ma-auto" fluid>
     <div class="d-flex flex-column justify-space-between align-center">
-      <v-img src="/public/images/TennisCourtMap.png" alt="Map of the Tennis Courts" style="width:70%"></v-img>
+      <img src="../../images/TennisCourtMap.png" alt="Map of the Tennis Courts" style="width:70%"/>
     </div>
     <v-container>
       <h3>Welcome</h3>

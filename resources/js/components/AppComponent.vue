@@ -6,10 +6,11 @@
         >
             <v-list-item>
                 <v-list-item-content>
-                    <v-img
+                    <img
                         style="width:100%"
-                        src="/public/images/racquetclub_logo.png"
-                    ></v-img>
+                        src="../../images/racquetclub_logo.png"
+                        alt="St. Petersburg Racquet Club Logo"
+                    />
                 </v-list-item-content>
             </v-list-item>
 
