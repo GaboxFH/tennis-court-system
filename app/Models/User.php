@@ -29,10 +29,13 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'membership_id',
+        'access',
         'name',
         'phone',
         'email',
+        'num_of_notos',
         'password',
+        'email_verified_at',
     ];
 
     /**

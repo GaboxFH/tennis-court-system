@@ -40,6 +40,16 @@
                     </v-list-item-content>
                 </v-list-item>
 
+                <v-list-item link to="/schedule">
+                    <v-list-item-icon>
+                        <v-icon>mdi-calendar-range</v-icon>
+                    </v-list-item-icon>
+
+                    <v-list-item-content>
+                        <v-list-item-title>Schedule</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+
                 <v-list-item link to="/users">
                     <v-list-item-icon>
                         <v-icon>mdi-account</v-icon>
@@ -86,15 +96,16 @@
         <v-app-bar app>
             <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
-            <v-toolbar-title>Reserve a Court</v-toolbar-title>
+            <v-toolbar-title>Reservation System {{ session_data.access }} {{ session_data.name }}</v-toolbar-title>
         </v-app-bar>
 
         <v-main>
             <router-view
                 :reservations="reservations"
-                @refresh-list="getReservations"
+                @refresh-schedule="getReservations"
                 :users="users"
                 @refresh-users="getUsers"
+                :session_data="session_data"
             >
 
             </router-view>
@@ -106,6 +117,8 @@
 import ExampleComponent from "./ExampleComponent";
 
 export default {
+    props: ['session_data'],
+
     data: () => ({
         drawer: null,
         reservations: [],
@@ -144,6 +157,8 @@ export default {
     },
 
     created() {
+        console.log("session_data")
+        console.log(this.session_data.access)
         // this.getReservations();
         // this.getUsers();
     },

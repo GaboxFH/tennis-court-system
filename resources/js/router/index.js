@@ -6,6 +6,7 @@ Vue.use(VueRouter)
 
 import AdminPanel from "../components/AdminPanelComponent"
 import Reservations from "../components/ReservationsComponent"
+import Schedule from "../components/ScheduleComponent"
 import Users from "../components/UsersComponent"
 import Report from "../components/ReportComponent"
 
@@ -22,6 +23,11 @@ let routes = [
         component: AdminPanel,
         name: "adminpanel",
         path: "/adminpanel"
+    },
+    {
+        component: Schedule,
+        name: "schedule",
+        path: "/schedule"
     },
     {
         component: Users,

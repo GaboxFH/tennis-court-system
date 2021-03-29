@@ -288,12 +288,6 @@ export default {
     // }
   }),
 
-  computed: {
-    formTitle() {
-      return this.editedIndex === -1 ? 'New Reservation' : 'Edit Reservation'
-    },
-  },
-
   watch: {
     dialog(val) {
       val || this.close();
