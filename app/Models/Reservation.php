@@ -18,7 +18,9 @@ class Reservation extends Model
         'court', 
         'num_of_members', 
         'num_of_guests', 
-        'user_id'
+        'user_id',
+        'duration',
+        'players'
     ];
 
     /*
