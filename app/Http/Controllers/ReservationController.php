@@ -41,6 +41,9 @@ class ReservationController extends Controller
         $newItem->title = $request->item["title"];
         $newItem->date = $request->item["date"];
         $newItem->court = $request->item["court"];
+        $newItem->startTime = $request->item["startTime"];
+        $newItem->duration = $request->item["duration"];
+        $newItem->players = $request->item["players"];
         $newItem->save();
 
         return $newItem;
@@ -85,6 +88,9 @@ class ReservationController extends Controller
             $existingItem->title = $request->item["title"];
             $existingItem->date = $request->item["date"];
             $existingItem->court = $request->item["court"];
+            $newItem->startTime = $request->item["startTime"];
+            $newItem->duration = $request->item["duration"];
+            $newItem->players = $request->item["players"];
             $existingItem->save();
         }
 

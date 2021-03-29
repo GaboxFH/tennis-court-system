@@ -18,8 +18,11 @@ class CreateReservationsTable extends Migration
             $table->string('title');
             $table->datetime('date');
             $table->integer('court');
-            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->nullable()->constrained();
             $table->timestamps();
+            $table->time('startTime');
+            $table->time('duration');
+            $table->string('players');
         });
     }
 
