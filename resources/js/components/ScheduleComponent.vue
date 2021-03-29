@@ -2,7 +2,12 @@
     <v-container fluid class="pa-0 ma-0">
     <v-row>
         <v-col>
-            Testing
+            Welcome {{ this.session_data }}
+        </v-col>
+    </v-row>
+    <v-row>
+        <v-col>
+            Testing {{ this.selectedEvent }}
         </v-col>
     </v-row>
     <v-row class="fill-height pt-3">
@@ -101,12 +106,14 @@
             <v-menu
                 v-model="selectedOpen"
                 :close-on-content-click="false"
+                :close-on-click="!editEvent"
                 :activator="selectedElement"
                 offset-x
             >
                 <v-card
                 color="grey lighten-4"
-                min-width="350px"
+                min-width="250px"
+                max-width="350px"
                 flat
                 >
                 <v-toolbar
@@ -117,28 +124,29 @@
                     <v-spacer></v-spacer>
 
                     <div v-if="editEvent">
-                    <v-btn @click="closeCard" icon>
+                    <v-btn @click="closeCard" icon small>
                         <v-icon>mdi-close</v-icon>
                     </v-btn>
                     </div>
 
                     <div v-else>
-                    <v-btn @click="editEvent = true" icon>
+                    <v-btn @click="editEvent = true" icon small>
                         <v-icon>mdi-pencil</v-icon>
                     </v-btn>
-                    <v-btn @click="deleteEvent" icon>
+                    <v-btn @click="deleteEvent" icon small>
                         <v-icon>mdi-delete</v-icon>
+                    </v-btn>
+                    <v-btn @click="closeCard" icon small>
+                        <v-icon>mdi-close</v-icon>
                     </v-btn>
                     </div>
                 </v-toolbar>
                 <div class="ma-2">
-                    
                     <v-text-field 
                     v-if="selectedEvent.method == 'USTA' || selectedEvent.method == 'Admin Event'"
                         v-model="selectedEvent.title"
                         :disabled="!editEvent"
                         label="Reservation Title">
-
                     </v-text-field>
                     
                     <v-select
@@ -150,39 +158,58 @@
                     <v-autocomplete
                         v-model="selectedEvent.host"
                         :disabled="!editEvent"
-                        :items="computedHost"
+                        :items="members"
+                        :search-input.sync="hostInput"
+                        @change="hostInput=''"
                         label="Host"
+                        chips
+                        hide-selected
+
+                        item-text="name"
+                        item-value="id"
+                    >                    
+                    <template v-slot:selection="data">
+                    <v-chip
+                        v-bind="data.attrs"
+                        :input-value="data.selected"
+                        :disabled="!editEvent"
+                        @click="data.select"
                     >
-                        <template v-slot:selection="data">
-                            <v-chip
-                                :disabled="!editEvent"
-                                v-bind="data.attrs"
-                                :input-value="data.selected"
-                                @click="data.select"
-                            >
-                                {{ data.item }}
-                            </v-chip>
-                        </template>
+                        {{ data.item.name }}
+                    </v-chip>
+                    </template>
+                    <template v-slot:item="data">
+                        <v-list-item-content v-text="data.item.name"></v-list-item-content>
+                    </template>
                     </v-autocomplete>
                     <v-autocomplete
                         v-model="selectedEvent.participants"
                         :disabled="!editEvent"
                         :items="computedMembers"
+                        :search-input.sync="participantInput"
+                        @change="participantInput=''"
                         chips
+                        deletable-chips
                         label="Participants"
+                        hide-selected   
                         multiple
+                        item-text="name"
+                        item-value="id"
                     >
                     <template v-slot:selection="data">
-                        <v-chip
-                            v-bind="data.attrs"
-                            :disabled="!editEvent"
-                            :input-value="data.selected"
-                            close
-                            @click="data.select"
-                            @click:close="remove(data.item)"
-                        >
-                            {{ data.item }}
-                        </v-chip>
+                    <v-chip
+                        v-bind="data.attrs"
+                        :input-value="data.selected"
+                        :disabled="!editEvent"
+                        close
+                        @click="data.select"
+                        @click:close="remove(data.item)"
+                    >
+                        {{ data.item.name }}
+                    </v-chip>
+                    </template>
+                    <template v-slot:item="data">
+                        <v-list-item-content v-text="data.item.name"></v-list-item-content>
                     </template>
                     </v-autocomplete>
                 </div>
@@ -192,14 +219,14 @@
                     <v-btn
                     text
                     color="secondary"
-                    @click="editEvent = false"
+                    @click="cancelEvent"
                     >
                     Cancel
                     </v-btn>
                     <v-btn
                     text
                     color="secondary"
-                    @click="selectedOpen = false"
+                    @click="saveEvent"
                     >
                     Save
                     </v-btn>
@@ -246,10 +273,12 @@
 
 <script>
 export default {
-    props: ['reservations','users'],
+    props: ['reservations','users','session_data'],
 
     data: () => ({
         focus: '',
+        hostInput: '',
+        participantInput: '',
         appointments: [],
         members: [],
         cal_events: [],
@@ -289,14 +318,24 @@ export default {
                 return "Today"
             }
         },
-        computedHost () {
-            return this.members.map(({ name }) => name)
-        },
         computedMembers () {
-            var members_no_host = this.members.map(({ name }) => name)
-            const index = members_no_host.indexOf(this.selectedEvent.host)
-            if (index >= 0) members_no_host.splice(index, 1)
-            return members_no_host
+            if(this.selectedEvent.host == null){
+                return this.members
+            } else {
+                // dont show host on option list
+                var members_no_host = JSON.parse(JSON.stringify(this.members))
+                var host_index = members_no_host.map(function(item) { return item.id; }).indexOf(this.selectedEvent.host)
+                members_no_host.splice(host_index, 1)
+            
+                // remove host from list
+                if(Object.entries(this.selectedEvent).length != 0){
+                    var index = this.selectedEvent.participants.indexOf(this.selectedEvent.host)
+                    if (index >= 0) this.selectedEvent.participants.splice(index, 1)
+                }
+                // console.log("members_no_host")
+                // console.log(members_no_host)
+                return members_no_host
+            }
         },
         computedCategories () {
             var categories = []
@@ -330,7 +369,7 @@ export default {
                         id: this.appointments[i].id,
                         title: this.appointments[i].title,
                         method: this.appointments[i].method,
-                        host: "Noah Smith", //this.appointments[i].user_id, should get hosts name
+                        host: this.appointments[i].user_id, 
                         participants: this.appointments[i].participants,
                         num_of_members: this.appointments[i].num_of_members,
                         num_of_guests: this.appointments[i].num_of_guests,
@@ -428,14 +467,14 @@ export default {
                     this.clickStart = true
 
                     this.createEvent = {
-                        title: "Noah Smith", //should be admin name
+                        title: "New Event", //should be admin name this.session_data.name
                         method: "Call",
-                        host: "Noah Smith", //should be admin name
-                        participants: ["Kenia Rangel"],
+                        host: null, //should be admin id this.session_data.id
+                        participants: [],
                         num_of_members: 1,
                         num_of_guests: 0,
-                        user_id: 1, //should be admin id
-                        name: "Noah Smith", //should be admin name
+                        user_id: null, //should be admin id this.session_data.id
+                        name: "New Event", //should be admin name this.session_data.name
                         start: time_clicked,
                         end: time_clicked+30*1000*60,
                         color: "blue",
@@ -503,13 +542,10 @@ export default {
             this.areyousure = true
             console.log(this.selectedEvent)
         },
-
         showEvent ({ nativeEvent, event }) {
             const open = () => {
                 this.selectedEvent = event
-                this.selectedEvent.participants = 
-                // this.selectedEvent.start_time = this.selectedEvent.start.slice(11, 16)
-                // this.selectedEvent.end_time = this.selectedEvent.end.slice(11, 16)
+                this.getParticipants()
                 this.selectedElement = nativeEvent.target
                 
                 console.log("event")
@@ -528,6 +564,45 @@ export default {
             }
             nativeEvent.stopPropagation()
         },
+        saveEvent () {
+            console.log("saveEvent")
+            // var ordered_participants_ids = []
+            console.log(this.selectedEvent.host)
+            console.log(this.selectedEvent.participants)
+            // var index = this.selectedEvent.participants.indexOf(this.selectedEvent.host)
+            // if (index >= 0){
+            //     ordered_participants_ids = this.selectedEvent.participants
+            // } else {
+            //     ordered_participants_ids = this.selectedEvent.participants
+            //     ordered_participants_ids.push(this.selectedEvent.host)
+            // }
+            var ordered_participants_ids = JSON.parse(JSON.stringify(this.selectedEvent.participants))
+            if(this.selectedEvent.host==''){ 
+                this.selectedEvent.host = null
+            }
+            if(this.selectedEvent.host!=null){
+                ordered_participants_ids.push(this.selectedEvent.host)
+            }
+            ordered_participants_ids.sort(function(a, b){return a-b})
+            // console.log(ordered_participants_ids)
+            
+            let item = JSON.parse(JSON.stringify(this.selectedEvent))
+            item.start = this.convertDate(new Date(item.start))
+            item.end = this.convertDate(new Date(item.end))
+            item.ordered_participants_ids = ordered_participants_ids
+            let newCompTimePayload = {
+                item
+            }
+            console.log(newCompTimePayload)
+            // this.editEvent = true
+            axios.put('api/reservation/update', newCompTimePayload)
+            this.getReservations()
+            this.closeCard()
+
+        },
+        cancelEvent () {
+            this.closeCard ()
+        },
         editEventFields (){
             this.editEvent = true
         },
@@ -536,8 +611,7 @@ export default {
             this.selectedOpen = false
         },
         remove (item) {
-            // console.log(item)
-            const index = this.selectedEvent.participants.indexOf(item)
+            var index = this.selectedEvent.participants.indexOf(item.id)
             if (index >= 0) this.selectedEvent.participants.splice(index, 1)
         },
         toTime (tms) {
@@ -568,6 +642,19 @@ export default {
         },
         reloadEvents (){
             this.$emit('refresh-schedule')
+        },
+        getParticipants() {
+            this.selectedEvent.host = ''
+            this.selectedEvent.participants = []
+            axios.get('api/reservation_users/'+this.selectedEvent.id+'/'+this.selectedEvent.user_id)
+            .then(response => {
+                this.selectedEvent.host = response.data.res_host
+                this.selectedEvent.participants = response.data.res_participants
+            })
+            .catch(error => {
+                console.log(error)
+            })
+
         },
         getReservations() {
             this.appointments = []

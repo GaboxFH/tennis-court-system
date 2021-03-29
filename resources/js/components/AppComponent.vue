@@ -96,6 +96,7 @@
                 @refresh-schedule="getReservations"
                 :users="users"
                 @refresh-users="getUsers"
+                :session_data="session_data"
             >
 
             </router-view>
@@ -113,7 +114,6 @@ export default {
         drawer: null,
         reservations: [],
         users: [],
-
     }),
 
     methods: {
@@ -148,6 +148,8 @@ export default {
     },
 
     created() {
+        console.log("session_data")
+        console.log(this.session_data.access)
         // this.getReservations();
         // this.getUsers();
     },

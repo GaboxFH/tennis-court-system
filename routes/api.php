@@ -24,9 +24,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 
 Route::get('/reservations', [ReservationController::class, 'index']);
-Route::get('/reservation_users', [ReservationController::class, 'reservation_users']);
+Route::get('/reservation_users/{id}/{user_id}', [ReservationController::class, 'reservation_users']);
 
 Route::prefix('/reservation')->group( function() {
+    // Route::get('/{id}', [ReservationController::class, 'reservation_users']);
     Route::post('/store', [ReservationController::class, 'store']);
     Route::put('/adminupdate', [ReservationController::class, 'adminupdate']);
     Route::put('/update', [ReservationController::class, 'update']);

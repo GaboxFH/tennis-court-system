@@ -22,7 +22,7 @@ class CreateReservationsTable extends Migration
             $table->integer('court');
             $table->integer('num_of_members');
             $table->integer('num_of_guests');
-            $table->integer('user_id');
+            $table->integer('user_id')->nullable();
             $table->timestamps();
         });
     }

@@ -13,7 +13,7 @@ class UserController extends Controller
     //
     public function index()
     {
-        return User::orderBy('name', 'DESC')->get();
+        return User::orderBy('name')->get();
     }
 
     public function update(Request $request, $id)
