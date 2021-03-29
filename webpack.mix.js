@@ -1,20 +1,22 @@
 const mix = require('laravel-mix');
 
-const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin') 
-const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin'); 
+const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin')
+const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 
-var webpackConfig = { 
+var webpackConfig = {
 
-    plugins: [ 
-        new VuetifyLoaderPlugin(), 
+    plugins: [
+        new VuetifyLoaderPlugin(),
 
-        new CaseSensitivePathsPlugin() 
-        // other plugins ... 
-    ] 
-    // other webpack config ... 
-} 
- 
-mix.webpackConfig(webpackConfig); 
+        new CaseSensitivePathsPlugin()
+        // other plugins ...
+    ]
+    // other webpack config ...
+}
+
+mix.webpackConfig(webpackConfig);
+
+mix.browserSync('127.0.0.1:8000');
 
 /*
  |--------------------------------------------------------------------------
@@ -28,8 +30,8 @@ mix.webpackConfig(webpackConfig);
  */
 
 mix.js('resources/js/app.js', 'public/js')
-    //Removed .vue because of getting following error: 
+    //Removed .vue because of getting following error:
     //AssertionError [ERR_ASSERTION]: mix.js() is missing required parameter 1: entry
-    //This is used for laravel-mix ^6, but not all packages are compatible with webpack 5.  
+    //This is used for laravel-mix ^6, but not all packages are compatible with webpack 5.
     //.vue()
     .sass('resources/sass/app.scss', 'public/css');

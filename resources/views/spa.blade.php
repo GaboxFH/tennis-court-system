@@ -9,7 +9,10 @@
 
     <title>{{ config('app.name', 'Laravel') }}</title>
 
-    <!-- Scripts -->
+    <!-- Scripts + pass user info into bootstrap/app script-->
+    @if(Auth::user()->access == "Admin")
+        <script>var userAccess = "{{ Auth::user()->access }}";</script>
+    @endif
     <script src="{{ asset('js/app.js') }}" defer></script>
 
     <!-- Fonts -->
@@ -22,7 +25,15 @@
 
 <body>
 <div id="app">
-    <app-component></app-component>
+    <app-component :session_data="{{ Auth::user() }}"></app-component>
 </div>
 </body>
 </html>
+
+<script>
+    @auth
+        window.Permissions = {!! json_encode(Auth::user()->allPermissions, true) !!};
+    @else
+        window.Permissions = [];
+    @endauth
+</script>

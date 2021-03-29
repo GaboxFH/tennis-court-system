@@ -4,25 +4,39 @@ import VueRouter from 'vue-router';
 
 Vue.use(VueRouter)
 
-// import Table from "../components/TableComponent"
-// import Users from "../components/UsersComponent"
+import AdminPanel from "../components/AdminPanelComponent"
+import Reservations from "../components/ReservationsComponent"
+import Schedule from "../components/ScheduleComponent"
+import Users from "../components/UsersComponent"
 
 let routes = [
-    // {
-    //     component: Table,
-    //     name: "table",
-    //     path: "/"
-    // },
-    // {
-    //     component: Users,
-    //     name: "users",
-    //     path: "/users",
-    //     meta: {
-    //         authRequired: 'true'
-    //     },
-    // }
+    {
+        component: Reservations,
+        name: "reservations",
+        path: "/",
+        meta: {
+            authRequired: 'true'
+        },
+    },
+    {
+        component: AdminPanel,
+        name: "adminpanel",
+        path: "/adminpanel"
+    },
+    {
+        component: Schedule,
+        name: "schedule",
+        path: "/schedule"
+    },
+    {
+        component: Users,
+        name: "users",
+        path: "/users"
+    },
+
 ];
 
 export default new VueRouter({
-    routes
+    routes,
+    // mode: 'history',
 });

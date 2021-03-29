@@ -21,7 +21,7 @@
                 dense
                 nav
             >
-                <v-list-item>
+                <v-list-item link to="/">
                     <v-list-item-icon>
                         <v-icon>mdi-calendar</v-icon>
                     </v-list-item-icon>
@@ -31,7 +31,7 @@
                     </v-list-item-content>
                 </v-list-item>
 
-                <v-list-item>
+                <v-list-item link to="/adminpanel">
                     <v-list-item-icon>
                         <v-icon>mdi-newspaper-variant</v-icon>
                     </v-list-item-icon>
@@ -41,13 +41,23 @@
                     </v-list-item-content>
                 </v-list-item>
 
-                <v-list-item>
+                <v-list-item link to="/schedule">
                     <v-list-item-icon>
-                        <v-icon>mdi-help-box</v-icon>
+                        <v-icon>mdi-calendar-range</v-icon>
                     </v-list-item-icon>
 
                     <v-list-item-content>
-                        <v-list-item-title>Help</v-list-item-title>
+                        <v-list-item-title>Schedule</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+
+                <v-list-item link to="/users">
+                    <v-list-item-icon>
+                        <v-icon>mdi-account</v-icon>
+                    </v-list-item-icon>
+
+                    <v-list-item-content>
+                        <v-list-item-title>Members</v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
 
@@ -77,18 +87,34 @@
         <v-app-bar app>
             <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
-            <v-toolbar-title>Reservation System</v-toolbar-title>
+            <v-toolbar-title>Reservation System {{ session_data.access }} {{ session_data.name }}</v-toolbar-title>
         </v-app-bar>
 
         <v-main>
-            <!--  -->
+            <router-view
+                :reservations="reservations"
+                @refresh-schedule="getReservations"
+                :users="users"
+                @refresh-users="getUsers"
+                :session_data="session_data"
+            >
+
+            </router-view>
         </v-main>
     </v-app>
 </template>
 
 <script>
+import ExampleComponent from "./ExampleComponent";
+
 export default {
-    data: () => ({ drawer: null }),
+    props: ['session_data'],
+
+    data: () => ({
+        drawer: null,
+        reservations: [],
+        users: [],
+    }),
 
     methods: {
 
@@ -97,9 +123,36 @@ export default {
                 .then(response => {
                     window.location.href = "login"
                 })
-        }
+        },
 
-    }
+        getReservations() {
+            axios.get('api/reservations')
+                .then(response => {
+                    this.reservations = response.data
+                })
+                .catch(error => {
+                    console.log(error);
+                })
+
+        },
+        getUsers() {
+            axios.get('api/users')
+                .then(response => {
+                    this.users = response.data
+                })
+                .catch(error => {
+                    console.log(error);
+                })
+        },
+
+    },
+
+    created() {
+        console.log("session_data")
+        console.log(this.session_data.access)
+        // this.getReservations();
+        // this.getUsers();
+    },
 
 }
 </script>
