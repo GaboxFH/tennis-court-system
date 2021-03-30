@@ -109,7 +109,7 @@ class ReservationController extends Controller
     public function update(Request $request)
     {
         $existingItem = Reservation::find($request->item["id"]);
-        return "whoop";
+        //return "whoop";
 
         if($existingItem) {
             $dataIndex = 0;
@@ -205,8 +205,8 @@ class ReservationController extends Controller
                 // }
                 // if(count($existingParticipants))
                 $existingItem->method = $request->item["method"];
-                // $existingItem->user_id = $request->item["host"];
-                $existingItem->user_id = 14;
+                $existingItem->user_id = $request->item["host"];
+                // $existingItem->user_id = 14;
                 $existingItem->title = $request->item["title"];
 
                 $existingItem->num_of_members = count($request->item["ordered_participants_ids"]);

@@ -24,9 +24,8 @@ class CreateReservationsTable extends Migration
             $table->integer('num_of_guests');
             $table->integer('user_id')->nullable();
             $table->timestamps();
-            $table->time('startTime');
-            $table->time('duration');
-            $table->string('players');
+            $table->time('duration')->nullable();;
+            $table->string('players')->nullable();
         });
     }
 
