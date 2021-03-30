@@ -97,10 +97,10 @@
             :categories="computedCategories"
             :events="computedEvents"
             :event-color="getEventColor"
-            @mousedown:time-category="newReservation"
+            @mousemove:event="startDrag"
+            @mousedown:time-category="startTime"
             @mousemove:time-category="mouseMove"
             @mouseup:event="endDrag"
-            @click:event="showEvent"
             >
             </v-calendar>
             <v-menu
@@ -252,7 +252,7 @@
                 <v-btn
                 color="green darken-1"
                 text
-                @click="areyousure = false"
+                @click="deleteFinal"
                 >
                 Yes
                 </v-btn>
@@ -287,20 +287,18 @@ export default {
         fullScreen: false,
         // dragEvent: null,
         createEvent: null,
+        getEvent: false,
         clickStart: false,
-
-        createStart: null,
-        extendOriginal: null,
-
-        startClick: undefined,
-        endClick: false,
-        currentDate: [],
-
+        dragStart: false,
+        dragEvent: null,
+        new_endtime: '',
+        first_edit: false,
+        
         selectedEvent: {},
         selectedElement: null,
         selectedOpen: false,
         editEvent: false,
-        new_endtime: '',
+        
 
         areyousure: false,
 
@@ -311,7 +309,7 @@ export default {
     }),
     computed: {
         computedDate () {
-            console.log(new Date())
+            // console.log(new Date())
             if(this.$refs.calendar.value != ''){
                 return this.$refs.calendar.value
             } else {
@@ -354,12 +352,46 @@ export default {
             return categories
         },
         computedEvents () {
+            // var color = "blue"
+
+            // if(!this.clickStart && this.appointments.length != 0){
+            //     this.cal_events = []
+                // for(var i=0; i<this.appointments.length; i++){
+                //     // console.log(this.appointments[i])
+                //     if(this.appointments[i].method == "Admin Event"){ color = "cyan" }
+                //     else if(this.appointments[i].method == "Call" || this.appointments[i].method == "Walk-In"){ color = "blue" }
+                //     else if(this.appointments[i].method == "Tennis Pro"){ color = "green" }
+                //     else if(this.appointments[i].method == "USTA"){ color = "lime" }
+                //     else{ color = "red" }
+                //     this.cal_events.push({
+                //         id: this.appointments[i].id,
+                //         title: this.appointments[i].title,
+                //         method: this.appointments[i].method,
+                //         host: this.appointments[i].user_id, 
+                //         participants: this.appointments[i].participants,
+                //         num_of_members: this.appointments[i].num_of_members,
+                //         num_of_guests: this.appointments[i].num_of_guests,
+                //         user_id: this.appointments[i].user_id,
+                //         name: this.appointments[i].title,
+                //         start: this.appointments[i].start_datetime,
+                //         end: this.appointments[i].end_datetime,
+                //         // color: this.colors[this.rnd(0, this.colors.length - 1)],
+                //         color: color,
+                //         timed: true,
+                //         category: this.categories[this.appointments[i].court-1],
+                //     })
+                // }
+                // this.refresh = false
+            // }
+            // return this.cal_events
+
+
             var color = "blue"
 
             if(!this.clickStart && this.appointments.length != 0){
                 this.cal_events = []
                 for(var i=0; i<this.appointments.length; i++){
-                    console.log(this.appointments[i])
+                    // console.log(this.appointments[i])
                     if(this.appointments[i].method == "Admin Event"){ color = "cyan" }
                     else if(this.appointments[i].method == "Call" || this.appointments[i].method == "Walk-In"){ color = "blue" }
                     else if(this.appointments[i].method == "Tennis Pro"){ color = "green" }
@@ -423,11 +455,11 @@ export default {
         },
         reservations (val) {
             this.appointments=val
-            console.log(val)
+            // console.log(val)
         },
         users (val) {
             this.members=val
-            console.log(val)
+            // console.log(val)
         },
     },
     created () {
@@ -450,14 +482,11 @@ export default {
         this.$refs.calendar.checkChange()
     },
     methods: {
-        newReservation (tms) {
+        startTime (tms) {
+            // console.log(tms)
             if (!this.selectedOpen) {
-                console.log(tms)
                 const time_clicked = this.roundTime(this.toTime(tms))
                 var timeConflict = false
-                // console.log(time_clicked)
-                // console.log(new Date(this.cal_events[1].start).getTime())
-                // console.log(this.cal_events)
                 for(var i=0; i<this.cal_events.length; i++) {
                     if(time_clicked >= new Date(this.cal_events[i].start).getTime() && time_clicked < new Date(this.cal_events[i].end).getTime() && tms.category.categoryName == this.cal_events[i].category){
                         timeConflict = true
@@ -477,6 +506,7 @@ export default {
                         name: "New Event", //should be admin name this.session_data.name
                         start: time_clicked,
                         end: time_clicked+30*1000*60,
+                        duration: (end-start),
                         color: "blue",
                         timed: true,
                         category: tms.category.categoryName
@@ -490,57 +520,73 @@ export default {
                     let newCompTimePayload = {
                         item
                     }
-                    // console.log(newCompTimePayload)
+
                     this.editEvent = true
                     axios.post('api/reservation/store', newCompTimePayload)
                 }
             }
         },
-        mouseMove (tms){
-            if(this.clickStart){
-                console.log(this.cal_events[this.cal_events.length-1])
+        startDrag ({ event }) {
+            if(this.clickStart && !this.getEvent){
+                console.log(event)
+                this.getEvent = true
+                this.dragStart = true
+                this.dragEvent = event
+            }
+        },
+        mouseMove (tms) {
+            if(this.dragStart){
+                console.log(this.dragEvent)
                 this.new_endtime = this.roundTime(this.toTime(tms))+30*1000*60
                 var timeConflict = false
-                // if(tms.category.categoryName == this.cal_events[this.cal_events.length-1].category){
-                    if(this.cal_events[this.cal_events.length-1].end != this.new_endtime && this.new_endtime >= (this.cal_events[this.cal_events.length-1].start+30*1000*60)){
-                        
-                        for(var i=0; i<this.cal_events.length-1; i++) {
-                            if(this.cal_events[this.cal_events.length-1].category == this.cal_events[i].category
-                            && (new Date(this.cal_events[i].start).getTime() < this.new_endtime
-                            && new Date(this.cal_events[i].end).getTime() >  this.cal_events[this.cal_events.length-1].start)
-                            ){
-                                timeConflict = true
-                            }
+                if(this.dragEvent.end != this.new_endtime && this.new_endtime >= (this.dragEvent.start+30*1000*60)){
+                    
+                    for(var i=0; i<this.cal_events.length-1; i++) {
+                        if(this.dragEvent.category == this.cal_events[i].category
+                        && (new Date(this.cal_events[i].start).getTime() < this.new_endtime
+                        && new Date(this.cal_events[i].end).getTime() >  this.dragEvent.start)
+                        ){
+                            timeConflict = true
                         }
-                        if(!timeConflict){
-                            this.cal_events[this.cal_events.length-1].end = this.new_endtime
-                            
-                            let item = JSON.parse(JSON.stringify(this.cal_events[this.cal_events.length-1]))
-                            item.start = this.convertDate(new Date(item.start))
-                            item.end = this.convertDate(new Date(item.end))
-                            let newCompTimePayload = {
-                                item
-                            }
-                            console.log(newCompTimePayload)
-
-                            axios.put('api/reservation/adminupdate', newCompTimePayload)
-                        }
-                        // this.cal_events[this.cal_events.length-1].end = new_endtime
                     }
-                    // console.log(tms.time)
-                // }
-                // console.log(tms.category.categoryName)
+                    if(!timeConflict){
+                        this.dragEvent.end = this.new_endtime
+                        
+                        let item = JSON.parse(JSON.stringify(this.dragEvent))
+                        item.start = this.convertDate(new Date(item.start))
+                        item.end = this.convertDate(new Date(item.end))
+                        let newCompTimePayload = {
+                            item
+                        }
+                        console.log(newCompTimePayload)
+
+                        axios.put('api/reservation/adminupdate', newCompTimePayload)
+                    }
+                }
             }
         },
         endDrag ({ nativeEvent, event }){
             this.getReservations()
             this.clickStart = false
-            // this.cal_events[this.cal_events.length-1].end = this.new_endtime
+            this.first_edit = true
+            this.getEvent = false
+            this.dragStart = false
             this.showEvent({ nativeEvent, event })
         },
         deleteEvent (){
             this.areyousure = true
             console.log(this.selectedEvent)
+        },
+        deleteFinal (){
+            // let item = JSON.parse(JSON.stringify(this.selectedEvent))
+            // let newCompTimePayload = {
+            //     item
+            // }
+            // console.log(newCompTimePayload)
+            // this.editEvent = true
+            axios.delete('api/reservation/'+this.selectedEvent.id)
+            this.areyousure = false
+            this.getReservations()
         },
         showEvent ({ nativeEvent, event }) {
             const open = () => {
@@ -548,10 +594,10 @@ export default {
                 this.getParticipants()
                 this.selectedElement = nativeEvent.target
                 
-                console.log("event")
-                console.log(this.selectedEvent)
-                console.log("element")
-                console.log(this.selectedElement)
+                // console.log("event")
+                // console.log(this.selectedEvent)
+                // console.log("element")
+                // console.log(this.selectedElement)
                 setTimeout(() => {
                     this.selectedOpen = true
                 }, 10)
@@ -661,10 +707,40 @@ export default {
             axios.get('api/reservations')
                 .then(response => {
                     this.appointments = response.data
+                    // this.fillCal()
                 })
                 .catch(error => {
                     console.log(error)
                 })
+        },
+        fillCal() {
+            this.cal_events = []
+            for(var i=0; i<this.appointments.length; i++){
+                // console.log(this.appointments[i])
+                if(this.appointments[i].method == "Admin Event"){ color = "cyan" }
+                else if(this.appointments[i].method == "Call" || this.appointments[i].method == "Walk-In"){ color = "blue" }
+                else if(this.appointments[i].method == "Tennis Pro"){ color = "green" }
+                else if(this.appointments[i].method == "USTA"){ color = "lime" }
+                else{ color = "red" }
+                this.cal_events.push({
+                    id: this.appointments[i].id,
+                    title: this.appointments[i].title,
+                    method: this.appointments[i].method,
+                    host: this.appointments[i].user_id, 
+                    participants: this.appointments[i].participants,
+                    num_of_members: this.appointments[i].num_of_members,
+                    num_of_guests: this.appointments[i].num_of_guests,
+                    user_id: this.appointments[i].user_id,
+                    name: this.appointments[i].title,
+                    start: this.appointments[i].start_datetime,
+                    end: this.appointments[i].end_datetime,
+                    duration: (end-start),
+                    // color: this.colors[this.rnd(0, this.colors.length - 1)],
+                    color: color,
+                    timed: true,
+                    category: this.categories[this.appointments[i].court-1],
+                })
+            }
         },
         rnd (a, b) {
             return Math.floor((b - a + 1) * Math.random()) + a
