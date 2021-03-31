@@ -24,7 +24,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 
 Route::get('/reservations', [ReservationController::class, 'index']);
-Route::get('/member_play/{month}', [ReservationController::class, 'member_play']);
+Route::get('/court_play/{year}/{month}', [ReservationController::class, 'court_play']);
+Route::get('/member_play/{year}/{month}', [ReservationController::class, 'member_play']);
 Route::get('/reservation_users/{id}/{user_id}', [ReservationController::class, 'reservation_users']);
 
 Route::prefix('/reservation')->group( function() {

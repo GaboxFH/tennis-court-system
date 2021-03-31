@@ -20,23 +20,28 @@ class ReservationController extends Controller
     }
 
 
-    public function court_play($month)
+    public function court_play($year, $month)
     {
         
+        return Reservation::whereYear('start_datetime', '=', $year)->whereMonth('start_datetime', '=', $month)
+                            ->join('reservation_user', 'reservations.id', '=', 'reservation_user.reservation_id')
+                            ->select('reservations.court as courtnumber', 'reservations.duration as totaltime')
+                            ->get();
     }
-    public function member_play($month)
+    public function member_play($year, $month)
     {
-        // new Date().getMonth()
         
-        // return Reservation::orderBy('created_at')->get();
-        // User::select('id','name')->get();
-        // return Reservation::get();
-        $user_info = User::select('id','name')->get();
-
-        return Reservation::where('start_datetime','>=','2021-03-01 00:00:00')
-                            ->where('start_datetime','<','2021-04-01 00:00:00')
-                            // ->join('Reservation','Reservation.user_id','=','Users.id')
-                            // ->groupBy('user_id');
+        return Reservation::whereYear('start_datetime', '=', $year)->whereMonth('start_datetime', '=', $month)
+                            // where('start_datetime','>=','2021-03-01 00:00:00')
+                            // ->where('start_datetime','<','2021-04-01 00:00:00')
+                            ->join('reservation_user','reservations.id','=','reservation_user.reservation_id')
+                            ->join('users', 'reservation_user.user_id', '=', 'users.id')
+                            ->select('reservations.duration as duration', 'users.name as name')
+                            
+                            // ->groupBy('users.name')
+                            // ->sum('reservation.duration')
+                            //->sum('duration')
+                            //->groupBy('users.name')
                             ->get();
 
         // return Reservation::where('start_datetime','<=','2020-04-01')->get();

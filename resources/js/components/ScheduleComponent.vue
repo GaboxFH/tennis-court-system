@@ -506,7 +506,7 @@ export default {
                         name: "New Event", //should be admin name this.session_data.name
                         start: time_clicked,
                         end: time_clicked+30*1000*60,
-                        duration: (end-start),
+                        ///duration: (end-start),
                         color: "blue",
                         timed: true,
                         category: tms.category.categoryName
@@ -734,7 +734,7 @@ export default {
                     name: this.appointments[i].title,
                     start: this.appointments[i].start_datetime,
                     end: this.appointments[i].end_datetime,
-                    duration: (end-start),
+                    //duration: (end-start),
                     // color: this.colors[this.rnd(0, this.colors.length - 1)],
                     color: color,
                     timed: true,

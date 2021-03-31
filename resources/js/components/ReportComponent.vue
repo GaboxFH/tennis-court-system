@@ -10,7 +10,7 @@
                             time the court was used.
                         </p>
                         <v-data-iterator
-                            :items="items"
+                            :items="courttime"
                             :items-per-page.sync="itemsPerPage"
                             :page.sync="page"
                             :search="date"
@@ -59,25 +59,25 @@
                                             <v-btn
                                                 text
                                                 color="primary"
-                                                @click="$refs.menu.save(date)"
+                                                @click="$refs.menu.save(date); filterCourts();"
                                             >OK</v-btn>
                                         </v-date-picker>
                                     </v-menu>
                                 <template v-if="$vuetify.breakpoint.mdAndUp">
                                     <v-spacer></v-spacer>
                                     <v-select
-                                    v-model="sortBy"
-                                    flat
-                                    solo-inverted
-                                    hide-details
-                                    :items="keys"
-                                    prepend-inner-icon="mdi-magnify"
-                                    label="Sort by"
-                                    ></v-select>
-                                    <v-spacer></v-spacer>
-                                    <v-btn-toggle
-                                    v-model="sortDesc"
-                                    mandatory
+                                        v-model="sortBy"
+                                        flat
+                                        solo-inverted
+                                        hide-details
+                                        :items="keys"
+                                        prepend-inner-icon="mdi-magnify"
+                                        label="Sort by"
+                                        ></v-select>
+                                        <v-spacer></v-spacer>
+                                        <v-btn-toggle
+                                        v-model="sortDesc"
+                                        mandatory
                                     >
                                     <v-btn
                                         large
@@ -135,7 +135,6 @@
                                             <div v-else>
                                                 {{ item[key.toLowerCase().replace(/\s+/g, '')] }} 
                                             </div>
-                                            <!-- {{ item[key.toLowerCase().replace(/\s+/g, '')] }}  -->
                                         </v-list-item-content>
                                         </v-list-item>
                                     </v-list>
@@ -211,7 +210,7 @@
                     <div class="card-header">Members Use Report</div>
 
                     <div class="card-body">
-                        <p>This report will be a montly listing of how much time (time slot count * 2) each member has played.</p>
+                        <p>This report will be a monthly listing of how much time (time slot count * 2) each member has played.</p>
                         <template>
                             <v-card>
                                 <v-card-title>
@@ -339,10 +338,10 @@ export default {
         sortBy: 'Court Number',
         keys: [
           'Court Number',
-          'Time Slots Used',
+           'Time Slots Used',
           'Total Time',
           'Type',
-          'Date Reserved'
+           'Date Reserved'
         ],
         items: [
           {
@@ -405,7 +404,7 @@ export default {
               courtnumber: 9,
               timeslotsused: 50,
               totaltime: 25,
-              type: "hard",
+            //   type: "hard",
               datereserved: "2021-03"
           },
           {
@@ -465,10 +464,12 @@ export default {
               datereserved: "2022-05"
           },
         ],
+        courttime: [],
         // Variables for Member Report
         dateMember: new Date().toISOString().substr(0, 7),
         menuMember: false,
         searchMembers:'',
+        playtime: [],
         headers: [
             {
                 text: 'Member',
@@ -480,150 +481,27 @@ export default {
                 value: 'duration'
             }
         ],
-        data: [
-            {
-                name: 'Jim Jam',
-                duration: 9.5,
-                yearMonth: "2021-01"
-            },
-             {
-                name: 'Jimmy Jammadone',
-                duration: 2.5,
-                yearMonth: '2021-01'
-            },
-             {
-                name: 'Jimbo Jambrowski',
-                duration: 10.5,
-                yearMonth: '2021-01'
-            },
-             {
-                name: 'Jam Jimmyson',
-                duration: 9.5,
-                yearMonth: '2021-01'
-            },
-            {
-                name: 'Jim Jam',
-                duration: 1,
-                yearMonth: '2021-02'
-            },
-             {
-                name: 'Jimmy Jammadone',
-                duration: 20.5,
-                yearMonth: '2021-02'
-            },
-             {
-                name: 'Jimbo Jambrowski',
-                duration: 11,
-                yearMonth: '2021-02'
-            },
-             {
-                name: 'Jam Jimmyson',
-                duration: 9,
-                yearMonth: '2021-02'
-            },
-            {
-                name: 'Jim Jam',
-                duration: 90,
-                yearMonth: '2021-03'
-            },
-             {
-                name: 'Jimmy Jammadone',
-                duration: 10,
-                yearMonth: '2021-03'
-            },
-             {
-                name: 'Jimbo Jambrowski',
-                duration: 14.5,
-                yearMonth: '2021-03'
-            },
-             {
-                name: 'Jam Jimmyson',
-                duration: 4.5,
-                yearMonth: '2021-03'
-            },
-        ],
-        dataF: [
-            {
-                name: 'Jim Jam',
-                duration: 9.5,
-                yearMonth: "2021-01"
-            },
-             {
-                name: 'Jimmy Jammadone',
-                duration: 2.5,
-                yearMonth: '2021-01'
-            },
-             {
-                name: 'Jimbo Jambrowski',
-                duration: 10.5,
-                yearMonth: '2021-01'
-            },
-             {
-                name: 'Jam Jimmyson',
-                duration: 9.5,
-                yearMonth: '2021-01'
-            },
-            {
-                name: 'Jim Jam',
-                duration: 1,
-                yearMonth: '2021-02'
-            },
-             {
-                name: 'Jimmy Jammadone',
-                duration: 20.5,
-                yearMonth: '2021-02'
-            },
-             {
-                name: 'Jimbo Jambrowski',
-                duration: 11,
-                yearMonth: '2021-02'
-            },
-             {
-                name: 'Jam Jimmyson',
-                duration: 9,
-                yearMonth: '2021-02'
-            },
-            {
-                name: 'Jim Jam',
-                duration: 90,
-                yearMonth: '2021-03'
-            },
-             {
-                name: 'Jimmy Jammadone',
-                duration: 10,
-                yearMonth: '2021-03'
-            },
-             {
-                name: 'Jimbo Jambrowski',
-                duration: 14.5,
-                yearMonth: '2021-03'
-            },
-             {
-                name: 'Jam Jimmyson',
-                duration: 4.5,
-                yearMonth: '2021-03'
-            },
-        ],// Variables used for Rain Outs
+        // Variables used for Rain Outs
         dialog: false,
-        playtime: ''
       }
     },
     created () {
-        this.getReservations()
+        this.getMembers(this.dateMember.substr(0, 4), this.dateMember.substr(5, 2));
+        this.getCourts();
     },
     computed: {
         computedPlay () {
             return this.playtime
         },
         numberOfPages () {
-            return Math.ceil(this.items.length / this.itemsPerPage)
+            return Math.ceil(this.courttime.length / this.itemsPerPage)
         },
         filteredKeys () {
             return this.keys.filter(key => key !== 'Name')
         },
     },
     methods: {
-        
+        // Methods for Court Report
         nextPage () {
             if (this.page + 1 <= this.numberOfPages) this.page += 1
         },
@@ -633,24 +511,41 @@ export default {
         updateItemsPerPage (number) {
             this.itemsPerPage = number
         },
+        filterCourts() {
+            console.log(this.date.substr(0, 4) + " " + this.date.substr(5, 2));
+            getCourts();
+        },
+        getCourts() {
+            axios.get('api/court_play'+'/'+this.date.substr(0, 4)+'/'+this.date.substr(5, 2))
+                .then(response => {
+                    this.courttime = response.data
+                    console.log("this.courtime")
+                    console.log(this.courttime)
+                    console.log(this.items);
+                })
+                .catch(error => {
+                    console.log(error)
+                })
+        },
+        // Methods for Member Report
         filterDate () {
             if (this.dateMember !== undefined) {
-                this.dataF = this.data.filter((item) => item.yearMonth == this.dateMember)
+                console.log(this.dateMember.substr(0, 4) + " " + this.dateMember.substr(5, 2));
+                getMembers(this.dateMember.substr(0, 4), this.dateMember.substr(5, 2));
             }
         },
-        getReservations() {
-        axios.get('api/member_play'+'/1')
-            .then(response => {
-                this.playtime = response.data
-                console.log("this.playtime")
-                console.log(this.playtime)
-            })
-            .catch(error => {
-                console.log(error)
-            })
-        }
+        getMembers(year, month) {
+            axios.get('api/member_play'+'/'+year+'/'+month)
+                .then(response => {
+                    this.playtime = response.data
+                    console.log("this.playtime")
+                    console.log(this.playtime)
+                })
+                .catch(error => {
+                    console.log(error)
+                })
+        },
     },
 }
 
 </script>
-`
