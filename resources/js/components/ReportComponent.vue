@@ -9,25 +9,14 @@
                         <p>This report will be a weekly monthly listing of how many time slots each court has been used and total
                             time the court was used.
                         </p>
-                        <v-data-iterator
-                            :items="courttime"
-                            :items-per-page.sync="itemsPerPage"
-                            :page.sync="page"
-                            :search="date"
-                            :sort-by="sortBy.toLowerCase().replace(/\s+/g, '')"
-                            :sort-desc="sortDesc"
-                            group-by="type"
-                            hide-default-footer
-                            >
-                            <template v-slot:header>
-                                <v-toolbar
-                                dark
-                                color="blue darken-3"
-                                class="mb-1"
-                                >
-                                    <v-menu
-                                        ref="menu"
-                                        v-model="menu"
+                        <template>
+                            <v-card>
+                                <v-card-title>
+                                    Court Utilization Time
+                                    <v-spacer></v-spacer>
+                                <v-menu
+                                        ref="menuCourt"
+                                        v-model="menuCourt"
                                         :close-on-content-click="false"
                                         :return-value.sync="date"
                                         transition="scale-transition"
@@ -54,156 +43,23 @@
                                             <v-btn
                                                 text
                                                 color="primary"
-                                                @click="menu = false"
+                                                @click="menuCourt = false"
                                             >Cancel</v-btn>
                                             <v-btn
                                                 text
                                                 color="primary"
-                                                @click="$refs.menu.save(date); filterCourts();"
+                                                @click="$refs.menuCourt.save(date); filterCourts();"
                                             >OK</v-btn>
                                         </v-date-picker>
                                     </v-menu>
-                                <template v-if="$vuetify.breakpoint.mdAndUp">
                                     <v-spacer></v-spacer>
-                                    <v-select
-                                        v-model="sortBy"
-                                        flat
-                                        solo-inverted
-                                        hide-details
-                                        :items="keys"
-                                        prepend-inner-icon="mdi-magnify"
-                                        label="Sort by"
-                                        ></v-select>
-                                        <v-spacer></v-spacer>
-                                        <v-btn-toggle
-                                        v-model="sortDesc"
-                                        mandatory
-                                    >
-                                    <v-btn
-                                        large
-                                        depressed
-                                        color="blue"
-                                        :value="false"
-                                    >
-                                        <v-icon>mdi-arrow-up</v-icon>
-                                    </v-btn>
-                                    <v-btn
-                                        large
-                                        depressed
-                                        color="blue"
-                                        :value="true"
-                                    >
-                                        <v-icon>mdi-arrow-down</v-icon>
-                                    </v-btn>
-                                    </v-btn-toggle>
-                                </template>
-                                </v-toolbar>
-                            </template>
-
-                            <template v-slot:default="props">
-                                <v-row>
-                                <v-col
-                                    v-for="item in props.items"
-                                    :key="item.courtnumber"
-                                    cols="12"
-                                    sm="6"
-                                    md="4"
-                                    lg="3"
-                                >
-                                    <v-card>
-                                    <v-card-title class="subheading font-weight-bold">
-                                        Court {{ item.courtnumber }}
-                                    </v-card-title>
-
-                                    <v-divider></v-divider>
-
-                                    <v-list dense>
-                                        <v-list-item
-                                        v-for="(key, index) in filteredKeys"
-                                        :key="index"
-                                        >
-                                        <v-list-item-content :class="{ 'blue--text': sortBy === key }">
-                                            {{ key }}:
-                                        </v-list-item-content>
-                                        <v-list-item-content
-                                            class="align-end"
-                                            :class="{ 'blue--text': sortBy === key }"
-                                        >
-                                            <div v-if="key.toLowerCase().replace(/\s+/g, '') == 'totaltime'">
-                                                {{ item[key.toLowerCase().replace(/\s+/g, '')] }} hrs
-                                            </div>
-                                            <div v-else>
-                                                {{ item[key.toLowerCase().replace(/\s+/g, '')] }} 
-                                            </div>
-                                        </v-list-item-content>
-                                        </v-list-item>
-                                    </v-list>
-                                    </v-card>
-                                </v-col>
-                                </v-row>
-                            </template>
-
-                            <template v-slot:footer>
-                                <v-row
-                                class="mt-2"
-                                align="center"
-                                justify="center"
-                                >
-                                <span class="grey--text">Items per page</span>
-                                <v-menu offset-y>
-                                    <template v-slot:activator="{ on, attrs }">
-                                    <v-btn
-                                        dark
-                                        text
-                                        color="primary"
-                                        class="ml-2"
-                                        v-bind="attrs"
-                                        v-on="on"
-                                    >
-                                        {{ itemsPerPage }}
-                                        <v-icon>mdi-chevron-down</v-icon>
-                                    </v-btn>
-                                    </template>
-                                    <v-list>
-                                    <v-list-item
-                                        v-for="(number, index) in itemsPerPageArray"
-                                        :key="index"
-                                        @click="updateItemsPerPage(number)"
-                                    >
-                                        <v-list-item-title>{{ number }}</v-list-item-title>
-                                    </v-list-item>
-                                    </v-list>
-                                </v-menu>
-
-                                <v-spacer></v-spacer>
-
-                                <span
-                                    class="mr-4
-                                    grey--text"
-                                >
-                                    Page {{ page }} of {{ numberOfPages }}
-                                </span>
-                                <v-btn
-                                    fab
-                                    dark
-                                    color="blue darken-3"
-                                    class="mr-1"
-                                    @click="formerPage"
-                                >
-                                    <v-icon>mdi-chevron-left</v-icon>
-                                </v-btn>
-                                <v-btn
-                                    fab
-                                    dark
-                                    color="blue darken-3"
-                                    class="ml-1"
-                                    @click="nextPage"
-                                >
-                                    <v-icon>mdi-chevron-right</v-icon>
-                                </v-btn>
-                                </v-row>
-                            </template>
-                            </v-data-iterator>
+                                </v-card-title>
+                                <v-data-table
+                                :headers="headersCourt"
+                                :items="computedCourt"
+                                ></v-data-table>
+                            </v-card>
+                        </template>
                     </div>
                 </div>
                  <div class="card">
@@ -255,10 +111,19 @@
                                         </v-date-picker>
                                     </v-menu>
                                     <v-spacer></v-spacer>
+                                <v-text-field
+                                    v-model="searchMembers"
+                                    append-icon="mdi-magnify"
+                                    label="Search"
+                                    single-line
+                                    hide-details
+                                ></v-text-field>
                                 </v-card-title>
                                 <v-data-table
+                                    dense
                                     :headers="headers"
                                     :items="computedPlay"
+                                    :search="searchMembers"
                                 ></v-data-table>
                             </v-card>
                         </template>
@@ -326,143 +191,18 @@ export default {
       return {
         // Variables for Court Utilization Report
         date: new Date().toISOString().substr(0, 7),
-        menu: false,
-        modal: false,
-        menu2: false,
-        itemsPerPageArray: [4, 8, 12],
+        menuCourt: false,
         search: '',
-        filter: {},
-        sortDesc: false,
-        page: 1,
-        itemsPerPage: 4,
-        sortBy: 'Court Number',
-        keys: [
-          'Court Number',
-           'Time Slots Used',
-          'Total Time',
-          'Type',
-           'Date Reserved'
-        ],
-        items: [
-          {
-              courtnumber: 1,
-              timeslotsused: 24,
-              totaltime: 12,
-              type: "hard",
-              datereserved: "2021-01"
-          },
-          {
-              courtnumber: 2,
-              timeslotsused: 12,
-              totaltime: 6,
-              type: "hard",
-              datereserved: "2021-01"
-          },
-          {
-              courtnumber: 3,
-              timeslotsused: 36,
-              totaltime: 18,
-              type: "hard",
-              datereserved: "2021-01"
-          },
-          {
-              courtnumber: 4,
-              timeslotsused: 40,
-              totaltime: 20,
-              type: "hard",
-              datereserved: "2021-02"
-          },
-          {
-              courtnumber: 5,
-              timeslotsused: 20,
-              totaltime: 10,
-              type: "hard",
-              datereserved: "2021-02"
-          },
-          {
-              courtnumber: 6,
-              timeslotsused: 40,
-              totaltime: 20,
-              type: "hard",
-              datereserved: "2021-02"
-          },
-          {
-              courtnumber: 7,
-              timeslotsused: 10,
-              totaltime: 5,
-              type: "hard",
-              datereserved: "2021-03"
-          },
-          {
-              courtnumber: 8,
-              timeslotsused: 30,
-              totaltime: 15,
-              type: "hard",
-              datereserved: "2021-03"
-          },
-          {
-              courtnumber: 9,
-              timeslotsused: 50,
-              totaltime: 25,
-            //   type: "hard",
-              datereserved: "2021-03"
-          },
-          {
-              courtnumber: 10,
-              timeslotsused: 8,
-              totaltime: 4,
-              type: "hard",
-              datereserved: "2021-04"
-          },
-          {
-              courtnumber: 11,
-              timeslotsused: 22,
-              totaltime: 11,
-              type: "hard",
-              datereserved: "2021-04"
-          },
-          {
-              courtnumber: 12,
-              timeslotsused: 13,
-              totaltime: 6.5,
-              type: "hard",
-              datereserved: "2021-04"
-          },
-          {
-              courtnumber: 13,
-              timeslotsused: 0,
-              totaltime: 0,
-              type: "hard",
-              datereserved: "2022-01"
-          },
-          {
-              courtnumber: 14,
-              timeslotsused: 9,
-              totaltime: 4.5,
-              type: "hard",
-              datereserved: "2022-02"
-          },
-          {
-              courtnumber: 15,
-              timeslotsused: 23,
-              totaltime: 11.5,
-              type: "soft",
-              datereserved: "2022-03"
-          },
-          {
-              courtnumber: 16,
-              timeslotsused: 7,
-              totaltime: 3.5,
-              type: "soft",
-              datereserved: "2022-04"
-          },
-          {
-              courtnumber: 17,
-              timeslotsused: 18,
-              totaltime: 9,
-              type:"soft",
-              datereserved: "2022-05"
-          },
+        headersCourt: [
+            {
+                text: 'Court Number',
+                align: 'start',
+                value: 'courtnumber'
+            },
+            {
+                text: 'Total Time (hours)',
+                value: 'totaltime',
+            }
         ],
         courttime: [],
         // Variables for Member Report
@@ -486,64 +226,54 @@ export default {
       }
     },
     created () {
-        this.getMembers(this.dateMember.substr(0, 4), this.dateMember.substr(5, 2));
+        this.getMembers();
         this.getCourts();
     },
     computed: {
         computedPlay () {
             return this.playtime
         },
-        numberOfPages () {
-            return Math.ceil(this.courttime.length / this.itemsPerPage)
-        },
-        filteredKeys () {
-            return this.keys.filter(key => key !== 'Name')
-        },
+        computedCourt () {
+            return this.courttime
+        }
     },
     methods: {
         // Methods for Court Report
-        nextPage () {
-            if (this.page + 1 <= this.numberOfPages) this.page += 1
-        },
-        formerPage () {
-            if (this.page - 1 >= 1) this.page -= 1
-        },
-        updateItemsPerPage (number) {
-            this.itemsPerPage = number
-        },
-        filterCourts() {
-            console.log(this.date.substr(0, 4) + " " + this.date.substr(5, 2));
-            getCourts();
-        },
         getCourts() {
             axios.get('api/court_play'+'/'+this.date.substr(0, 4)+'/'+this.date.substr(5, 2))
                 .then(response => {
                     this.courttime = response.data
                     console.log("this.courtime")
+                    this.courttime.forEach(element => element.totaltime = element.totaltime / 3600);
                     console.log(this.courttime)
-                    console.log(this.items);
                 })
                 .catch(error => {
                     console.log(error)
                 })
         },
+        filterCourts() {
+            console.log(this.date.substr(0, 4) + " " + this.date.substr(5, 2));
+            this.getCourts();
+        },
         // Methods for Member Report
+        getMembers() {
+            axios.get('api/member_play'+'/'+this.dateMember.substr(0, 4)+'/'+this.dateMember.substr(5, 2))
+                .then(response => {
+                    this.playtime = response.data
+                    
+                    console.log("this.playtime")
+                    this.playtime.forEach(element => element.duration = element.duration / 3600);
+                    console.log(this.playtime);
+                })
+                .catch(error => {
+                    console.log(error)
+                })
+        },
         filterDate () {
             if (this.dateMember !== undefined) {
                 console.log(this.dateMember.substr(0, 4) + " " + this.dateMember.substr(5, 2));
-                getMembers(this.dateMember.substr(0, 4), this.dateMember.substr(5, 2));
+                this.getMembers();
             }
-        },
-        getMembers(year, month) {
-            axios.get('api/member_play'+'/'+year+'/'+month)
-                .then(response => {
-                    this.playtime = response.data
-                    console.log("this.playtime")
-                    console.log(this.playtime)
-                })
-                .catch(error => {
-                    console.log(error)
-                })
         },
     },
 }

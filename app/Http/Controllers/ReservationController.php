@@ -25,30 +25,19 @@ class ReservationController extends Controller
         
         return Reservation::whereYear('start_datetime', '=', $year)->whereMonth('start_datetime', '=', $month)
                             ->join('reservation_user', 'reservations.id', '=', 'reservation_user.reservation_id')
-                            ->select('reservations.court as courtnumber', 'reservations.duration as totaltime')
+                            ->select('reservations.court as courtnumber', Reservation::raw('sum(TIME_TO_SEC(reservations.duration)) as totaltime'))
+                            ->groupBy('reservations.court')
                             ->get();
     }
     public function member_play($year, $month)
     {
         
         return Reservation::whereYear('start_datetime', '=', $year)->whereMonth('start_datetime', '=', $month)
-                            // where('start_datetime','>=','2021-03-01 00:00:00')
-                            // ->where('start_datetime','<','2021-04-01 00:00:00')
                             ->join('reservation_user','reservations.id','=','reservation_user.reservation_id')
                             ->join('users', 'reservation_user.user_id', '=', 'users.id')
-                            ->select('reservations.duration as duration', 'users.name as name')
-                            
-                            // ->groupBy('users.name')
-                            // ->sum('reservation.duration')
-                            //->sum('duration')
-                            //->groupBy('users.name')
+                            ->select(Reservation::raw('sum(TIME_TO_SEC(reservations.duration)) as duration'), 'users.name as name')     
+                            ->groupBy('users.name')
                             ->get();
-
-        // return Reservation::where('start_datetime','<=','2020-04-01')->get();
-                            // ->where('start_datetime','<','2020-04-11 00:00:00')
-                            
-
-        // return User::select('id','name')->leftJoin();
     }
 
     public function reservation_users($res_id, $user_id)
