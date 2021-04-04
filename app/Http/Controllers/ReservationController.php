@@ -6,6 +6,8 @@ use App\Models\Reservation;
 use App\Models\Reservation_User;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\RainoutMessage;
 
 class ReservationController extends Controller
 {
@@ -19,6 +21,21 @@ class ReservationController extends Controller
         return Reservation::orderBy('created_at', 'DESC')->get();
     }
 
+    public function rainout($start, $end)
+    {
+        $users = Reservation::where('start_datetime', '>', $start)
+                            ->where('start_datetime', '<', $end)
+                            ->join('reservation_user', 'reservations.id', '=', 'reservation_user.reservation_id')
+                            ->join('users', 'reservation_user.user_id', '=', 'users.id')
+                            //->select('users.id', 'users.membership_id', 'users.access', 'users.name', 'users.phone', 'users.email', 'users.num_of_notos', 'users.password', 'users.remember_token', 'users.email_verified_at', 'users.created_at', 'users.updated_at')
+                            ->select('users.email')
+                            ->get();
+
+        foreach ($users as $user) {
+            Notification::route('mail', $user->email)->notify(new RainoutMessage());
+        }
+        return $users;
+    }
 
     public function court_play($year, $month)
     {

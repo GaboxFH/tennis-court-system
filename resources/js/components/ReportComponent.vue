@@ -171,6 +171,13 @@
                                                 color="primary"
                                                 text
                                                 @click="dialog = false"
+                                            >
+                                            No
+                                            </v-btn>
+                                            <v-btn
+                                                color="primary"
+                                                text
+                                                @click="dialog = false; rainouts()"
                                             >Yes</v-btn>
                                         </v-card-actions>
                                     </v-card>
@@ -186,10 +193,13 @@
 </template>
 
 <script>
+import moment from 'moment';
 export default {
     data () {
       return {
         // Variables for Court Utilization Report
+        dateNow: new Date,
+        // dateDayEnd: new Date().setHours(23, 59, 59, 999),
         date: new Date().toISOString().substr(0, 7),
         menuCourt: false,
         search: '',
@@ -223,6 +233,7 @@ export default {
         ],
         // Variables used for Rain Outs
         dialog: false,
+        emailList: [],
       }
     },
     created () {
@@ -243,16 +254,13 @@ export default {
             axios.get('api/court_play'+'/'+this.date.substr(0, 4)+'/'+this.date.substr(5, 2))
                 .then(response => {
                     this.courttime = response.data
-                    console.log("this.courtime")
                     this.courttime.forEach(element => element.totaltime = element.totaltime / 3600);
-                    console.log(this.courttime)
                 })
                 .catch(error => {
                     console.log(error)
                 })
         },
         filterCourts() {
-            console.log(this.date.substr(0, 4) + " " + this.date.substr(5, 2));
             this.getCourts();
         },
         // Methods for Member Report
@@ -260,10 +268,7 @@ export default {
             axios.get('api/member_play'+'/'+this.dateMember.substr(0, 4)+'/'+this.dateMember.substr(5, 2))
                 .then(response => {
                     this.playtime = response.data
-                    
-                    console.log("this.playtime")
                     this.playtime.forEach(element => element.duration = element.duration / 3600);
-                    console.log(this.playtime);
                 })
                 .catch(error => {
                     console.log(error)
@@ -271,10 +276,27 @@ export default {
         },
         filterDate () {
             if (this.dateMember !== undefined) {
-                console.log(this.dateMember.substr(0, 4) + " " + this.dateMember.substr(5, 2));
                 this.getMembers();
             }
         },
+        // Methods for Rainout
+        rainouts () {
+            var start = new Date();
+            
+            var end = new Date();
+            end.setHours(23, 59, 59, 59);
+            var startD = moment(start);
+            var endD = moment(end);
+            startD = startD.format('YYYY-MM-DD HH:mm:ss')
+            endD = endD.format('YYYY-MM-DD HH:mm:ss')
+            axios.get('api/rainout'+'/'+startD+'/'+endD)
+                .then(response => {
+                    this.emailList = response.data
+                })
+                .catch(error => {
+                    console.log(error)
+                })
+        }
     },
 }
 
