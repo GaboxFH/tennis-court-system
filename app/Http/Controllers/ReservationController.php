@@ -22,7 +22,7 @@ class ReservationController extends Controller
 
     public function court_play($month)
     {
-        
+
     }
     public function member_play($month)
     {
@@ -87,18 +87,63 @@ class ReservationController extends Controller
      */
     public function store(Request $request)
     {
-        Reservation::create([
-            'title' => $request->item["title"],
+        // (new Date(this.cal_events[i].start).getTime() < this.new_endtime
+        // && new Date(this.cal_events[i].end).getTime() >  this.dragEvent.start)
+        // $conflictingReservations = Reservation::where('start', '>=', $request->item["start"])
+        // ->where('start', '<', $request->item["end"])
+        // ->where('end', '>', $request->item["start"])
+        // ->where('category', $request->item["category"])
+        //                             ->count();
+        $conflictingReservations = Reservation::where('start', '<', $request->item["end"])
+                                            ->where('end', '>', $request->item["start"])
+                                            ->where('category', $request->item["category"])
+                                            ->count();
+        // $conflictingReservations = Reservation::where('start', '<', $request->item["start"])
+        //                             ->count();
+        if($conflictingReservations){
+            return "error";
+        } 
+        // $existingItem = Reservation::where('start_datetime', $request->item["start"])
+        //                             ->where('court', $request->item["category"])
+        //                             ->update(['end_datetime' => $request->item["end"]]);
+        // $datetime1 = strtotime($request->item["start"]);
+        // $datetime2 = strtotime($request->item["end"]);
+
+        $datetime1 = $request->item["start"]/1000;
+        $datetime2 = $request->item["end"]/1000;
+
+        $hours = floor(($datetime2-$datetime1)/60/60);
+        $mins = ($datetime2-$datetime1)/60%60;
+        $secs = ($datetime2-$datetime1)%60;
+
+        $duration = date("H:i:s", mktime($hours, $mins, $secs));
+        // Reservation::create([
+        //     'name' => "noah",
+        //     'method' => "call",
+        //     'start' => 1617631200000,
+        //     'end' => 1617633000000,
+        //     'duration' => "00:30:00",
+        //     'category' => "13",
+        //     'num_of_members' => 0,
+        //     'num_of_guests' => 0,
+        //     'host_id' => 123,
+        //     'timed' => 1,
+        // ]);
+        $newEvent = Reservation::create([
+            'name' => $request->item["name"],
             'method' => $request->item["method"],
-            'start_datetime' => $request->item["start"],
-            'end_datetime' => $request->item["end"],
-            'court' => $request->item["category"],
+            'start' => $request->item["start"],
+            'end' => $request->item["end"],
+            // 'duration' => "00:30:00",
+            'duration' => $duration,
+            'category' => $request->item["category"],
             'num_of_members' => $request->item["num_of_members"],
             'num_of_guests' => $request->item["num_of_guests"],
-            'user_id' => $request->item["user_id"],
+            'host_id' => $request->item["host_id"],
+            'timed' => $request->item["timed"],
         ]);
         
-        return "Reservation not created";
+        return $newEvent;
     }
 
     /**
@@ -133,21 +178,45 @@ class ReservationController extends Controller
     public function update(Request $request)
     {
         // id is not passed in for created events so we must use start and court for this button to work correctly 
-        if (!isset($request->item["id"])){
-            $existingItem = Reservation::where('start_datetime', $request->item["start"])->where('court', $request->item["category"])->first();
-        } else {
-            $existingItem = Reservation::find($request->item["id"]);
-        }
+        // if (!isset($request->item["id"])){
+        //     $existingItem = Reservation::where('start_datetime', $request->item["start"])->where('court', $request->item["category"])->first();
+        // } else {
+        $conflictingReservations = Reservation::where('id', '!=', $request->item["id"])
+        ->where('start', '<', $request->item["end"])
+        ->where('end', '>', $request->item["start"])
+        ->where('category', $request->item["category"])
+        ->count();
+        // $conflictingReservations = Reservation::where('start', '<', $request->item["start"])
+        //                             ->count();
+        if($conflictingReservations){
+            return "error";
+        } 
+
+        $existingItem = Reservation::find($request->item["id"]);
+        // }
         
         if($existingItem) {
             $dataIndex = 0;
             $formIndex = 0;
-
-            $existingParticipants = Reservation_User::where('reservation_id', $existingItem->id)->orderBy('user_id')->get();
-            $formParticipants = $request->item["ordered_participants_ids"];
             
-            if($existingParticipants){
-                // participant replacement algorithm for the Reservation_User table
+            $existingParticipants = Reservation_User::where('reservation_id', $existingItem->id)->orderBy('user_id')->get();
+            $checkParticipants = true;
+
+            if(isset($request->item["ordered_participants_ids"])){
+                if($request->item["ordered_participants_ids"] == -1){
+                    $checkParticipants = false;
+                } else {
+                    $formParticipants = $request->item["ordered_participants_ids"];
+                    $existingItem->num_of_members = count($formParticipants); 
+                }
+            } else {
+                $formParticipants = [];
+            } 
+            // return "here";
+            // return count($formParticipants);
+            // return "here";
+            if($checkParticipants){
+                    // participant replacement algorithm for the Reservation_User table
                 while($dataIndex != count($existingParticipants) || $formIndex != count($formParticipants)){
                     if($formIndex == count($formParticipants)) {
                         $existingParticipants[$dataIndex]->delete();
@@ -176,16 +245,30 @@ class ReservationController extends Controller
                         $formIndex++;
                     }
                 }
-                
-                $existingItem->title = $request->item["title"];
-                $existingItem->method = $request->item["method"];
-                $existingItem->user_id = $request->item["host"];
-                $existingItem->num_of_members = count($request->item["ordered_participants_ids"]);
-                $existingItem->num_of_guests = 0; //hard coded
-                $existingItem->save();
-                
-                return "Update complete";
-            }
+            }    
+            
+
+            $datetime1 = $request->item["start"]/1000;
+            $datetime2 = $request->item["end"]/1000;
+
+            $hours = floor(($datetime2-$datetime1)/60/60);
+            $mins = ($datetime2-$datetime1)/60%60;
+            $secs = ($datetime2-$datetime1)%60;
+
+            $duration = date("H:i:s", mktime($hours, $mins, $secs));
+
+            $existingItem->name = $request->item["name"];
+            $existingItem->method = $request->item["method"];
+            $existingItem->start = $request->item["start"];
+            $existingItem->end = $request->item["end"];
+            $existingItem->duration = $duration;
+            $existingItem->category = $request->item["category"];
+            $existingItem->host_id = $request->item["host_id"];
+            $existingItem->num_of_guests = $request->item["num_of_guests"];; //hard coded
+            $existingItem->save();
+            
+            return "success";
+            
             
         }
         return "Item not found.";

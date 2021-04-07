@@ -259,7 +259,7 @@
                                 </v-card-title>
                                 <v-data-table
                                     :headers="headers"
-                                    :items="computedPlay"
+                                    :items="dataF"
                                 ></v-data-table>
                             </v-card>
                         </template>
