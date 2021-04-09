@@ -255,7 +255,6 @@ export default {
             start.setFullYear(this.date.substr(0,4))
             start.setMonth((this.date.substr(5, 2)-1))
             start.setDate(1)
-            console.log(start.getTime());
             axios.get('api/court_play'+'/'+start.getTime())
                 .then(response => {
                     this.courttime = response.data
@@ -274,7 +273,6 @@ export default {
             start.setFullYear(this.dateMember.substr(0,4))
             start.setMonth((this.dateMember.substr(5, 2)-1))
             start.setDate(1)
-            console.log(start.getTime());
             axios.get('api/member_play'+'/'+start.getTime())
                 .then(response => {
                     this.playtime = response.data
@@ -295,13 +293,9 @@ export default {
             
             var end = new Date();
             end.setHours(23, 59, 59, 59);
-            console.log(end);
-            console.log(start.getTime())
-            console.log(end.getTime())
             axios.get('api/rainout'+'/'+start.getTime()+'/'+end.getTime())
                 .then(response => {
                     this.emailList = response.data
-                    console.log(this.emailList)
                 })
                 .catch(error => {
                     console.log(error)
