@@ -11,16 +11,17 @@ class Reservation extends Model
 
     public $table = 'reservations';
     protected $fillable = [
-        'title',
+        'name',
         'method', 
-        'start_datetime', 
-        'end_datetime', 
-        'court', 
+        'start', 
+        'end', 
+        'duration',
+        'category', 
         'num_of_members', 
         'num_of_guests', 
-        'user_id',
-        'duration',
-        'players'
+        'host_id',
+        'reoccur_id',
+        'timed',
     ];
 
     /*

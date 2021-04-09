@@ -36,7 +36,7 @@
                     </v-list-item-icon>
 
                     <v-list-item-content>
-                        <v-list-item-title>Admin Panel</v-list-item-title>
+                        <v-list-item-title>Reserve a Court</v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
 

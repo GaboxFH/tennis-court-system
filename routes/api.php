@@ -28,6 +28,7 @@ Route::get('/court_play/{year}/{month}', [ReservationController::class, 'court_p
 Route::get('/member_play/{year}/{month}', [ReservationController::class, 'member_play']);
 Route::get('/rainout/{start}/{end}', [ReservationController::class, 'rainout']);
 Route::get('/reservation_users/{id}/{user_id}', [ReservationController::class, 'reservation_users']);
+Route::get('/avail_reservations/{date_input_milliseconds}/{findType}', [ReservationController::class, 'avail_reservations']);
 
 Route::prefix('/reservation')->group( function() {
     // Route::get('/{id}', [ReservationController::class, 'reservation_users']);
