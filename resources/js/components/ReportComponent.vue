@@ -251,7 +251,12 @@ export default {
     methods: {
         // Methods for Court Report
         getCourts() {
-            axios.get('api/court_play'+'/'+this.date.substr(0, 4)+'/'+this.date.substr(5, 2))
+            var start = new Date();
+            start.setFullYear(this.date.substr(0,4))
+            start.setMonth((this.date.substr(5, 2)-1))
+            start.setDate(1)
+            console.log(start.getTime());
+            axios.get('api/court_play'+'/'+start.getTime())
                 .then(response => {
                     this.courttime = response.data
                     this.courttime.forEach(element => element.totaltime = element.totaltime / 3600);
@@ -265,7 +270,12 @@ export default {
         },
         // Methods for Member Report
         getMembers() {
-            axios.get('api/member_play'+'/'+this.dateMember.substr(0, 4)+'/'+this.dateMember.substr(5, 2))
+            var start = new Date();
+            start.setFullYear(this.dateMember.substr(0,4))
+            start.setMonth((this.dateMember.substr(5, 2)-1))
+            start.setDate(1)
+            console.log(start.getTime());
+            axios.get('api/member_play'+'/'+start.getTime())
                 .then(response => {
                     this.playtime = response.data
                     this.playtime.forEach(element => element.duration = element.duration / 3600);
@@ -285,13 +295,13 @@ export default {
             
             var end = new Date();
             end.setHours(23, 59, 59, 59);
-            var startD = moment(start);
-            var endD = moment(end);
-            startD = startD.format('YYYY-MM-DD HH:mm:ss')
-            endD = endD.format('YYYY-MM-DD HH:mm:ss')
-            axios.get('api/rainout'+'/'+startD+'/'+endD)
+            console.log(end);
+            console.log(start.getTime())
+            console.log(end.getTime())
+            axios.get('api/rainout'+'/'+start.getTime()+'/'+end.getTime())
                 .then(response => {
                     this.emailList = response.data
+                    console.log(this.emailList)
                 })
                 .catch(error => {
                     console.log(error)

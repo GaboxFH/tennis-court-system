@@ -478,70 +478,10 @@ export default {
                 if(this.selectedEvent.host_id==''){ 
                     this.selectedEvent.host_id = null
                 }
-<<<<<<< HEAD
-                if(!timeConflict){
-                    this.clickStart = true
-
-                    this.createEvent = {
-                        title: "New Event", //should be admin name this.session_data.name
-                        method: "Call",
-                        host: null, //should be admin id this.session_data.id
-                        participants: [],
-                        num_of_members: 1,
-                        num_of_guests: 0,
-                        user_id: null, //should be admin id this.session_data.id
-                        name: "New Event", //should be admin name this.session_data.name
-                        start: time_clicked,
-                        end: time_clicked+30*1000*60,
-                        ///duration: (end-start),
-                        color: "blue",
-                        timed: true,
-                        category: tms.category.categoryName
-                    }
-                    this.cal_events.push(this.createEvent)
-
-                    let item = JSON.parse(JSON.stringify(this.createEvent))
-                    item.start = this.convertDate(new Date(item.start))
-                    item.end = this.convertDate(new Date(item.end))
-
-                    let newCompTimePayload = {
-                        item
-                    }
-||||||| 5840f3e
-                if(!timeConflict){
-                    this.clickStart = true
-
-                    this.createEvent = {
-                        title: "New Event", //should be admin name this.session_data.name
-                        method: "Call",
-                        host: null, //should be admin id this.session_data.id
-                        participants: [],
-                        num_of_members: 1,
-                        num_of_guests: 0,
-                        user_id: null, //should be admin id this.session_data.id
-                        name: "New Event", //should be admin name this.session_data.name
-                        start: time_clicked,
-                        end: time_clicked+30*1000*60,
-                        duration: (end-start),
-                        color: "blue",
-                        timed: true,
-                        category: tms.category.categoryName
-                    }
-                    this.cal_events.push(this.createEvent)
-
-                    let item = JSON.parse(JSON.stringify(this.createEvent))
-                    item.start = this.convertDate(new Date(item.start))
-                    item.end = this.convertDate(new Date(item.end))
-
-                    let newCompTimePayload = {
-                        item
-                    }
-=======
                 if(this.selectedEvent.host_id!=null){
                     ordered_participants_ids.push(this.selectedEvent.host_id)
                 }
                 ordered_participants_ids.sort(function(a, b){return a-b})
->>>>>>> development
 
                 let item = JSON.parse(JSON.stringify(this.selectedEvent))
                 item.ordered_participants_ids = ordered_participants_ids
@@ -867,111 +807,6 @@ export default {
             this.$emit('refresh-schedule')
             this.$refs.calendar.next()
         },
-<<<<<<< HEAD
-        getParticipants() {
-            this.selectedEvent.host = ''
-            this.selectedEvent.participants = []
-            axios.get('api/reservation_users/'+this.selectedEvent.id+'/'+this.selectedEvent.user_id)
-            .then(response => {
-                this.selectedEvent.host = response.data.res_host
-                this.selectedEvent.participants = response.data.res_participants
-            })
-            .catch(error => {
-                console.log(error)
-            })
-
-        },
-        getReservations() {
-            this.appointments = []
-            axios.get('api/reservations')
-                .then(response => {
-                    this.appointments = response.data
-                    // this.fillCal()
-                })
-                .catch(error => {
-                    console.log(error)
-                })
-        },
-        fillCal() {
-            this.cal_events = []
-            for(var i=0; i<this.appointments.length; i++){
-                // console.log(this.appointments[i])
-                if(this.appointments[i].method == "Admin Event"){ color = "cyan" }
-                else if(this.appointments[i].method == "Call" || this.appointments[i].method == "Walk-In"){ color = "blue" }
-                else if(this.appointments[i].method == "Tennis Pro"){ color = "green" }
-                else if(this.appointments[i].method == "USTA"){ color = "lime" }
-                else{ color = "red" }
-                this.cal_events.push({
-                    id: this.appointments[i].id,
-                    title: this.appointments[i].title,
-                    method: this.appointments[i].method,
-                    host: this.appointments[i].user_id, 
-                    participants: this.appointments[i].participants,
-                    num_of_members: this.appointments[i].num_of_members,
-                    num_of_guests: this.appointments[i].num_of_guests,
-                    user_id: this.appointments[i].user_id,
-                    name: this.appointments[i].title,
-                    start: this.appointments[i].start_datetime,
-                    end: this.appointments[i].end_datetime,
-                    //duration: (end-start),
-                    // color: this.colors[this.rnd(0, this.colors.length - 1)],
-                    color: color,
-                    timed: true,
-                    category: this.categories[this.appointments[i].court-1],
-                })
-||||||| 5840f3e
-        getParticipants() {
-            this.selectedEvent.host = ''
-            this.selectedEvent.participants = []
-            axios.get('api/reservation_users/'+this.selectedEvent.id+'/'+this.selectedEvent.user_id)
-            .then(response => {
-                this.selectedEvent.host = response.data.res_host
-                this.selectedEvent.participants = response.data.res_participants
-            })
-            .catch(error => {
-                console.log(error)
-            })
-
-        },
-        getReservations() {
-            this.appointments = []
-            axios.get('api/reservations')
-                .then(response => {
-                    this.appointments = response.data
-                    // this.fillCal()
-                })
-                .catch(error => {
-                    console.log(error)
-                })
-        },
-        fillCal() {
-            this.cal_events = []
-            for(var i=0; i<this.appointments.length; i++){
-                // console.log(this.appointments[i])
-                if(this.appointments[i].method == "Admin Event"){ color = "cyan" }
-                else if(this.appointments[i].method == "Call" || this.appointments[i].method == "Walk-In"){ color = "blue" }
-                else if(this.appointments[i].method == "Tennis Pro"){ color = "green" }
-                else if(this.appointments[i].method == "USTA"){ color = "lime" }
-                else{ color = "red" }
-                this.cal_events.push({
-                    id: this.appointments[i].id,
-                    title: this.appointments[i].title,
-                    method: this.appointments[i].method,
-                    host: this.appointments[i].user_id, 
-                    participants: this.appointments[i].participants,
-                    num_of_members: this.appointments[i].num_of_members,
-                    num_of_guests: this.appointments[i].num_of_guests,
-                    user_id: this.appointments[i].user_id,
-                    name: this.appointments[i].title,
-                    start: this.appointments[i].start_datetime,
-                    end: this.appointments[i].end_datetime,
-                    duration: (end-start),
-                    // color: this.colors[this.rnd(0, this.colors.length - 1)],
-                    color: color,
-                    timed: true,
-                    category: this.categories[this.appointments[i].court-1],
-                })
-=======
         nth (d) {
             return d > 3 && d < 21
             ? 'th'
@@ -997,7 +832,6 @@ export default {
                 amOrPm = "pm"
             } else {
                 amOrPm = "am"
->>>>>>> development
             }
             hour = parseInt(hour)
             return hour+ ":"+min+" "+amOrPm

@@ -23,11 +23,11 @@ class ReservationController extends Controller
 
     public function rainout($start, $end)
     {
-        $users = Reservation::where('start_datetime', '>', $start)
-                            ->where('start_datetime', '<', $end)
+        $users = Reservation::where('start', '>', $start)
+                            ->where('start', '<', $end)
                             ->join('reservation_user', 'reservations.id', '=', 'reservation_user.reservation_id')
                             ->join('users', 'reservation_user.user_id', '=', 'users.id')
-                            //->select('users.id', 'users.membership_id', 'users.access', 'users.name', 'users.phone', 'users.email', 'users.num_of_notos', 'users.password', 'users.remember_token', 'users.email_verified_at', 'users.created_at', 'users.updated_at')
+                            ->select('users.id', 'users.membership_id', 'users.access', 'users.name', 'users.phone', 'users.email', 'users.num_of_notos', 'users.password', 'users.remember_token', 'users.email_verified_at', 'users.created_at', 'users.updated_at')
                             ->select('users.email')
                             ->get();
 
@@ -171,18 +171,18 @@ class ReservationController extends Controller
         return Reservation::orderBy('created_at', 'DESC')->get();
     }
 
-    public function court_play($year, $month)
+    public function court_play($time)
     {
-        return Reservation::whereYear('start_datetime', '=', $year)->whereMonth('start_datetime', '=', $month)
+        return Reservation::where('start', '>', $time)
                             ->join('reservation_user', 'reservations.id', '=', 'reservation_user.reservation_id')
-                            ->select('reservations.court as courtnumber', Reservation::raw('sum(TIME_TO_SEC(reservations.duration)) as totaltime'))
-                            ->groupBy('reservations.court')
+                            ->select('reservations.category as courtnumber', Reservation::raw('sum(TIME_TO_SEC(reservations.duration)) as totaltime'))
+                            ->groupBy('reservations.category')
                             ->get();
     }
-    public function member_play($year, $month)
+    public function member_play($time)
     {
         
-        return Reservation::whereYear('start_datetime', '=', $year)->whereMonth('start_datetime', '=', $month)
+        return Reservation::where('start', '>', $time)
                             ->join('reservation_user','reservations.id','=','reservation_user.reservation_id')
                             ->join('users', 'reservation_user.user_id', '=', 'users.id')
                             ->select(Reservation::raw('sum(TIME_TO_SEC(reservations.duration)) as duration'), 'users.name as name')     
