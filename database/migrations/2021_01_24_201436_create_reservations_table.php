@@ -15,17 +15,18 @@ class CreateReservationsTable extends Migration
     {
         Schema::create('reservations', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
+            $table->string('name');
             $table->string('method');
-            $table->datetime('start_datetime');
-            $table->datetime('end_datetime');
-            $table->integer('court');
+            $table->bigInteger('start');
+            $table->bigInteger('end');
+            $table->time('duration');
+            $table->string('category');//court_num
             $table->integer('num_of_members');
             $table->integer('num_of_guests');
-            $table->integer('user_id')->nullable();
+            $table->integer('host_id')->nullable();
+            $table->integer('reoccur_id')->nullable();
+            $table->boolean('timed');
             $table->timestamps();
-            $table->time('duration')->nullable();;
-            $table->string('players')->nullable();
         });
     }
 

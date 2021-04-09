@@ -1,4 +1,4 @@
-<template>
+`<template>
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-10">
@@ -605,32 +605,52 @@ export default {
             },
         ],// Variables used for Rain Outs
         dialog: false,
+        playtime: ''
       }
+    },
+    created () {
+        this.getReservations()
     },
     computed: {
-      numberOfPages () {
-        return Math.ceil(this.items.length / this.itemsPerPage)
-      },
-      filteredKeys () {
-        return this.keys.filter(key => key !== 'Name')
-      },
+        computedPlay () {
+            return this.playtime
+        },
+        numberOfPages () {
+            return Math.ceil(this.items.length / this.itemsPerPage)
+        },
+        filteredKeys () {
+            return this.keys.filter(key => key !== 'Name')
+        },
     },
     methods: {
-      nextPage () {
-        if (this.page + 1 <= this.numberOfPages) this.page += 1
-      },
-      formerPage () {
-        if (this.page - 1 >= 1) this.page -= 1
-      },
-      updateItemsPerPage (number) {
-        this.itemsPerPage = number
-      },
-      filterDate () {
-          if (this.dateMember !== undefined) {
-              this.dataF = this.data.filter((item) => item.yearMonth == this.dateMember)
-          }
-      }
+        
+        nextPage () {
+            if (this.page + 1 <= this.numberOfPages) this.page += 1
+        },
+        formerPage () {
+            if (this.page - 1 >= 1) this.page -= 1
+        },
+        updateItemsPerPage (number) {
+            this.itemsPerPage = number
+        },
+        filterDate () {
+            if (this.dateMember !== undefined) {
+                this.dataF = this.data.filter((item) => item.yearMonth == this.dateMember)
+            }
+        },
+        getReservations() {
+        axios.get('api/member_play'+'/1')
+            .then(response => {
+                this.playtime = response.data
+                console.log("this.playtime")
+                console.log(this.playtime)
+            })
+            .catch(error => {
+                console.log(error)
+            })
+        }
     },
 }
 
 </script>
+`
