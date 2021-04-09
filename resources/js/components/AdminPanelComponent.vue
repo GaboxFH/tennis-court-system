@@ -238,9 +238,9 @@
         avail_temp: ''
     }),
     created () {
-        console.log(new Date())
-        console.log(new Date().toLocaleString().substr(0, 10))
-        console.log(new Date().toISOString().substr(0, 10))
+        // console.log(new Date())
+        // console.log(new Date().toLocaleString().substr(0, 10))
+        // console.log(new Date().toISOString().substr(0, 10))
 
         this.date_input_display=this.displayDate(new Date(this.date_input+'T00:00'))
         // this.$emit('refresh-schedule')
