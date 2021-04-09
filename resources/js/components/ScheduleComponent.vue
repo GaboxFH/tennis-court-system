@@ -127,12 +127,41 @@
                     <v-list-item @click="areyousure=true">
                         <v-list-item-title>Delete Event</v-list-item-title>
                     </v-list-item>
+                    <v-list-item @click="repeat_dialog=true">
+                        <v-list-item-title>Repeat Event</v-list-item-title>
+                    </v-list-item>
                 </v-list>
                 </v-menu>
             </v-toolbar>
 
             <div v-if="selectedEvent" class="mx-5">
-            <v-text-field v-model="selectedEvent.name" label="Event Title" required></v-text-field>
+            <v-row>
+            <v-col>
+            <v-text-field
+              label="Date"
+              v-model="curr_date"
+              outlined
+              readonly
+            ></v-text-field>
+            </v-col>
+            <v-col>
+            <v-text-field
+              label="Start Time"
+              v-model="computedTimes"
+              outlined
+              readonly
+            ></v-text-field>
+            </v-col>
+            <v-col>
+            <v-text-field
+              label="End Time"
+              v-model="computedTimes2"
+              outlined
+              readonly
+            >yoo</v-text-field>
+            </v-col>
+            </v-row>
+            <v-text-field v-model="selectedEvent.name" label="Event Title"></v-text-field>
             <v-select
                 v-model="selectedEvent.method"
                 :items="method_type"
@@ -251,6 +280,31 @@
             </v-card-actions>
             </v-card>
         </v-dialog>
+
+        <v-dialog
+            v-model="repeat_dialog"
+            persistent
+            max-width="450"
+        >
+            <v-card>
+                <div class="mx-5">
+                <v-card-title>
+                    Repeating Event
+                </v-card-title>
+                <v-select
+                    
+                    v-model="repeat_select"
+                    :items="repeat_type"
+                    label="Repeat"
+                ></v-select>
+                </div>
+            <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" text @click="repeat_event">Save</v-btn>
+                <v-btn color="blue darken-1" text @click="repeat_dialog=false">Cancel</v-btn>
+            </v-card-actions>
+            </v-card>
+        </v-dialog>
         
 
         
@@ -295,6 +349,9 @@ export default {
         dropdown_cal: false,
         events: [],
         method_type: ['Admin Event', 'Call', 'Walk-In', 'Tennis Pro', 'USTA'],
+        repeat_type: ['Repeat Event Daily', 'Repeat Event Weekly', 'Repeat Event Monthly'],
+        repeat_select: 'Repeat Event Weekly',
+        repeat_dialog: false,
         colors: ['#0196F3', '#3F51B5', '#00BCD4', '#4CAF50', '#FF9800', '#757575'],        // names: ['Meeting', 'Holiday', 'PTO', 'Travel', 'Event', 'Birthday', 'Conference', 'Party'],
         scheduleView: 0,
         fullScreen: false,
@@ -351,6 +408,12 @@ export default {
         },
     },
     computed: {
+        computedTimes() {
+            return this.getTimes(this.selectedEvent.start)
+        },
+        computedTimes2(){
+            return this.getTimes(this.selectedEvent.end)
+        },
         computedMembers() {
             if(this.selectedEvent.host_id == null || this.selectedEvent.participants == null){
                 return this.members
@@ -405,6 +468,10 @@ export default {
         },
     },
     methods: {
+        repeat_event() {
+            console.log(this.selectedEvent)
+            console.log(this.repeat_select)
+        },
         saveEvent(save) {
             if(save){
                 var ordered_participants_ids = JSON.parse(JSON.stringify(this.selectedEvent.participants))

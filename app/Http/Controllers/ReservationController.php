@@ -19,6 +19,140 @@ class ReservationController extends Controller
         return Reservation::orderBy('created_at', 'DESC')->get();
     }
 
+    // function hhmmssToMillisec($string){
+    //     $time = explode(":", $string);
+    
+    //     $hour = $time[0] * 60 * 60 * 1000;
+    //     $minute = $time[1] * 60 * 1000;
+    //     $sec = $time[2] * 1000;
+    
+    //     $result = $hour + $minute + $sec;
+    //     return $result;
+    // }
+
+    public function avail_reservations($date,$n)
+    {
+
+        $duration_options = ["0"=>true,"1"=>true,"2"=>true,"3"=>true];
+        $avail_durs = ([
+            '1' => $duration_options,'2' => $duration_options,'3' => $duration_options,'4' => $duration_options,'5' => $duration_options,'6' => $duration_options,'7' => $duration_options,'8' => $duration_options,
+            '9' => $duration_options,'10' => $duration_options,'11' => $duration_options,'12' => $duration_options,'13' => $duration_options,'14' => $duration_options,'15' => $duration_options,'16' => $duration_options,'17' => $duration_options,
+        ]);
+        $avail_durs_slots = ([
+            '1' => $duration_options,'2' => $duration_options,'3' => $duration_options,'4' => $duration_options,'5' => $duration_options,'6' => $duration_options,'7' => $duration_options,'8' => $duration_options,
+            '9' => $duration_options,'10' => $duration_options,'11' => $duration_options,'12' => $duration_options,'13' => $duration_options,'14' => $duration_options,'15' => $duration_options,'16' => $duration_options,'17' => $duration_options,
+        ]);
+
+        $timeslot_options = ["0"=>true,"1"=>true,"2"=>true,"3"=>true,"4"=>true,"5"=>true,"6"=>true,"7"=>true,"8"=>true,"9"=>true,"10"=>true,"11"=>true,"12"=>true,"13"=>true,"14"=>true,"15"=>true,"16"=>true,"17"=>true,"18"=>true,"19"=>true,"20"=>true,"21"=>true,"22"=>true,"23"=>true];
+        $avail_slots = ([
+            '1' => $timeslot_options,'2' => $timeslot_options,'3' => $timeslot_options,'4' => $timeslot_options,'5' => $timeslot_options,'6' => $timeslot_options,'7' => $timeslot_options,'8' => $timeslot_options,
+            '9' => $timeslot_options,'10' => $timeslot_options,'11' => $timeslot_options,'12' => $timeslot_options,'13' => $timeslot_options,'14' => $timeslot_options,'15' => $timeslot_options,'16' => $timeslot_options,'17' => $timeslot_options,
+        ]);
+        $dur_avail_slots = ([
+            '1' => $timeslot_options,'2' => $timeslot_options,'3' => $timeslot_options,'4' => $timeslot_options,'5' => $timeslot_options,'6' => $timeslot_options,'7' => $timeslot_options,'8' => $timeslot_options,
+            '9' => $timeslot_options,'10' => $timeslot_options,'11' => $timeslot_options,'12' => $timeslot_options,'13' => $timeslot_options,'14' => $timeslot_options,'15' => $timeslot_options,'16' => $timeslot_options,'17' => $timeslot_options,
+        ]);
+
+        if($n <= 4){
+            $start_string = explode(":", '08:00:00');
+
+            $hour = $start_string[0] * 60 * 60 * 1000;
+            $minute = $start_string[1] * 60 * 1000;
+            $sec = $start_string[2] * 1000;
+        
+            $start_time = $hour + $minute + $sec;
+
+            $start_t_input = $date+ $start_time;
+            $halfHr = 30*60*1000;
+
+            $reservations = Reservation::where('start','>',$date)
+                            ->where('start','<',($date+24*60*60*1000))
+                            ->get();
+            foreach($reservations as $res){
+                // return $start_t_input;
+                $check_time = $start_t_input;
+                for($x = 0; $x <= 23; $x++){
+                    if($check_time>=$res->start && $check_time<$res->end){
+                        $avail_slots[$res->category][$x]=false;
+                    }
+                    $check_time+=$halfHr;
+                }
+            }
+            for($c = 1; $c <= 17; $c++){
+                for($x = 0; $x <= 23; $x++){
+                    for($i=0;$i<$n; $i++){
+                        if($x+$i>23){
+                            $dur_avail_slots[$c][$x]=false;
+                        } 
+                        else if($avail_slots[$c][$x+$i]==false){
+                            $dur_avail_slots[$c][$x]=false;
+                        }
+                    }
+                }
+            }
+            return $dur_avail_slots;
+        } else{
+            
+            $start_string = explode(":", $n);
+
+            $hour = $start_string[0] * 60 * 60 * 1000;
+            $minute = $start_string[1] * 60 * 1000;
+            $sec = $start_string[2] * 1000;
+        
+            $start_time = $hour + $minute + $sec;
+            
+            $possible_slots = 4;
+            // 66600000
+            if($start_time==(66600000)){
+                $possible_slots = 3;
+            } else if($start_time==(68400000)){
+                $possible_slots = 2;
+            } else if($start_time==(70200000)){
+                $possible_slots = 1;
+            } else if($start_time==(73800000)){
+                $possible_slots = 0;
+            }
+
+            $start_t_input = $date+ $start_time;
+            $halfHr = 30*60*1000;
+            
+            $reservations = Reservation::where('start','>=',$start_t_input)
+                            ->where('start','<',($start_t_input+2*60*60*1000))
+                            ->get();
+            
+            foreach($reservations as $res){
+                // return $start_t_input;
+                $check_time = $start_t_input;
+                for($x = 0; $x < $possible_slots; $x++){
+                    if($check_time>=$res->start && $check_time<$res->end){
+                        $avail_durs[$res->category][$x]=false;
+                    }
+                    $check_time+=$halfHr;
+                }
+            }
+            // return $start_time;
+            for($c = 1; $c <= 17; $c++){
+                $bust = false;
+                for($x = 0; $x < 4; $x++){
+                    if($x>($possible_slots-1)){
+                        $bust = true;
+                    }
+                    if(!$bust){
+                        if($avail_durs[$c][$x]==false){
+                            $bust = true;
+                            $avail_durs_slots[$c][$x]=false;
+                        } 
+                    } else {
+                        $avail_durs_slots[$c][$x]=false;
+                    }
+                }
+            }
+            return $avail_durs_slots;
+            // return $avail_durs;
+        } 
+        
+        return Reservation::orderBy('created_at', 'DESC')->get();
+    }
 
     public function court_play($month)
     {
@@ -69,22 +203,7 @@ class ReservationController extends Controller
     }
 
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+   
     public function store(Request $request)
     {
         // (new Date(this.cal_events[i].start).getTime() < this.new_endtime
@@ -146,35 +265,7 @@ class ReservationController extends Controller
         return $newEvent;
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Reservation  $reservation
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Reservation $reservation)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Reservation  $reservation
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Reservation $reservation)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Reservation  $reservation
-     * @return \Illuminate\Http\Response
-     */
+    
     public function update(Request $request)
     {
         // id is not passed in for created events so we must use start and court for this button to work correctly 
