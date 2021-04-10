@@ -39,6 +39,7 @@
         <template v-slot:top>
             <v-toolbar
                 flat
+                color="grey lighten-2"
             >
                 <v-toolbar-title>Club Members</v-toolbar-title>
                 <v-divider
