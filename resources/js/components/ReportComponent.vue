@@ -3,6 +3,38 @@
         <div class="row justify-content-center">
             <div class="col-md-10">
                 <div class="card">
+                    <div class="card-header">Daily Court Report</div>
+
+                    <div class="card-body">
+                        <p>This report will be a listing of the Date, Court Numbers, Time Slots, and Players for the entire day.
+                            It will be used by the FD to tell members checking in which court they are playing on.
+                        </p>
+                        <template>
+                            <v-card>
+                                <v-card-title>
+                                    Daily Court Report
+                                    <v-spacer></v-spacer>
+                                    {{dailyDate}}
+                                    <v-spacer></v-spacer>
+                                        <v-text-field
+                                            v-model="dailySearch"
+                                            append-icon="mdi-magnify"
+                                            label="Search"
+                                            single-line
+                                            hide-details
+                                        ></v-text-field>
+                                    <v-spacer></v-spacer>
+                                </v-card-title>
+                                <v-data-table
+                                :headers="headersDaily"
+                                :items="computedDaily"
+                                :search="dailySearch"
+                                ></v-data-table>
+                            </v-card>
+                        </template>
+                    </div>
+                </div>
+                <div class="card">
                     <div class="card-header">Court Utilization Report</div>
 
                     <div class="card-body">
@@ -197,6 +229,30 @@ import moment from 'moment';
 export default {
     data () {
       return {
+        // Varialbes for Court Utilization Report
+        dailyDate: new Date().toISOString().substr(0, 10),
+        menuDaily: false,
+        dailySearch: '',
+        headersDaily: [
+            {
+                text: 'Time',
+                align: 'start',
+                value: 'time'
+            },
+            {
+                text: 'Host',
+                value: 'host'
+            },
+            {
+                text: 'Court Number',
+                value: 'courtnumber'
+            },
+            {
+                text: 'Guests',
+                value: 'guests'
+            }
+        ],
+        dailytime: [],
         // Variables for Court Utilization Report
         dateNow: new Date,
         // dateDayEnd: new Date().setHours(23, 59, 59, 999),
@@ -237,10 +293,14 @@ export default {
       }
     },
     created () {
+        this.getDaily();
         this.getMembers();
         this.getCourts();
     },
     computed: {
+        computedDaily () {
+            return this.dailytime
+        },
         computedPlay () {
             return this.playtime
         },
@@ -249,6 +309,26 @@ export default {
         }
     },
     methods: {
+        // Methods for Daily Report
+        getDaily() {
+            var start = new Date();
+            start.setHours(0, 0, 0, 0);
+            
+            var end = new Date();
+            end.setHours(23, 59, 59, 59);
+            axios.get('api/daily'+'/'+start.getTime()+'/'+end.getTime())
+                .then(response => {
+                    this.dailytime = response.data
+                    console.log(this.dailytime)
+                    this.dailytime.forEach(element => element.time = new Date(element.time).toLocaleTimeString());
+                })
+                .catch(error => {
+                    console.log(error)
+                })
+        },
+        filterDaily() {
+            this.getDaily();
+        },
         // Methods for Court Report
         getCourts() {
             var start = new Date();

@@ -21,13 +21,29 @@ class ReservationController extends Controller
         return Reservation::orderBy('created_at', 'DESC')->get();
     }
 
+    public function daily($start, $end)
+    {
+        $reservations = Reservation::where('start', '>', $start)
+                            ->where('start', '<', $end)
+                            ->select('reservations.start as time', 'reservations.category as courtnumber', 'reservations.num_of_guests as guests', 'reservations.host_id as host')
+                            ->get();
+        $hosts = array();
+        foreach ($reservations as $r) {
+            $name = User::where('id', '=', $r->host)
+                    ->select('name')
+                    ->get();
+            $r->host = $name[0]->name;
+        }
+        return $reservations;
+    }
+
     public function rainout($start, $end)
     {
         $users = Reservation::where('start', '>', $start)
                             ->where('start', '<', $end)
                             ->join('reservation_user', 'reservations.id', '=', 'reservation_user.reservation_id')
                             ->join('users', 'reservation_user.user_id', '=', 'users.id')
-                            ->select('users.id', 'users.membership_id', 'users.access', 'users.name', 'users.phone', 'users.email', 'users.num_of_notos', 'users.password', 'users.remember_token', 'users.email_verified_at', 'users.created_at', 'users.updated_at')
+                            //->select('users.id', 'users.membership_id', 'users.access', 'users.name', 'users.phone', 'users.email', 'users.num_of_notos', 'users.password', 'users.remember_token', 'users.email_verified_at', 'users.created_at', 'users.updated_at')
                             ->select('users.email')
                             ->get();
 

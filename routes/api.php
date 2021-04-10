@@ -24,6 +24,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 
 Route::get('/reservations', [ReservationController::class, 'index']);
+Route::get('/daily/{start}/{end}', [ReservationController::class, 'daily']);
 Route::get('/court_play/{time}', [ReservationController::class, 'court_play']);
 Route::get('/member_play/{time}', [ReservationController::class, 'member_play']);
 Route::get('/rainout/{start}/{end}', [ReservationController::class, 'rainout']);
