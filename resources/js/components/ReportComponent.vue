@@ -3,14 +3,16 @@
         <div class="row justify-content-center">
             <div class="col-md-10">
                 <div class="card">
-                    <div class="card-header">Daily Court Report</div>
+                    <div class="card-header blue lighten-1">Daily Court Report</div>
 
                     <div class="card-body">
                         <p>This report will be a listing of the Date, Court Numbers, Time Slots, and Players for the entire day.
                             It will be used by the FD to tell members checking in which court they are playing on.
                         </p>
                         <template>
-                            <v-card>
+                            <v-card
+                                color="blue lighten-2"
+                            >
                                 <v-card-title>
                                     Daily Court Report
                                     <v-spacer></v-spacer>
@@ -34,15 +36,18 @@
                         </template>
                     </div>
                 </div>
+                <br>
                 <div class="card">
-                    <div class="card-header">Court Utilization Report</div>
+                    <div class="card-header blue lighten-1">Court Utilization Report</div>
 
                     <div class="card-body">
                         <p>This report will be a weekly monthly listing of how many time slots each court has been used and total
                             time the court was used.
                         </p>
                         <template>
-                            <v-card>
+                            <v-card
+                                color="blue lighten-2"
+                            >
                                 <v-card-title>
                                     Court Utilization Time
                                     <v-spacer></v-spacer>
@@ -94,14 +99,18 @@
                         </template>
                     </div>
                 </div>
+                <br>
                  <div class="card">
-                    <div class="card-header">Members Use Report</div>
+                    <div class="card-header blue lighten-1">Members Use Report</div>
 
                     <div class="card-body">
                         <p>This report will be a monthly listing of how much time (time slot count * 2) each member has played.</p>
                         <template>
-                            <v-card>
-                                <v-card-title>
+                            <v-card
+                                color="blue lighten-2"
+                            >
+                                <v-card-title
+                                >
                                 Members Play Time
                                 <v-spacer></v-spacer>
                                 <v-menu
@@ -161,8 +170,9 @@
                         </template>
                     </div>
                 </div>
+                <br>
                 <div class="card">
-                    <div class="card-header">Rainouts</div>
+                    <div class="card-header blue lighten-1">Rainouts</div>
 
                     <div class="card-body">
                         <p>When a rainout occurs, the system will automatically send an automated message to the members listed 
