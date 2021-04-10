@@ -3,7 +3,7 @@
         <div class="row justify-content-center">
             <div class="col-md-10">
                 <div class="card">
-                    <div class="card-header blue lighten-1">Daily Court Report</div>
+                    <div class="card-header blue darken-4 text-white">Daily Court Report</div>
 
                     <div class="card-body">
                         <p>This report will be a listing of the Date, Court Numbers, Time Slots, and Players for the entire day.
@@ -11,7 +11,7 @@
                         </p>
                         <template>
                             <v-card
-                                color="blue lighten-2"
+                                color="grey lighten-2"
                             >
                                 <v-card-title>
                                     Daily Court Report
@@ -38,7 +38,7 @@
                 </div>
                 <br>
                 <div class="card">
-                    <div class="card-header blue lighten-1">Court Utilization Report</div>
+                    <div class="card-header blue darken-4 text-white">Court Utilization Report</div>
 
                     <div class="card-body">
                         <p>This report will be a weekly monthly listing of how many time slots each court has been used and total
@@ -46,7 +46,7 @@
                         </p>
                         <template>
                             <v-card
-                                color="blue lighten-2"
+                                color="grey lighten-2"
                             >
                                 <v-card-title>
                                     Court Utilization Time
@@ -101,13 +101,13 @@
                 </div>
                 <br>
                  <div class="card">
-                    <div class="card-header blue lighten-1">Members Use Report</div>
+                    <div class="card-header blue darken-4 text-white">Members Use Report</div>
 
                     <div class="card-body">
                         <p>This report will be a monthly listing of how much time (time slot count * 2) each member has played.</p>
                         <template>
                             <v-card
-                                color="blue lighten-2"
+                                color="grey lighten-2"
                             >
                                 <v-card-title
                                 >
@@ -172,7 +172,7 @@
                 </div>
                 <br>
                 <div class="card">
-                    <div class="card-header blue lighten-1">Rainouts</div>
+                    <div class="card-header blue darken-4 text-white">Rainouts</div>
 
                     <div class="card-body">
                         <p>When a rainout occurs, the system will automatically send an automated message to the members listed 

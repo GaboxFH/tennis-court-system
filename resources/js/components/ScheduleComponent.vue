@@ -3,13 +3,13 @@
     <v-row class="fill-height pt-3">
         <v-col>
             <v-app-bar flat dense color="white">
-                <v-btn v-if="$vuetify.breakpoint.name != 'xs'" outlined class="ml-4 mr-2" color="grey darken-2" @click="setToday">Today</v-btn>
+                <v-btn v-if="$vuetify.breakpoint.name != 'xs'" outlined class="ml-4 mr-2" color="blue darken-4" @click="setToday">Today</v-btn>
                 <div class="flex text-center" 
                 v-bind:style="[$vuetify.breakpoint.name != 'xs' ? { 
                     position: 'relative', right: 32 + 'px'
                 } : { position: 'relative', left: 24 + 'px'
                 }]">
-                <v-btn icon text medium color="grey darken-2" @click="prev">
+                <v-btn icon text medium color="blue darken-4" @click="prev">
                     <v-icon>mdi-chevron-left</v-icon>
                 </v-btn>
 
@@ -28,6 +28,7 @@
                         v-on="on"
                         min-width="200px"
                         outlined
+                        color="blue darken-4"
                     > {{ displayDate(new Date(curr_date+'T00:00')) }} </v-btn>
                     </template>
                     <v-date-picker
@@ -37,7 +38,7 @@
                     ></v-date-picker>
                 </v-menu>
 
-                <v-btn icon text medium color="grey darken-2" @click="next">
+                <v-btn icon text medium color="blue darken-4" @click="next">
                     <v-icon>mdi-chevron-right</v-icon>
                 </v-btn>
                 </div>
@@ -48,13 +49,15 @@
         <v-col align="center">
             <div v-if="fullScreen==false">
             <v-btn-toggle style="position: relative; left: 24px;" class="mx-6" v-model="scheduleView" rounded dense mandatory btn-toggle-btn-height="170px">
-                <v-btn>1-8</v-btn>
-                <v-btn>9-17</v-btn>
+                <v-btn
+                >1-8</v-btn>
+                <v-btn
+                >9-17</v-btn>
             </v-btn-toggle>
             </div>
         </v-col>
     </v-row>
-    <v-row class="pl-15 pr-4 pt-2 pb-2">
+    <v-row class="pl-15 pr-4 pt-2 pb-2 blue darken-4 text-white">
         <v-col v-for="n in computedCategories" v-bind:key="n" align="center" class="pa-0 ma-0">
             <!-- <div v-if="n%2==0" style="background-color:tomato;">{{ n }}</div>
             <div v-else style="background-color:orange;">{{ n }}</div> -->
