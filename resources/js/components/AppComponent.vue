@@ -96,7 +96,7 @@
         <v-app-bar app>
             <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
-            <v-toolbar-title>Reservation System {{ session_data.access }} {{ session_data.name }}</v-toolbar-title>
+            <v-toolbar-title>Reservation System</v-toolbar-title>
         </v-app-bar>
 
         <v-main>

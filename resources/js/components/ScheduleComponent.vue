@@ -46,7 +46,7 @@
         </v-col>
     </v-row>
     <v-row>
-        <v-col align="center">
+        <v-col align="center" class="mb-2">
             <div v-if="fullScreen==false">
             <v-btn-toggle style="position: relative; left: 24px;" class="mx-6" v-model="scheduleView" rounded dense mandatory btn-toggle-btn-height="170px">
                 <v-btn
@@ -198,7 +198,6 @@
             <v-spacer></v-spacer>
             <v-col cols="4">
                 <v-text-field height=42 readonly v-model="selectedEvent.num_of_guests" type="number" label="Number of Guests" append-outer-icon="mdi-plus" @click:append-outer="selectedEvent.num_of_guests = parseInt(selectedEvent.num_of_guests,10) + 1" prepend-icon="mdi-minus" @click:prepend="selectedEvent.num_of_guests = parseInt(selectedEvent.num_of_guests,10) - 1"></v-text-field>
-                
             </v-col>
             </v-row>
 
@@ -213,6 +212,8 @@
                 item-text="name"
                 item-value="id"
                 :allow-overflow="false"
+                @input="searchInput=null"
+                :search-input.sync="searchInput"
             >
             </v-autocomplete>
 
@@ -321,24 +322,6 @@
             <v-btn color="blue" text v-bind="attrs" @click="message = false"> Close</v-btn>
         </template>
     </v-snackbar>
-
-    <v-row class="pa-0 ma-0 fill-height" v-for="n in events" v-bind:key="n.id">
-    <v-col>
-        <!-- <div v-if="n%2==0" style="background-color:tomato;">{{ n }}</div>
-        <div v-else style="background-color:orange;">{{ n }}</div> -->
-        <div>{{ n }}</div>
-    </v-col>
-    </v-row>
-
-    <v-row class="fill-height">
-    <v-col>
-        <p>Events:</p>
-        <div v-if="events[0]">
-            {{ new Date(events[0].start) }}
-        </div>
-    </v-col>
-    </v-row>
-
     
 </v-container>
 </template>
@@ -351,12 +334,13 @@ export default {
         curr_date: new Date().toISOString().substr(0, 10),
         dropdown_cal: false,
         events: [],
-        method_type: ['Admin Event', 'Call', 'Walk-In', 'Tennis Pro', 'USTA'],
+        method_type: ['Admin Event', 'Call', 'Walk-In', 'Tennis Pro', 'USTA', 'Member'],
         repeat_type: ['Repeat Event Daily', 'Repeat Event Weekly', 'Repeat Event Monthly'],
         repeat_select: 'Repeat Event Weekly',
         repeat_dialog: false,
         colors: ['#0196F3', '#3F51B5', '#00BCD4', '#4CAF50', '#FF9800', '#757575'],        // names: ['Meeting', 'Holiday', 'PTO', 'Travel', 'Event', 'Birthday', 'Conference', 'Party'],
         scheduleView: 0,
+        searchInput: null,
         fullScreen: false,
 
         dragEvent: null,

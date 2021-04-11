@@ -21,6 +21,17 @@ class ReservationController extends Controller
         return Reservation::orderBy('created_at', 'DESC')->get();
     }
 
+    public function getUserReservations($user_id)
+    {
+        // return $user_id;
+        // $reservations = Reservation::orderBy('created_at', 'DESC')->get();
+        $reservations = Reservation::where('host_id',$user_id)->orderBy('start', 'DESC')->get();
+        return $reservations;
+        // $participants = Reservation_User::where('reservation_id', $res_id)->select('user_id')->get();
+        // $participants = Reservation_User::where('reservation_id', $res_id)->select('user_id')->get();
+
+    }
+
     public function daily($start, $end)
     {
         $reservations = Reservation::where('start', '>', $start)
@@ -149,10 +160,12 @@ class ReservationController extends Controller
             $start_t_input = $date+ $start_time;
             $halfHr = 30*60*1000;
             
-            $reservations = Reservation::where('start','>=',$start_t_input)
-                            ->where('start','<',($start_t_input+2*60*60*1000))
+            // $reservations = Reservation::where('start','>=',$start_t_input)
+            //                 ->where('start','<',($start_t_input+2*60*60*1000))
+            //                 ->get();
+            $reservations = Reservation::where('start','>',$date)
+                            ->where('start','<',($date+24*60*60*1000))
                             ->get();
-            
             foreach($reservations as $res){
                 // return $start_t_input;
                 $check_time = $start_t_input;
@@ -228,26 +241,71 @@ class ReservationController extends Controller
         ]);
     }
 
-
-   
-    public function store(Request $request)
+    public function memberStore(Request $request)
     {
-        // (new Date(this.cal_events[i].start).getTime() < this.new_endtime
-        // && new Date(this.cal_events[i].end).getTime() >  this.dragEvent.start)
-        // $conflictingReservations = Reservation::where('start', '>=', $request->item["start"])
-        // ->where('start', '<', $request->item["end"])
-        // ->where('end', '>', $request->item["start"])
-        // ->where('category', $request->item["category"])
-        //                             ->count();
         $conflictingReservations = Reservation::where('start', '<', $request->item["end"])
                                             ->where('end', '>', $request->item["start"])
                                             ->where('category', $request->item["category"])
                                             ->count();
-        // $conflictingReservations = Reservation::where('start', '<', $request->item["start"])
-        //                             ->count();
+        
         if($conflictingReservations){
             return "error";
         } 
+
+        $datetime1 = $request->item["start"]/1000;
+        $datetime2 = $request->item["end"]/1000;
+
+        $hours = floor(($datetime2-$datetime1)/60/60);
+        $mins = ($datetime2-$datetime1)/60%60;
+        $secs = ($datetime2-$datetime1)%60;
+
+        $duration = date("H:i:s", mktime($hours, $mins, $secs));
+       
+        $newEvent = Reservation::create([
+            'name' => $request->item["name"],
+            'method' => $request->item["method"],
+            'start' => $request->item["start"],
+            'end' => $request->item["end"],
+            'duration' => $duration,
+            'category' => $request->item["category"],
+            'num_of_members' => $request->item["num_of_members"],
+            'num_of_guests' => $request->item["num_of_guests"],
+            'host_id' => $request->item["host_id"],
+            'timed' => $request->item["timed"],
+        ]);
+        
+        if(isset($request->item["ordered_participants_ids"])){
+            foreach($request->item["ordered_participants_ids"] as $id){
+                Reservation_User::create([
+                    'reservation_id' => $newEvent->id,
+                    'user_id' => $id
+                ]);
+            }
+        }
+
+        return $newEvent;
+    }
+   
+    public function store(Request $request)
+    {
+        $conflictingReservations = Reservation::where('start', '<', $request->item["end"])
+                                            ->where('end', '>', $request->item["start"])
+                                            ->where('category', $request->item["category"])
+                                            ->count();
+        
+        if($conflictingReservations){
+            return "error";
+        } 
+        // return $request->item["ordered_participants_ids"];
+        // if(isset($request->item["ordered_participants_ids"])){
+        //     for($i;$i<$request->item["ordered_participants_ids"]){
+                
+        //         Reservation_User::create([
+        //             'reservation_id' => $existingItem->id,
+        //             'user_id' => $formParticipants[$formIndex]
+        //         ]);
+        //     }
+        // }
         // $existingItem = Reservation::where('start_datetime', $request->item["start"])
         //                             ->where('court', $request->item["category"])
         //                             ->update(['end_datetime' => $request->item["end"]]);
@@ -262,24 +320,12 @@ class ReservationController extends Controller
         $secs = ($datetime2-$datetime1)%60;
 
         $duration = date("H:i:s", mktime($hours, $mins, $secs));
-        // Reservation::create([
-        //     'name' => "noah",
-        //     'method' => "call",
-        //     'start' => 1617631200000,
-        //     'end' => 1617633000000,
-        //     'duration' => "00:30:00",
-        //     'category' => "13",
-        //     'num_of_members' => 0,
-        //     'num_of_guests' => 0,
-        //     'host_id' => 123,
-        //     'timed' => 1,
-        // ]);
+       
         $newEvent = Reservation::create([
             'name' => $request->item["name"],
             'method' => $request->item["method"],
             'start' => $request->item["start"],
             'end' => $request->item["end"],
-            // 'duration' => "00:30:00",
             'duration' => $duration,
             'category' => $request->item["category"],
             'num_of_members' => $request->item["num_of_members"],
