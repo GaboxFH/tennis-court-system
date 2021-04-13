@@ -57,7 +57,7 @@
         <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="blue darken-1" text @click="deleteFinal(true)">Yes</v-btn>
-            <v-btn color="blue darken-1" text @click="deleteFinal(false)">No</v-btn>
+            <v-btn color="blue darken-1" text @click="areyousure=false">No</v-btn>
         </v-card-actions>
         </v-card>
     </v-dialog>
