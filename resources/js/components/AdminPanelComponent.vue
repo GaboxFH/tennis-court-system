@@ -208,7 +208,7 @@
             <v-col>
             <v-text-field
               label="Date"
-              v-model="selectedEvent.date"
+              v-model="selectedEvent.dateShow"
               outlined
               readonly
             ></v-text-field>
@@ -216,7 +216,7 @@
             <v-col>
             <v-text-field
               label="Start Time"
-              v-model="selectedEvent.start"
+              v-model="selectedEvent.startDisplay"
               outlined
               readonly
             ></v-text-field>
@@ -224,7 +224,7 @@
             <v-col>
             <v-text-field
               label="End Time"
-              v-model="selectedEvent.end"
+              v-model="selectedEvent.endDisplay"
               outlined
               readonly
             ></v-text-field>
@@ -294,8 +294,8 @@
         message_text: '',
         timeout: 3000,        
         loading: false,
-        search_input: "Duration",
-        // search_input: "Start Time",
+        // search_input: "Duration",
+        search_input: "Start Time",
         search_type: ["Duration","Start Time"],
         court_input: "Clay Courts",
         court_type: ["Clay Courts","Hard Courts"],
@@ -423,6 +423,9 @@
                 this.selectedEvent.category=court;
                 this.selectedEvent.end=this.selectedEvent.start+n*30*60*1000;
                 this.selectedEvent.duration=this.dur_type[n-1].data
+
+                this.selectedEvent.startDisplay = this.getTimes(new Date(this.selectedEvent.start))
+                this.selectedEvent.endDisplay = this.getTimes(new Date(this.selectedEvent.end))
                 console.log("dur")
                 this.dialog_edit = true
 
@@ -434,6 +437,9 @@
 
                 this.selectedEvent.duration=this.dur_type[this.selectedEvent.param-1].data
                 console.log("time")
+
+                this.selectedEvent.startDisplay = this.getTimes(new Date(this.selectedEvent.start))
+                this.selectedEvent.endDisplay = this.getTimes(new Date(this.selectedEvent.end))
                 this.dialog_edit = true
             }
             console.log(this.selectedEvent)
@@ -524,12 +530,25 @@
         },
         displayTime(time){
             console.log(time)
-            for(var i=0; i<this.start_type.length; i++){
-                if(this.start_type[i].val==time){
-                    console.log(this.start_type[i].val)
-                    return this.start_type[i].show
+            // for(var i=0; i<this.start_type.length; i++){
+            //     if(this.start_type[i].val==time){
+            //         console.log(this.start_type[i].val)
+            //         return this.start_type[i].show
+            //     }
+            // }
+            var hour = time.substr(0,2)
+            var min = time.substr(3,2)
+            var amOrPm = "am"
+            if(hour>=12){
+                if(hour != 12){
+                    hour = hour %12
                 }
+                amOrPm = "pm"
+            } else {
+                amOrPm = "am"
             }
+            hour = parseInt(hour)
+            return hour+ ":"+min+" "+amOrPm
         },
         formatDate(date){
             var d = new Date(date),
@@ -548,6 +567,21 @@
             return d > 3 && d < 21
             ? 'th'
             : ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'][d % 10]
+        },
+        getTimes (datetime) {
+            var hour = new Date(datetime).toString().substr(16,2)
+            var min = new Date(datetime).toString().substr(19,2)
+            var amOrPm = "am"
+            if(hour>=12){
+                if(hour != 12){
+                    hour = hour %12
+                }
+                amOrPm = "pm"
+            } else {
+                amOrPm = "am"
+            }
+            hour = parseInt(hour)
+            return hour+ ":"+min+" "+amOrPm
         },
         displayDate (calDate) {
 
