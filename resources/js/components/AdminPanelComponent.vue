@@ -460,8 +460,9 @@
             // console.log(date_input_milliseconds)
             // console.log(new Date(this.selectedEvent.start))
             var param = ""
-            
+            var search_type = 0
             if(this.search_input == "Start Time"){
+                search_type = 1
                 this.selectedEvent = { 
                     date: date_input_milliseconds,
                     // dateShow: this.displayDate(new Date()),
@@ -484,6 +485,7 @@
                 }
                 param=this.start_input
             } else {
+                search_type = 0
                 this.selectedEvent = { 
                     date: date_input_milliseconds,
                     dateShow: this.date_input_display,
@@ -504,7 +506,7 @@
                 param=this.dur_input
             }
             console.log(this.selectedEvent)
-            axios.get('api/avail_reservations/'+date_input_milliseconds+'/'+param)
+            axios.get('api/avail_reservations/'+search_type+'/'+date_input_milliseconds+'/'+param)
             .then(response => {
                 console.log(response)
                 if(this.selectedEvent.duration==null){
