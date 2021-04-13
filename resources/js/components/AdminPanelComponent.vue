@@ -89,7 +89,7 @@
         </v-row>
         <div v-if="results=='start_time'">
             <v-divider></v-divider>
-            <v-card-title class="pt-0"><p>Showing Available Time Slots on <b>{{selectedEvent.dateShow}}</b> at <b>{{selectedEvent.paramShow}}</b></p></v-card-title>
+            <v-card-title class="pt-0"><p>Showing Available Time Slots for <b>{{selectedEvent.dateShow}}</b> at <b>{{selectedEvent.paramShow}}</b></p></v-card-title>
             <v-card-subtitle class="pb-0">217 results</v-card-subtitle>
             <div v-for="(n, ind) in avail_slots" v-bind:key="n.court">
             <div v-if="n[0] || n[1] || n[2] || n[3]">
@@ -106,7 +106,8 @@
                         >
                         <div v-if="t">
                             <v-chip @click="open_reservation_dialog(dur_type[index].val,ind)">
-                            {{ dur_type[index].show }}
+                            <!-- {{ dur_type[index].show }} -->
+                            {{ bugFix(index*30+30) }}
                             <!-- {{ index }} -->
                             </v-chip>
                         </div>
@@ -530,12 +531,6 @@
         },
         displayTime(time){
             console.log(time)
-            // for(var i=0; i<this.start_type.length; i++){
-            //     if(this.start_type[i].val==time){
-            //         console.log(this.start_type[i].val)
-            //         return this.start_type[i].show
-            //     }
-            // }
             var hour = time.substr(0,2)
             var min = time.substr(3,2)
             var amOrPm = "am"
@@ -549,6 +544,12 @@
             }
             hour = parseInt(hour)
             return hour+ ":"+min+" "+amOrPm
+        },
+        bugFix(n){
+            if(n==30){ return "30 mins" } 
+            else if(n==60){ return "1 Hour"}
+            else if(n==90){ return "1.5 Hours"}
+            else if(n==120){ return "2 Hours"}
         },
         formatDate(date){
             var d = new Date(date),
