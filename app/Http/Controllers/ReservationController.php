@@ -74,7 +74,7 @@ class ReservationController extends Controller
     //     return $result;
     // }
 
-    public function avail_reservations($date,$n)
+    public function avail_reservations($search_type,$date,$n)
     {
 
         $duration_options = ["0"=>true,"1"=>true,"2"=>true,"3"=>true];
@@ -97,7 +97,7 @@ class ReservationController extends Controller
             '9' => $timeslot_options,'10' => $timeslot_options,'11' => $timeslot_options,'12' => $timeslot_options,'13' => $timeslot_options,'14' => $timeslot_options,'15' => $timeslot_options,'16' => $timeslot_options,'17' => $timeslot_options,
         ]);
 
-        if($n <= 4){
+        if($search_type == 0){
             $start_string = explode(":", '08:00:00');
 
             $hour = $start_string[0] * 60 * 60 * 1000;
