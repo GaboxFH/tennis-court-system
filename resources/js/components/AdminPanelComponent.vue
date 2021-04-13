@@ -107,6 +107,7 @@
                         <div v-if="t">
                             <v-chip @click="open_reservation_dialog(dur_type[index].val,ind)">
                             {{ dur_type[index].show }}
+                            <!-- {{ index }} -->
                             </v-chip>
                         </div>
                         </div>
@@ -293,7 +294,8 @@
         message_text: '',
         timeout: 3000,        
         loading: false,
-        search_input: "Start Time",
+        search_input: "Duration",
+        // search_input: "Start Time",
         search_type: ["Duration","Start Time"],
         court_input: "Clay Courts",
         court_type: ["Clay Courts","Hard Courts"],
@@ -341,7 +343,7 @@
         ],
         // dur_type: ["30 mins","1 Hour","1.5 Hours","2 Hours"],
         
-        avail_slots: ''
+        avail_slots: []
     }),
     created () {
         this.date_input=this.formatDate(new Date())
@@ -455,7 +457,10 @@
             if(this.search_input == "Start Time"){
                 this.selectedEvent = { 
                     date: date_input_milliseconds,
-                    dateShow: this.displayDate(new Date(date_input_milliseconds)),
+                    // dateShow: this.displayDate(new Date()),
+                    dateShow: this.date_input_display,
+                    // dateShow: "hey",
+                    // dateShow: this.displayDate(new Date(date_input_milliseconds)),
                     start: (this.hhmmssTomilli(this.start_input)+date_input_milliseconds),
                     end: null,
                     duration: null,
@@ -474,7 +479,8 @@
             } else {
                 this.selectedEvent = { 
                     date: date_input_milliseconds,
-                    dateShow: this.displayDate(new Date(date_input_milliseconds)),
+                    dateShow: this.date_input_display,
+                    // dateShow: this.displayDate(new Date(date_input_milliseconds)),
                     start: null,
                     end: null,
                     duration: this.dur_type[this.dur_input-1].data,
@@ -517,8 +523,10 @@
             return millisecs
         },
         displayTime(time){
+            console.log(time)
             for(var i=0; i<this.start_type.length; i++){
                 if(this.start_type[i].val==time){
+                    console.log(this.start_type[i].val)
                     return this.start_type[i].show
                 }
             }
@@ -542,6 +550,7 @@
             : ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'][d % 10]
         },
         displayDate (calDate) {
+
             if(calDate==null){
                 calDate = new Date()
             }
@@ -560,6 +569,7 @@
             const dateNthTitle = this.nth(calDate.getUTCDate())
             const yearTitle = calDate.getFullYear()
             return dayTitle+' '+monthTitle+' '+dateTitle+dateNthTitle+' '+yearTitle
+            // return monthTitle+' '+dateTitle+dateNthTitle+' '+yearTitle
         },
     }
 

@@ -29,7 +29,11 @@
                         min-width="200px"
                         outlined
                         color="blue darken-4"
-                    > {{ displayDate(new Date(curr_date+'T00:00')) }} </v-btn>
+                    > 
+                    <!-- {{ displayDate(new Date(curr_date+'T00:00')) }}  -->
+                    {{ displayDate(new Date(curr_date)) }} 
+                    <!-- {{ curr_date }}  -->
+                    </v-btn>
                     </template>
                     <v-date-picker
                     v-model="curr_date"
