@@ -6,12 +6,11 @@
         >
             <v-list-item>
                 <v-list-item-content>
-                    <v-list-item-title class="title">
-                        Dashboard
-                    </v-list-item-title>
-                    <v-list-item-subtitle>
-                        The Raquet Club
-                    </v-list-item-subtitle>
+                    <img
+                        style="width:100%"
+                        src="../../images/racquetclub_logo.png"
+                        alt="St. Petersburg Racquet Club Logo"
+                    />
                 </v-list-item-content>
             </v-list-item>
 
@@ -37,7 +36,7 @@
                     </v-list-item-icon>
 
                     <v-list-item-content>
-                        <v-list-item-title>Admin Panel</v-list-item-title>
+                        <v-list-item-title>Reserve a Court</v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
 
@@ -58,6 +57,16 @@
 
                     <v-list-item-content>
                         <v-list-item-title>Members</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+
+                <v-list-item link to="/report">
+                    <v-list-item-icon>
+                        <v-icon>mdi-file-chart</v-icon>
+                    </v-list-item-icon>
+
+                    <v-list-item-content>
+                        <v-list-item-title>Data Report</v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
 
@@ -87,7 +96,7 @@
         <v-app-bar app>
             <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
-            <v-toolbar-title>Reservation System {{ session_data.access }} {{ session_data.name }}</v-toolbar-title>
+            <v-toolbar-title>Reservation System</v-toolbar-title>
         </v-app-bar>
 
         <v-main>

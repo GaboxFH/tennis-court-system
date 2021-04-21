@@ -14,7 +14,14 @@
 
 
         </v-container>
-
+        <v-select
+          :items="membership_types"
+          label="Group Selected"
+          dense
+          offset-y
+          outlined
+        ></v-select>
+    
     <v-data-table
         :headers="computedHeaders"
         :items="users"
@@ -32,6 +39,7 @@
         <template v-slot:top>
             <v-toolbar
                 flat
+                color="grey lighten-2"
             >
                 <v-toolbar-title>Club Members</v-toolbar-title>
                 <v-divider
