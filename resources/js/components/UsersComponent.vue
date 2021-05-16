@@ -339,8 +339,8 @@ export default {
     },
 
     created () {
-        // this.getUsers();
-        this.$emit('refresh-users')
+        this.getUsers();
+        // this.$emit('refresh-users')
     },
 
     methods: {
