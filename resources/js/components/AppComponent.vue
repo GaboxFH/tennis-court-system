@@ -20,7 +20,7 @@
                 dense
                 nav
             >
-                <v-list-item link to="/">
+                <v-list-item link to="/" style="text-decoration: none;">
                     <v-list-item-icon>
                         <v-icon>mdi-calendar</v-icon>
                     </v-list-item-icon>
@@ -30,7 +30,7 @@
                     </v-list-item-content>
                 </v-list-item>
 
-                <v-list-item link to="/adminpanel">
+                <v-list-item link to="/adminpanel" style="text-decoration: none;">
                     <v-list-item-icon>
                         <v-icon>mdi-newspaper-variant</v-icon>
                     </v-list-item-icon>
@@ -40,7 +40,7 @@
                     </v-list-item-content>
                 </v-list-item>
 
-                <v-list-item link to="/schedule">
+                <v-list-item link to="/schedule" style="text-decoration: none;">
                     <v-list-item-icon>
                         <v-icon>mdi-calendar-range</v-icon>
                     </v-list-item-icon>
@@ -50,7 +50,7 @@
                     </v-list-item-content>
                 </v-list-item>
 
-                <v-list-item link to="/users">
+                <v-list-item link to="/users" style="text-decoration: none;">
                     <v-list-item-icon>
                         <v-icon>mdi-account</v-icon>
                     </v-list-item-icon>
@@ -60,7 +60,7 @@
                     </v-list-item-content>
                 </v-list-item>
 
-                <v-list-item link to="/report">
+                <v-list-item link to="/report" style="text-decoration: none;">
                     <v-list-item-icon>
                         <v-icon>mdi-file-chart</v-icon>
                     </v-list-item-icon>
@@ -80,7 +80,7 @@
                     </v-list-item-content>
                 </v-list-item>
 
-                <v-list-item @click="logout">
+                <v-list-item @click="logout" style="text-decoration: none;">
                     <v-list-item-icon>
                         <v-icon>mdi-power</v-icon>
                     </v-list-item-icon>
@@ -114,7 +114,6 @@
 </template>
 
 <script>
-import ExampleComponent from "./ExampleComponent";
 
 export default {
     props: ['session_data'],

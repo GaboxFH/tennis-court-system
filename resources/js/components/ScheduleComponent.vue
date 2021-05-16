@@ -111,7 +111,7 @@
         <v-dialog v-model="dialog_edit" persistent max-width="600px"
         >
         <v-card>
-           
+             
             <v-toolbar v-if="selectedEvent" class="mb-3" :color="getEventColor(selectedEvent)" dark >
                 <v-card-title>{{ selectedEvent.name }}</v-card-title>
                 <v-spacer></v-spacer>
@@ -146,6 +146,7 @@
             <v-col>
             <v-text-field
               label="Date"
+              :color="getEventColor(selectedEvent)"
               v-model="curr_date"
               outlined
               readonly
@@ -154,6 +155,7 @@
             <v-col>
             <v-text-field
               label="Start Time"
+              :color="getEventColor(selectedEvent)"
               v-model="computedTimes"
               outlined
               readonly
@@ -162,16 +164,18 @@
             <v-col>
             <v-text-field
               label="End Time"
+              :color="getEventColor(selectedEvent)"
               v-model="computedTimes2"
               outlined
               readonly
-            >yoo</v-text-field>
+            ></v-text-field>
             </v-col>
             </v-row>
-            <v-text-field v-model="selectedEvent.name" label="Event Title"></v-text-field>
+            <v-text-field v-model="selectedEvent.name" :color="getEventColor(selectedEvent)" label="Event Title"></v-text-field>
             <v-select
                 v-model="selectedEvent.method"
                 :items="method_type"
+                :color="getEventColor(selectedEvent)"
                 label="Reservation Type"
             ></v-select>
             <v-row>
@@ -179,6 +183,7 @@
             <v-autocomplete
                 v-model="selectedEvent.host_id"
                 :items="members"
+                :color="getEventColor(selectedEvent)"
                 label="Host"
                 chips
                 hide-selected
@@ -201,13 +206,17 @@
             </v-col>
             <v-spacer></v-spacer>
             <v-col cols="4">
-                <v-text-field height=42 readonly v-model="selectedEvent.num_of_guests" type="number" label="Number of Guests" append-outer-icon="mdi-plus" @click:append-outer="selectedEvent.num_of_guests = parseInt(selectedEvent.num_of_guests,10) + 1" prepend-icon="mdi-minus" @click:prepend="selectedEvent.num_of_guests = parseInt(selectedEvent.num_of_guests,10) - 1"></v-text-field>
+                <v-text-field :color="getEventColor(selectedEvent)" height=42 readonly v-model="selectedEvent.num_of_guests" type="number" label="Number of Guests" append-outer-icon="mdi-plus" @click:append-outer="selectedEvent.num_of_guests = parseInt(selectedEvent.num_of_guests,10) + 1" prepend-icon="mdi-minus" @click:prepend="selectedEvent.num_of_guests = parseInt(selectedEvent.num_of_guests,10) - 1"></v-text-field>
             </v-col>
             </v-row>
 
             <v-autocomplete
                 v-model="selectedEvent.participants"
                 :items="computedMembers"
+                :key="participantsLoaded"
+                :loading="!participantsLoaded"
+                :disabled="!participantsLoaded"
+                :color="getEventColor(selectedEvent)"
                 chips
                 deletable-chips
                 label="Participants"
@@ -221,12 +230,13 @@
             >
             </v-autocomplete>
 
-            </div>
+            
             <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="saveEvent(true)">Save</v-btn>
-                <v-btn color="blue darken-1" text @click="saveEvent(false)">Close</v-btn>
-            </v-card-actions>        
+                <v-btn :color="getEventColor(selectedEvent)" text @click="saveEvent(true)">Save</v-btn>
+                <v-btn :color="getEventColor(selectedEvent)" text @click="saveEvent(false)">Close</v-btn>
+            </v-card-actions>     
+            </div>   
         </v-card>
         </v-dialog>
 
@@ -326,7 +336,14 @@
             <v-btn color="blue" text v-bind="attrs" @click="message = false"> Close</v-btn>
         </template>
     </v-snackbar>
-    
+
+    <v-overlay :value="refreshLoad">
+    <v-progress-circular
+        indeterminate
+        size="64"
+    ></v-progress-circular>
+    </v-overlay>
+
 </v-container>
 </template>
 
@@ -346,6 +363,9 @@ export default {
         scheduleView: 0,
         searchInput: null,
         fullScreen: false,
+
+        participantsLoaded: false,
+        refreshLoad: true,
 
         dragEvent: null,
         dragStart: null,
@@ -387,12 +407,17 @@ export default {
 
     }),
     created () {
+        console.log("first")
+        this.refreshLoad = true
         this.$emit('refresh-schedule')
         this.$emit('refresh-users')
+        
     },
     watch: {
         reservations (val) {
             this.events=val
+            this.refreshLoad = false
+            console.log("second")
         },
         users (val) {
             this.members=val
@@ -482,8 +507,11 @@ export default {
                 // console.log("this.newCompTimePayload")
                 // console.log(this.selectedEvent.host_id)
                 // console.log(this.newCompTimePayload.item.host_id)
+                this.participantsLoaded = false
                 this.updateEvent(true)
             } else {
+                this.participantsLoaded = false
+                this.refreshLoad = true
                 this.$emit('refresh-schedule')
             }
             this.dialog_edit = false
@@ -495,11 +523,13 @@ export default {
                     console.log(response);
                     this.message_text = "Event Deleted"
                     this.message = true
+                    this.refreshLoad = true
                     this.$emit('refresh-schedule')
                 }, (error) => {
                     console.log(error);
                 });
             } else {
+                this.refreshLoad = true
                 this.$emit('refresh-schedule')
             }
             this.dialog_edit = false
@@ -515,10 +545,12 @@ export default {
                     if(response.data == "error"){
                         this.message_text = "Time Conflict"
                         this.message = true
+                        this.refreshLoad = true
                         this.$emit('refresh-schedule')
                     } else{
                         this.message_text = "Event Updated"
                         this.message = true
+                        this.refreshLoad = true
                         this.$emit('refresh-schedule')
                     }
                 }, (error) => {
@@ -527,6 +559,7 @@ export default {
             } else {
                 this.message_text = "Event Drag Canceled"
                 this.message = true
+                this.refreshLoad = true
                 this.$emit('refresh-schedule')
             }
             this.dialog_verify_update = false
@@ -695,7 +728,8 @@ export default {
                             this.getParticipants()
                             // this.dialog_edit = true
                         }
-                        this.$emit('refresh-schedule')
+                        // this.refreshLoad = true
+                        // this.$emit('refresh-schedule')
                     }, (error) => {
                         console.log(error);
                     });
@@ -718,7 +752,7 @@ export default {
             this.extendOriginal = null
         },
         cancelDrag () {
-            console.log("left native!")
+            // console.log("left native!")
             if (this.createEvent) {
                 if (this.extendOriginal) {
                     this.createEvent.end = this.extendOriginal
@@ -738,13 +772,16 @@ export default {
         getParticipants() {
             // this.selectedEvent.host_id = ''
             this.selectedEvent.participants = []
+            this.dialog_edit = true
             axios.get('api/reservation_users/'+this.selectedEvent.id+'/'+this.selectedEvent.host_id)
             .then(response => {
                 console.log(response)
                 console.log("response")
                 this.selectedEvent.host_id = response.data.res_host
                 this.selectedEvent.participants = response.data.res_participants
-                this.dialog_edit = true
+                // this.dialog_edit = true
+                this.participantsLoaded = true
+                // this.participantsLoaded = false
             })
             .catch(error => {
                 console.log(error)
@@ -786,15 +823,18 @@ export default {
         },
         setToday () {
             //using new Date() migth be an issue
+            this.refreshLoad = true
             this.$emit('refresh-schedule')
             this.curr_date = new Date().toISOString().substr(0, 10)
         },
         prev () {
+            this.refreshLoad = true
             this.$emit('refresh-schedule')
             this.$refs.calendar.prev()
 
         },
         next () {
+            this.refreshLoad = true
             this.$emit('refresh-schedule')
             this.$refs.calendar.next()
         },

@@ -4,7 +4,7 @@ import VueRouter from 'vue-router';
 
 Vue.use(VueRouter)
 
-import AdminPanel from "../components/AdminPanelComponent"
+import AdminPanel from "../components/ReserveQueryComponent"
 import Reservations from "../components/ReservationsComponent"
 import Schedule from "../components/ScheduleComponent"
 import Users from "../components/UsersComponent"
