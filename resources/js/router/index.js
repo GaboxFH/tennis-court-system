@@ -4,10 +4,11 @@ import VueRouter from 'vue-router';
 
 Vue.use(VueRouter)
 
-import AdminPanel from "../components/ReserveQueryComponent"
+import ReserveACourt from "../components/ReserveQueryComponent"
 import Reservations from "../components/ReservationsComponent"
 import Schedule from "../components/ScheduleComponent"
 import Users from "../components/UsersComponent"
+import AdminPanel from "../components/AdminPanelComponent"
 import Report from "../components/ReportComponent"
 
 let routes = [
@@ -20,9 +21,9 @@ let routes = [
         },
     },
     {
-        component: AdminPanel,
-        name: "adminpanel",
-        path: "/adminpanel"
+        component: ReserveACourt,
+        name: "reserve_a_court",
+        path: "/reserve_a_court"
     },
     {
         component: Schedule,
@@ -33,6 +34,11 @@ let routes = [
         component: Users,
         name: "users",
         path: "/users"
+    },
+    {
+        component: AdminPanel,
+        name: "admin_panel",
+        path: "/admin_panel"
     },
     {
         component: Report,

@@ -30,9 +30,9 @@
                     </v-list-item-content>
                 </v-list-item>
 
-                <v-list-item link to="/adminpanel" style="text-decoration: none;">
+                <v-list-item link to="/reserve_a_court" style="text-decoration: none;">
                     <v-list-item-icon>
-                        <v-icon>mdi-newspaper-variant</v-icon>
+                        <v-icon>mdi-pencil</v-icon>
                     </v-list-item-icon>
 
                     <v-list-item-content>
@@ -57,6 +57,16 @@
 
                     <v-list-item-content>
                         <v-list-item-title>Members</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+
+                <v-list-item link to="/admin_panel" style="text-decoration: none;">
+                    <v-list-item-icon>
+                        <v-icon>mdi-newspaper-variant-outline</v-icon>
+                    </v-list-item-icon>
+
+                    <v-list-item-content>
+                        <v-list-item-title>Admin Panel</v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
 
@@ -106,6 +116,7 @@
                 :users="users"
                 @refresh-users="getUsers"
                 :session_data="session_data"
+                
             >
 
             </router-view>
@@ -122,6 +133,7 @@ export default {
         drawer: null,
         reservations: [],
         users: [],
+        rules: []
     }),
 
     methods: {
@@ -152,6 +164,7 @@ export default {
                     console.log(error);
                 })
         },
+        
 
     },
 

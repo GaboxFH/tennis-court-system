@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\RulesController;
 use App\Http\Controllers\Auth\RegisterController;
 
 /*
@@ -60,3 +61,5 @@ Route::prefix('/user')->group( function() {
     Route::put('/{id}', [UserController::class, 'update']);
     Route::delete('/{id}', [UserController::class, 'destroy']);
 });
+
+Route::get('/rules', [RulesController::class, 'index']);
