@@ -38,10 +38,12 @@ Route::prefix('/reservation')->group( function() {
     // Route::get('/{id}', [ReservationController::class, 'reservation_users']);
     Route::post('/store', [ReservationController::class, 'store']);
     Route::post('/memberStore', [ReservationController::class, 'memberStore']);
+    Route::post('/storeReoccur', [ReservationController::class, 'storeReoccur']);
     Route::post('/resUsers', [ReservationController::class, 'resUsers']);
     Route::put('/adminupdate', [ReservationController::class, 'adminupdate']);
     Route::put('/update', [ReservationController::class, 'update']);
     Route::delete('/{id}', [ReservationController::class, 'destroy']);
+    Route::delete('/deleteReoccur/{id}', [ReservationController::class, 'deleteReoccur']);
 });
 
 

@@ -80,7 +80,7 @@
                     </v-list-item-content>
                 </v-list-item>
 
-                <v-list-item>
+                <!-- <v-list-item>
                     <v-list-item-icon>
                         <v-icon>mdi-database-export</v-icon>
                     </v-list-item-icon>
@@ -88,7 +88,7 @@
                     <v-list-item-content>
                         <v-list-item-title>Export</v-list-item-title>
                     </v-list-item-content>
-                </v-list-item>
+                </v-list-item> -->
 
                 <v-list-item @click="logout" style="text-decoration: none;">
                     <v-list-item-icon>

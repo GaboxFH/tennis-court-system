@@ -4,7 +4,7 @@
         <v-col>
             <v-app-bar flat dense color="white">
                 <v-btn v-if="$vuetify.breakpoint.name != 'xs'" outlined class="ml-4 mr-2" color="blue darken-4" @click="setToday">Today</v-btn>
-                <div class="flex text-center" 
+                <div class="flex text-center mx-8" 
                 v-bind:style="[$vuetify.breakpoint.name != 'xs' ? { 
                     position: 'relative', right: 32 + 'px'
                 } : { position: 'relative', left: 24 + 'px'
@@ -114,7 +114,10 @@
              
             <v-toolbar v-if="selectedEvent" class="mb-3" :color="getEventColor(selectedEvent)" dark >
                 <v-card-title>{{ selectedEvent.name }}</v-card-title>
+                
                 <v-spacer></v-spacer>
+                <div v-if="selectedEvent.reoccur_id!=null">
+                        (Reoccuring Event)</div>
                 <v-menu
                 left
                 bottom
@@ -131,12 +134,22 @@
                 </template>
         
                 <v-list>
-                    <v-list-item @click="areyousure=true">
-                        <v-list-item-title>Delete Event</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item @click="repeat_dialog=true">
-                        <v-list-item-title>Repeat Event</v-list-item-title>
-                    </v-list-item>
+                    <div v-if="selectedEvent.reoccur_id==null">
+                        <v-list-item @click="showAreYouSure(0)">
+                            <v-list-item-title>Delete Event</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item @click="repeat_dialog=true">
+                            <v-list-item-title>Repeat Event</v-list-item-title>
+                        </v-list-item>
+                    </div>
+                    <div v-else>
+                        <v-list-item @click="showAreYouSure(0)">
+                            <v-list-item-title>Delete This Event Only</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item @click="showAreYouSure(1)">
+                            <v-list-item-title>Delete This Event and Following Events</v-list-item-title>
+                        </v-list-item>
+                    </div>
                 </v-list>
                 </v-menu>
             </v-toolbar>
@@ -300,6 +313,26 @@
         </v-dialog>
 
         <v-dialog
+            v-model="areyousure_reoccur"
+            persistent
+            max-width="450"
+        >
+            <v-card>
+                <v-card-title>
+                    Delete Reservations
+                </v-card-title>
+                <v-card-text>
+                    Are you sure you want to delete this reservation and future reoccuring reservations?
+                </v-card-text>
+            <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" text @click="deleteReoccur(true)">Yes</v-btn>
+                <v-btn color="blue darken-1" text @click="deleteReoccur(false)">No</v-btn>
+            </v-card-actions>
+            </v-card>
+        </v-dialog>
+
+        <v-dialog
             v-model="repeat_dialog"
             persistent
             max-width="450"
@@ -310,16 +343,23 @@
                     Repeating Event
                 </v-card-title>
                 <v-select
-                    
                     v-model="repeat_select"
                     :items="repeat_type"
-                    label="Repeat"
                 ></v-select>
+                <div v-if="reoccur_err">
+                <v-alert
+                    dense
+                    outlined
+                    type="error"
+                >
+                    {{reoccur_err_mess}}
+                </v-alert>
+                </div>
                 </div>
             <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="repeat_event">Save</v-btn>
-                <v-btn color="blue darken-1" text @click="repeat_dialog=false">Cancel</v-btn>
+                <v-btn color="blue darken-1" text @click="repeat_event(true)">Save</v-btn>
+                <v-btn color="blue darken-1" text @click="repeat_event(false)">Cancel</v-btn>
             </v-card-actions>
             </v-card>
         </v-dialog>
@@ -356,8 +396,19 @@ export default {
         dropdown_cal: false,
         events: [],
         method_type: ['Admin Event', 'Call', 'Walk-In', 'Tennis Pro', 'USTA', 'Member'],
-        repeat_type: ['Repeat Event Daily', 'Repeat Event Weekly', 'Repeat Event Monthly'],
-        repeat_select: 'Repeat Event Weekly',
+        // repeat_type: ['Repeat Event Weekly', 'Repeat Event Monthly'],
+        repeat_select: 0,
+        // {   display: 'Repeat Event Weekly',
+        //     value: 0
+        // },
+        repeat_type: [{
+            text: 'Repeat Event Weekly',
+            value: 0
+        },{
+            text: 'Repeat Event Monthly',
+            value: 1
+        }],
+        // repeat_select: 'Repeat Event Weekly',
         repeat_dialog: false,
         colors: ['#0196F3', '#3F51B5', '#00BCD4', '#4CAF50', '#FF9800', '#757575'],        // names: ['Meeting', 'Holiday', 'PTO', 'Travel', 'Event', 'Birthday', 'Conference', 'Party'],
         scheduleView: 0,
@@ -379,10 +430,13 @@ export default {
         dialog_verify_update: false,
         selectedEvent: null,
         areyousure: false,
+        areyousure_reoccur: false,
 
         message: false,
         message_text: '',
         timeout: 3000,
+        reoccur_err: false,
+        reoccur_err_mess: null,
 
         newCompTimePayload: [],
         // test: [ 
@@ -484,9 +538,54 @@ export default {
         },
     },
     methods: {
-        repeat_event() {
-            console.log(this.selectedEvent)
-            console.log(this.repeat_select)
+        repeat_event(bool) {
+            if(bool){
+                if(this.repeat_select == 0){//weekly
+                    let item = JSON.parse(JSON.stringify(this.selectedEvent))
+                    this.newCompTimePayload = {
+                        item
+                    }
+                    item.reoccur_type = "weekly"
+                    // new event
+                    this.refreshLoad = true
+                    axios.post('api/reservation/storeReoccur', this.newCompTimePayload)
+                    .then((response) => {
+                        console.log(response);
+                        if(response.data["status"]=="success"){
+                            this.repeat_dialog = false
+                            this.saveEvent(false)
+                            this.message_text = response.data["message"]
+                            this.message = true
+                        } else if(response.data["status"]=="error"){
+                            this.reoccur_err_mess = response.data["message"]
+                            this.reoccur_err = true
+                            // console.log("POOP")
+                        } 
+                        // if(response.data=="error"){
+                        //     this.message_text = "Time Conflict"
+                        //     this.message = true
+                        // } else {
+                        //     this.message_text = "Event Created"
+                        //     this.message = true
+                        //     this.selectedEvent.id = response.data.id
+                        //     this.getParticipants()
+                        //     // this.dialog_edit = true
+                        // }
+                        // this.refreshLoad = true
+                        // this.$emit('refresh-schedule')
+                    }, (error) => {
+                        console.log(error);
+                    });
+                } else if(this.repeat_select == 1){//monthly
+                    console.log("hi")
+                }
+                console.log(this.selectedEvent)
+                console.log(this.repeat_select)
+                // console.log(this.reoccur_id)
+            } else{
+                this.repeat_dialog = false
+                this.reoccur_err = false
+            }
         },
         saveEvent(save) {
             if(save){
@@ -534,6 +633,35 @@ export default {
             }
             this.dialog_edit = false
             this.areyousure = false
+        },
+        deleteReoccur(del_event){
+            if(del_event){
+                axios.delete('api/reservation/deleteReoccur/'+this.selectedEvent.id)
+                .then((response) => {
+                    console.log(response);
+                    this.message_text = "Event Deleted"
+                    this.message = true
+                    this.refreshLoad = true
+                    this.$emit('refresh-schedule')
+                }, (error) => {
+                    console.log(error);
+                });
+            } else {
+                this.refreshLoad = true
+                this.$emit('refresh-schedule')
+            }
+            this.dialog_edit = false
+            this.areyousure_reoccur = false
+        },
+        showAreYouSure(num){
+            if(num==1){
+                console.log(this.selectedEvent)
+                this.areyousure_reoccur=true;
+            } else if(num==0){
+                this.areyousure=true;
+                // deleteFinal(true)
+            }
+            
         },
         updateEvent(edit) {
             if(edit){
@@ -599,6 +727,7 @@ export default {
                     num_of_members: 0,
                     num_of_guests: 0,
                     host_id: null,
+                    reoccur_id: null,
                     timed: 1
                 }
 

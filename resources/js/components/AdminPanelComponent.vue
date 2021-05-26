@@ -1,4 +1,65 @@
 <template>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-11">
+                <div class="card">
+                    <div class="card-header text-white" style="background-color: rgb(51, 104, 153)">Court Rules</div>
+
+                    <div class="card-body">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-md-11">
+                <div class="card">
+                    <div class="card-header text-white" style="background-color: rgb(51, 104, 153)">Court Activity</div>
+
+                    <div class="card-body">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-md-11">
+                <div class="card">
+                    <div class="card-header text-white" style="background-color: rgb(51, 104, 153)">Members</div>
+
+                    <div class="card-body">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-md-11">
+                <div class="card">
+                    <div class="card-header text-white" style="background-color: rgb(51, 104, 153)">Groups</div>
+
+                    <div class="card-body">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-md-11">
+                <div class="card">
+                    <div class="card-header text-white" style="background-color: rgb(51, 104, 153)">Event Categories</div>
+
+                    <div class="card-body">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    
 
     <v-container
         class="pa-6 ma-auto"
@@ -45,6 +106,9 @@
 
 
     </v-container>
+
+
+    </div>
 </template>
 
 <script>

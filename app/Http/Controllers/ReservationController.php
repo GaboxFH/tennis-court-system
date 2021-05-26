@@ -240,6 +240,118 @@ class ReservationController extends Controller
             'res_participants' => $res_participants
         ]);
     }
+    public function deleteReoccur($id){
+        
+        $existingItem = Reservation::find($id);
+
+        $futureEvents = Reservation::where('reoccur_id', $existingItem->reoccur_id)
+        ->where('start', '>=', $existingItem->start)
+        ->get();
+        // $count = 0;
+        foreach($futureEvents as $event){
+            // $count += 1;
+            $event->delete();
+        }
+        // return $existingItem;
+        return [
+            'status' => 'success',
+            'message' => 'Reoccuring Events Deleted',
+        ];
+    
+        // return [
+        //     'status' => 'error',
+        //     'message' => 'bad option',
+        // ]; 
+    }
+
+    public function storeReoccur(Request $request){
+        if($request->item["reoccur_type"] == "weekly"){
+
+            $st_seconds = $request->item["start"] / 1000;
+            $st_datetime = date("Y-m-d H:i:s", $st_seconds);
+            $st_weeklater = $st_datetime;
+            
+            $en_seconds = $request->item["end"] / 1000;
+            $en_datetime = date("Y-m-d H:i:s", $en_seconds);
+            $en_weeklater = $en_datetime;
+
+            $num_of_weeks = 5;
+            for ($x = 0; $x < $num_of_weeks; $x++) {
+                $st_weeklater = date("Y-m-d H:i:s", strtotime("+7 day", strtotime($st_weeklater)));
+                $en_weeklater = date("Y-m-d H:i:s", strtotime("+7 day", strtotime($en_weeklater)));
+                $st_new = strtotime($st_weeklater) * 1000;
+                $en_new = strtotime($en_weeklater) * 1000;
+
+            
+                $conflictingReservations = Reservation::where('start', '<', $en_new)
+                                                ->where('end', '>', $st_new)
+                                                ->where('category', $request->item["category"])
+                                                ->count();
+            
+                if($conflictingReservations){
+                    $numberofsecs = $st_new/1000;
+                    return 
+                    [
+                        'status' => 'error',
+                        'message' => 'Time Conflict on '.date('m/d/Y', $numberofsecs),
+                    ];
+                } 
+            }
+
+            $st_seconds = $request->item["start"] / 1000;
+            $st_datetime = date("Y-m-d H:i:s", $st_seconds);
+            $st_weeklater = $st_datetime;
+            
+            $en_seconds = $request->item["end"] / 1000;
+            $en_datetime = date("Y-m-d H:i:s", $en_seconds);
+            $en_weeklater = $en_datetime;
+            
+            for ($x = 0; $x < $num_of_weeks; $x++) {
+                $st_weeklater = date("Y-m-d H:i:s", strtotime("+7 day", strtotime($st_weeklater)));
+                $en_weeklater = date("Y-m-d H:i:s", strtotime("+7 day", strtotime($en_weeklater)));
+                $st_new = strtotime($st_weeklater) * 1000;
+                $en_new = strtotime($en_weeklater) * 1000;
+
+                // duration
+                $datetime1 = $st_new/1000;
+                $datetime2 = $en_new/1000;
+
+                $hours = floor(($datetime2-$datetime1)/60/60);
+                $mins = ($datetime2-$datetime1)/60%60;
+                $secs = ($datetime2-$datetime1)%60;
+
+                $duration = date("H:i:s", mktime($hours, $mins, $secs));
+
+                Reservation::create([
+                    'name' => $request->item["name"],
+                    'method' => $request->item["method"],
+                    'start' => $st_new,
+                    'end' => $en_new,
+                    // 'start' => $st_weeklater,
+                    // 'end' => $en_weeklater,
+                    'duration' => $duration,
+                    'category' => $request->item["category"],
+                    'num_of_members' => $request->item["num_of_members"],
+                    'num_of_guests' => $request->item["num_of_guests"],
+                    'host_id' => $request->item["host_id"],
+                    'reoccur_id' => $request->item["id"],
+                    'timed' => $request->item["timed"],
+                ]);
+
+            }
+            
+            $existingItem = Reservation::where('id', $request->item["id"])->update(['reoccur_id' => $request->item["id"]]);
+
+            return [
+                'status' => 'success',
+                'message' => 'Event Repeated Weekly',
+            ];
+        } 
+        return [
+            'status' => 'error',
+            'message' => 'bad option',
+        ];
+    }
 
     public function memberStore(Request $request)
     {
