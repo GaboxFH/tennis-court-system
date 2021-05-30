@@ -82,7 +82,6 @@
             <v-col>
                 <v-text-field
                     v-model="club_rules[index].value"
-                    :rules="formRules[index]"
                     :hint="hints[index]"
                     :label="labels[index]"
                     :disabled="!club_rules[index].active"
@@ -95,7 +94,9 @@
                 ></v-switch>
             </v-col>
         </v-row>
-        
+        <v-btn
+            @click="updateClubRules()"
+        >Update Rules</v-btn>
         
 
         <br>
@@ -129,7 +130,7 @@ export default {
         switch1: true,
         labels: [
             "Max duration (hours)", 
-            "Max number", 
+            "Max number of reservations", 
             "Time in Advance (hours)", 
             "Guest Policy (days)", 
             "Guest Price (price)", 
@@ -215,6 +216,9 @@ export default {
     },
 
     methods: {
+        updateClubRules() {
+            console.log(this.club_rules)
+        },
         getRules() {
             axios.get('api/rules')
                 .then(response => {

@@ -73,6 +73,7 @@
     <v-col>
         <v-sheet>
         <v-calendar
+            v-if="cal_loaded"
             ref="calendar"
             v-model="curr_date"
             color="primary"
@@ -188,9 +189,13 @@
             <v-select
                 v-model="selectedEvent.method"
                 :items="method_type"
+                item-text="name"
+                item-value="name"
+                :menu-props="{ top: false, offsetY: true }"
                 :color="getEventColor(selectedEvent)"
                 label="Reservation Type"
             ></v-select>
+            <v-text-field v-model="selectedEvent.custom" v-if="selectedEvent.method=='Custom'" dense label="'Custom' Type Name"></v-text-field>
             <v-row>
             <v-col cols="7">
             <v-autocomplete
@@ -345,6 +350,7 @@
                 <v-select
                     v-model="repeat_select"
                     :items="repeat_type"
+                    :menu-props="{ top: false, offsetY: true }"
                 ></v-select>
                 <div v-if="reoccur_err">
                 <v-alert
@@ -389,13 +395,16 @@
 
 <script>
 export default {
-    props: ['reservations','users','session_data'],
+    props: ['reservations','users','session_data', 'categories'],
 
     data: () => ({
         curr_date: new Date().toISOString().substr(0, 10),
         dropdown_cal: false,
         events: [],
-        method_type: ['Admin Event', 'Call', 'Walk-In', 'Tennis Pro', 'USTA', 'Member'],
+        members: [],
+        method_type: [],
+        cal_loaded: false,
+        // method_type: ['Admin Event', 'Call', 'Walk-In', 'Tennis Pro', 'USTA', 'Member', 'Custom'],
         // repeat_type: ['Repeat Event Weekly', 'Repeat Event Monthly'],
         repeat_select: 0,
         // {   display: 'Repeat Event Weekly',
@@ -410,7 +419,7 @@ export default {
         }],
         // repeat_select: 'Repeat Event Weekly',
         repeat_dialog: false,
-        colors: ['#0196F3', '#3F51B5', '#00BCD4', '#4CAF50', '#FF9800', '#757575'],        // names: ['Meeting', 'Holiday', 'PTO', 'Travel', 'Event', 'Birthday', 'Conference', 'Party'],
+        // colors: ['#0196F3', '#3F51B5', '#00BCD4', '#4CAF50', '#FF9800', '#757575'],        // names: ['Meeting', 'Holiday', 'PTO', 'Travel', 'Event', 'Birthday', 'Conference', 'Party'],
         scheduleView: 0,
         searchInput: null,
         fullScreen: false,
@@ -463,8 +472,10 @@ export default {
     created () {
         console.log("first")
         this.refreshLoad = true
-        this.$emit('refresh-schedule')
         this.$emit('refresh-users')
+        this.$emit('refresh-categories')
+        this.$emit('refresh-schedule')
+
         
     },
     watch: {
@@ -475,6 +486,11 @@ export default {
         },
         users (val) {
             this.members=val
+        },
+        categories (val) {
+            this.method_type=val
+            this.cal_loaded = true
+            // var members_no_host = JSON.parse(JSON.stringify(this.method_type))
         },
     },
     computed: {
@@ -666,6 +682,9 @@ export default {
         updateEvent(edit) {
             if(edit){
                 console.log(this.newCompTimePayload)
+                if(this.newCompTimePayload.item.method=="Custom"){
+                    this.newCompTimePayload.item.method=this.newCompTimePayload.item.custom
+                }
                 // this.newCompTimePayload.ordered_participants_ids = ""
                 axios.put('api/reservation/update', this.newCompTimePayload)
                 .then((response) => {
@@ -825,6 +844,10 @@ export default {
                     this.dialog_verify_update = true
                     // console.log("slide date!")
                 } else {
+                    if(!this.checkForCustomMethod(this.selectedEvent.method)){
+                        this.selectedEvent.custom = this.selectedEvent.method
+                        this.selectedEvent.method = "Custom"
+                    }
                     this.getParticipants()
                     // this.dialog_edit = true
                 }
@@ -916,6 +939,20 @@ export default {
                 console.log(error)
             })
         },
+        checkForCustomMethod (method){
+
+            this.method_type.forEach(function (item, index) {
+                if(method==item.name){
+                    return true
+                }
+            });
+            return false
+            // if(method=="temp function") {
+            //     return true
+            // } else {
+            //     return true
+            // }
+        },
         roundTime (time, down = true) {
             const roundTo = 30 // minutes
             const roundDownTime = roundTo * 60 * 1000
@@ -928,11 +965,19 @@ export default {
             return new Date(tms.year, tms.month - 1, tms.day, tms.hour, tms.minute).getTime()
         },
         getEventColor (event) {
-            if(event.method == "Admin Event"){ event.color = this.colors[0] }
-            else if(event.method == "Call" || event.method == "Walk-In"){ event.color = this.colors[1] }
-            else if(event.method == "Tennis Pro"){ event.color = this.colors[2] }
-            else if(event.method == "USTA"){ event.color = this.colors[3] }
-            else{ event.color = this.colors[4] }
+            const colors = ['#0196F3', '#3F51B5', '#00BCD4', '#4CAF50', '#FF9800', '#723575', '#550725', '#752302', '#014575','#515075', '#753021', '#145715']
+            
+            event.color = colors[6]
+
+            this.method_type.forEach(function (item, index) {
+                if(event.method==item.name){
+                    // console.log("i be damned",colors[item.color])
+                    event.color = colors[item.color]
+                    // return colors[item.color]
+                }
+                // console.log(colors[0], index);
+            });
+
             const rgb = parseInt(event.color.substring(1), 16)
             const r = (rgb >> 16) & 0xFF
             const g = (rgb >> 8) & 0xFF
@@ -943,6 +988,8 @@ export default {
                 : event === this.createEvent
                 ? `rgba(${r}, ${g}, ${b}, 0.7)`
                 : event.color
+            // .indexOf(this.selectedEvent.host_id)
+            // return colors[0];
         },
         rnd (a, b) {
             return Math.floor((b - a + 1) * Math.random()) + a
@@ -1019,14 +1066,12 @@ export default {
 </script>
 
 
-<style lang="scss">
-//   @import '~vuetify/src/components/VStepper/_variables.scss';
-    // @import '~vuetify/src/resources/sass/_variables.scss';
-    @import 'resources/sass/_variables.scss';
-    $calendar-event-right-empty: 0px;
-</style>
+
 
 <style>
+/* .#test{
+    $calendar-event-right-empty: 2px !default;
+} */
 /* $calendar-event-right-empty 0px  */
 .v-event-draggable {
 padding-left: 6px;

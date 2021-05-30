@@ -116,7 +116,8 @@
                 :users="users"
                 @refresh-users="getUsers"
                 :session_data="session_data"
-                
+                @refresh-categories="getCategories"
+                :categories="categories"
             >
 
             </router-view>
@@ -133,7 +134,8 @@ export default {
         drawer: null,
         reservations: [],
         users: [],
-        rules: []
+        rules: [],
+        categories: [],
     }),
 
     methods: {
@@ -159,6 +161,15 @@ export default {
             axios.get('api/users')
                 .then(response => {
                     this.users = response.data
+                })
+                .catch(error => {
+                    console.log(error);
+                })
+        },
+        getCategories() {
+            axios.get('api/categories')
+                .then(response => {
+                    this.categories = response.data
                 })
                 .catch(error => {
                     console.log(error);
