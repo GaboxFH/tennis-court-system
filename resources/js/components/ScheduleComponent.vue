@@ -1,5 +1,142 @@
 <template>
 <v-container fluid class="pa-0 ma-0">
+    <v-row class="fill-height pt-6">
+        <v-col cols="3" v-if="($vuetify.breakpoint.name != 'xs' && $vuetify.breakpoint.name != 'sm')">
+            Today
+        </v-col>
+        <v-col style="display: flex;
+            align-items: center; 
+            justify-content: center;"
+        >
+            wow
+        </v-col>
+        <v-col cols="3" v-if="($vuetify.breakpoint.name != 'xs' && $vuetify.breakpoint.name != 'sm')">
+            <h5 class="pa-0 ma-0">
+                Categories
+                <v-btn small icon @click="method_type[0].name = 'whattheheck'">
+                    <v-icon small color="grey lighten-1">mdi-plus-circle-outline</v-icon>
+                </v-btn></h5>
+            <v-row 
+                v-for="(item,ind) in method_type" :key="item.id" 
+                @mouseover="method_type[ind].active = 1"
+                @mouseleave="method_type[ind].active = 0"
+                align="center"
+                justify="center"
+                class="pa-0 ma-0 categories_row"
+                :class="{ list_item_active: item.active }"
+            >
+                <v-col cols="1" class="pa-0 ma-0 categories_style">
+                    <v-avatar
+                            size=16
+                            :color="color_options[method_type[ind].color]"
+                            class="pa-0 ma-0 rounded"
+                    ></v-avatar>
+                </v-col>
+                <v-col class="pa-0 ma-0 categories_style">
+                    {{method_type[ind].name}}
+                </v-col>
+                <v-col cols="2" class="pa-0 ma-0 categories_style">
+                    <v-menu
+                        top
+                        left
+                        :offset-x="true"
+                    >
+                        <template v-slot:activator="{ on, attrs }">
+                        <v-btn small icon 
+                            class="pa-0 ma-0"
+                            v-bind="attrs" v-on="on"
+                        >
+                            <v-icon small class="pa-0 ma-0" color="grey lighten-1">
+                                mdi-dots-vertical
+                            </v-icon>
+                        </v-btn>
+                        </template>
+                        <v-card
+                            color="grey lighten-4"
+                            min-width="150px"
+                            max-width="200px"
+                            height="150px"
+                            flat
+                        >
+                            <v-row v-for="i in 4" :key="i" align="center" justify="center">
+                                <v-col v-for="j in 3" :key="j" align="center" justify="center" cols="4">
+                                    <v-avatar
+                                        size=16
+                                        :color="color_options[(i*3+j-4)]"
+                                        class="pa-0 ma-0 rounded"
+                                    ></v-avatar>
+                                </v-col>
+                            </v-row>
+                        </v-card>
+                    </v-menu>
+                    <!-- <v-btn :ref="item.id" small icon class="pa-0 ma-0">
+                        <v-icon small class="pa-0 ma-0" color="grey lighten-1" @click="open_colors=true">
+                            mdi-dots-vertical
+                        </v-icon>
+                    </v-btn>
+                    <v-menu
+                        top
+                        left
+                        :offset-x="true"
+                        :activator="item.id"
+                    >
+                        <v-card
+                            color="grey lighten-4"
+                            min-width="250px"
+                            max-width="350px"
+                            flat
+                        >
+                            testing
+                        </v-card>
+                    </v-menu> -->
+                </v-col>
+            </v-row>
+        </v-col>
+    </v-row>
+    <!-- <v-row v-if="cal_loaded" class="fill-height pt-6">
+        <v-col cols="3" v-if="($vuetify.breakpoint.name != 'xs' && $vuetify.breakpoint.name != 'sm')">
+            {{method_type}}
+        </v-col>
+        <v-col class="flex text-center">
+            {{computedMethods}} 
+        </v-col>
+        <v-col cols="3" class="pa-0 ma-0" v-if="($vuetify.breakpoint.name != 'xs' && $vuetify.breakpoint.name != 'sm')">
+            <h5 class="pa-0 ma-0">
+                Categories
+                <v-btn small icon @click="method_type[0].name = 'whattheheck'">
+                    <v-icon small color="grey lighten-1">mdi-plus-circle-outline</v-icon>
+                </v-btn>
+                <v-btn small icon @click="plzwork()">
+                    <v-icon small color="grey lighten-1">mdi-plus-box</v-icon>
+                </v-btn></h5>
+            <v-row 
+                v-for="item in method_type" 
+                :key="item.id" 
+                @mouseover="item.active = true"
+                @mouseleave="item.active = false"
+                class="pa-0 ma-0"
+                :class="{ list_item_active: !item.active }"
+            >
+                <v-col cols="1" class="pa-0 ma-0">
+                    <v-avatar
+                            size=16
+                            :color="color_options[item.color]"
+                            class="pa-0 ma-0 rounded"
+                    ></v-avatar>
+                    
+                </v-col>
+                <v-col class="pa-0 ma-0">
+                    {{item.name}} {{item.active}} 
+                </v-col>
+                <v-col cols="2" class="pa-0 ma-0">
+                    <v-btn small icon @click="item.active = true">
+                        <v-icon small color="grey lighten-1">mdi-dots-vertical</v-icon>
+                    </v-btn>
+                </v-col>
+            </v-row>
+            
+        </v-col>
+    </v-row> -->
     <v-row class="fill-height pt-3">
         <v-col>
             <v-app-bar flat dense color="white">
@@ -419,6 +556,25 @@ export default {
         }],
         // repeat_select: 'Repeat Event Weekly',
         repeat_dialog: false,
+        // color_options: ['#0196F3', '#3F51B5', '#00BCD4', '#4CAF50', '#FF9800', '#723575', '#550725', '#752302', '#014575','#515075', '#753021', '#145715'],
+        color_options: [
+            'rgb(6, 74, 154)',
+            'rgb(239, 229, 142)',
+            'rgb(84, 142, 102)',
+
+            'rgb(246, 129, 36)',
+            'rgb(242, 97, 143)',
+            'rgb(124, 124, 124)',
+            
+            'rgb(219, 76, 75)',
+            'rgb(165, 227, 246)',
+            'rgb(22, 124, 159)',
+
+            'rgb(182, 233, 95)',
+            'rgb(100, 119, 247)',
+            'rgb(142, 106, 107)',
+            
+        ],
         // colors: ['#0196F3', '#3F51B5', '#00BCD4', '#4CAF50', '#FF9800', '#757575'],        // names: ['Meeting', 'Holiday', 'PTO', 'Travel', 'Event', 'Birthday', 'Conference', 'Party'],
         scheduleView: 0,
         searchInput: null,
@@ -488,8 +644,11 @@ export default {
             this.members=val
         },
         categories (val) {
-            this.method_type=val
-            this.cal_loaded = true
+            if(!this.cal_loaded){
+                console.log("cats loaded")
+                this.method_type=val
+                this.cal_loaded = true
+            }
             // var members_no_host = JSON.parse(JSON.stringify(this.method_type))
         },
     },
@@ -518,6 +677,9 @@ export default {
                 // console.log(members_no_host)
                 return members_no_host
             }
+        },
+        computedMethods(){
+            return this.method_type;
         },
         computedCategories(){
             var categories = []
@@ -844,6 +1006,7 @@ export default {
                     this.dialog_verify_update = true
                     // console.log("slide date!")
                 } else {
+                    // console.log(this.checkForCustomMethod(this.selectedEvent.method))
                     if(!this.checkForCustomMethod(this.selectedEvent.method)){
                         this.selectedEvent.custom = this.selectedEvent.method
                         this.selectedEvent.method = "Custom"
@@ -940,18 +1103,25 @@ export default {
             })
         },
         checkForCustomMethod (method){
-
-            this.method_type.forEach(function (item, index) {
+            var return_val = false
+            this.method_type.forEach(function (item) {
+                // console.log(method,item.name)
                 if(method==item.name){
-                    return true
+                    console.log("return true true")
+                    return_val = true
                 }
-            });
-            return false
+            })
+            return return_val ? true : false
+            // return false
             // if(method=="temp function") {
             //     return true
             // } else {
             //     return true
             // }
+        },
+        plzwork(){
+            console.log("idk the issue ",this.method_type[0].active)
+            this.method_type[0].active = true
         },
         roundTime (time, down = true) {
             const roundTo = 30 // minutes
@@ -965,8 +1135,7 @@ export default {
             return new Date(tms.year, tms.month - 1, tms.day, tms.hour, tms.minute).getTime()
         },
         getEventColor (event) {
-            const colors = ['#0196F3', '#3F51B5', '#00BCD4', '#4CAF50', '#FF9800', '#723575', '#550725', '#752302', '#014575','#515075', '#753021', '#145715']
-            
+            const colors = this.color_options;
             event.color = colors[6]
 
             this.method_type.forEach(function (item, index) {
@@ -1069,12 +1238,26 @@ export default {
 
 
 <style>
-/* .#test{
-    $calendar-event-right-empty: 2px !default;
-} */
+/* Categories CSS */
+.list_item_active {
+    background-color:rgb(228, 228, 228);
+}
+.categories_style {
+    display: inline-block;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.categories_row {
+    cursor: pointer;
+}
+
+
+/* Calendar css */
+/* SASS variable not working ... */
 /* $calendar-event-right-empty 0px  */
 .v-event-draggable {
-padding-left: 6px;
+    padding-left: 6px;
 }
 
 .v-event-timed {

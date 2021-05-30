@@ -169,7 +169,11 @@ export default {
         getCategories() {
             axios.get('api/categories')
                 .then(response => {
+                    // console.log("burhh this the problem")
                     this.categories = response.data
+                    // this.categories.forEach(function (element) {
+                    //     element.active = 0;
+                    // });
                 })
                 .catch(error => {
                     console.log(error);
