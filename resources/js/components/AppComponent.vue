@@ -30,9 +30,9 @@
                     </v-list-item-content>
                 </v-list-item>
 
-                <v-list-item link to="/adminpanel" style="text-decoration: none;">
+                <v-list-item link to="/reserve_a_court" style="text-decoration: none;">
                     <v-list-item-icon>
-                        <v-icon>mdi-newspaper-variant</v-icon>
+                        <v-icon>mdi-pencil</v-icon>
                     </v-list-item-icon>
 
                     <v-list-item-content>
@@ -60,6 +60,16 @@
                     </v-list-item-content>
                 </v-list-item>
 
+                <v-list-item link to="/admin_panel" style="text-decoration: none;">
+                    <v-list-item-icon>
+                        <v-icon>mdi-newspaper-variant-outline</v-icon>
+                    </v-list-item-icon>
+
+                    <v-list-item-content>
+                        <v-list-item-title>Admin Panel</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+
                 <v-list-item link to="/report" style="text-decoration: none;">
                     <v-list-item-icon>
                         <v-icon>mdi-file-chart</v-icon>
@@ -70,7 +80,7 @@
                     </v-list-item-content>
                 </v-list-item>
 
-                <v-list-item>
+                <!-- <v-list-item>
                     <v-list-item-icon>
                         <v-icon>mdi-database-export</v-icon>
                     </v-list-item-icon>
@@ -78,7 +88,7 @@
                     <v-list-item-content>
                         <v-list-item-title>Export</v-list-item-title>
                     </v-list-item-content>
-                </v-list-item>
+                </v-list-item> -->
 
                 <v-list-item @click="logout" style="text-decoration: none;">
                     <v-list-item-icon>
@@ -106,6 +116,8 @@
                 :users="users"
                 @refresh-users="getUsers"
                 :session_data="session_data"
+                @refresh-categories="getCategories"
+                :categories="categories"
             >
 
             </router-view>
@@ -122,6 +134,8 @@ export default {
         drawer: null,
         reservations: [],
         users: [],
+        rules: [],
+        categories: [],
     }),
 
     methods: {
@@ -152,6 +166,20 @@ export default {
                     console.log(error);
                 })
         },
+        getCategories() {
+            axios.get('api/categories')
+                .then(response => {
+                    // console.log("burhh this the problem")
+                    this.categories = response.data
+                    // this.categories.forEach(function (element) {
+                    //     element.active = 0;
+                    // });
+                })
+                .catch(error => {
+                    console.log(error);
+                })
+        },
+        
 
     },
 

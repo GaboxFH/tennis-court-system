@@ -8,7 +8,7 @@
         <v-container>
             <p>Welcome.</p>
 
-            <p>Added phone number and basic vuetify validation. Still needs database validation to check that email is unique if email is changed. Also maybe add are you sure for email and phone changes. </p>
+            <p>HI</p>
             <!-- <p>{{ this.users[0].access }}</p> -->
             <!-- <p>{{ this.editedItem[0].access }}</p> -->
 

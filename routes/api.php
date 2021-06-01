@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\RulesController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\Auth\RegisterController;
 
 /*
@@ -37,10 +39,12 @@ Route::prefix('/reservation')->group( function() {
     // Route::get('/{id}', [ReservationController::class, 'reservation_users']);
     Route::post('/store', [ReservationController::class, 'store']);
     Route::post('/memberStore', [ReservationController::class, 'memberStore']);
+    Route::post('/storeReoccur', [ReservationController::class, 'storeReoccur']);
     Route::post('/resUsers', [ReservationController::class, 'resUsers']);
     Route::put('/adminupdate', [ReservationController::class, 'adminupdate']);
     Route::put('/update', [ReservationController::class, 'update']);
     Route::delete('/{id}', [ReservationController::class, 'destroy']);
+    Route::delete('/deleteReoccur/{id}', [ReservationController::class, 'deleteReoccur']);
 });
 
 
@@ -59,4 +63,15 @@ Route::prefix('/user')->group( function() {
     Route::post('/store', [UserController::class, 'store']);
     Route::put('/{id}', [UserController::class, 'update']);
     Route::delete('/{id}', [UserController::class, 'destroy']);
+});
+
+Route::get('/rules', [RulesController::class, 'index']);
+
+
+Route::get('/categories', [CategoryController::class, 'index']);
+
+Route::prefix('/categories')->group( function() {
+    Route::post('/store', [CategoryController::class, 'store']);
+    Route::put('/update', [CategoryController::class, 'update']);
+    Route::delete('/{id}', [CategoryController::class, 'destroy']);
 });

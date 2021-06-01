@@ -1,67 +1,216 @@
 <template>
 <v-container fluid class="pa-0 ma-0">
-    <v-row class="fill-height pt-3">
+    <v-row class="fill-height pt-6 pb-3">
+        <v-col cols="3" align="center" v-if="($vuetify.breakpoint.name != 'xs' && $vuetify.breakpoint.name != 'sm')">
+            <v-btn outlined class="ml-4 mr-2" color="blue darken-4" @click="setToday">Today</v-btn>
+        </v-col>
         <v-col>
-            <v-app-bar flat dense color="white">
-                <v-btn v-if="$vuetify.breakpoint.name != 'xs'" outlined class="ml-4 mr-2" color="blue darken-4" @click="setToday">Today</v-btn>
-                <div class="flex text-center" 
-                v-bind:style="[$vuetify.breakpoint.name != 'xs' ? { 
-                    position: 'relative', right: 32 + 'px'
-                } : { position: 'relative', left: 24 + 'px'
-                }]">
-                <v-btn icon text medium color="blue darken-4" @click="prev">
-                    <v-icon>mdi-chevron-left</v-icon>
-                </v-btn>
+            <!-- <div class="flex text-center mx-8" 
+                v-bind:style="[($vuetify.breakpoint.name == 'xs' || $vuetify.breakpoint.name == 'sm') ? { 
+                    position: 'relative', left: 24 + 'px'
+                } : { position: 'relative', right: 18 + 'px'
+                }]"> -->
+            <v-row>
+                <v-col>
+                    <div class="flex text-center mx-8" 
+                        v-bind:style="[($vuetify.breakpoint.name == 'xs' || $vuetify.breakpoint.name == 'sm') ? { 
+                            position: 'relative', left: 24 + 'px'
+                        } : { position: 'relative', right: 18 + 'px'
+                        }]">
+                    <h1>Racquet Club Schedule</h1>
+                    </div>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col>
+                    <v-app-bar flat dense color="white">
+                        <div class="flex text-center mx-8" 
+                        v-bind:style="[($vuetify.breakpoint.name == 'xs' || $vuetify.breakpoint.name == 'sm') ? { 
+                            position: 'relative', left: 24 + 'px'
+                        } : { position: 'relative', right: 18 + 'px'
+                        }]">
+                        <v-btn icon text medium color="blue darken-4" @click="prev">
+                            <v-icon>mdi-chevron-left</v-icon>
+                        </v-btn>
 
-                <v-menu
-                    ref="dropdown_cal"
-                    v-model="dropdown_cal"
-                    :close-on-content-click="false"
-                    transition="scale-transition"
-                    offset-y
-                    max-width="590px"
-                    min-width="auto"
-                >
-                    <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                        v-bind="attrs"
-                        v-on="on"
-                        min-width="200px"
-                        outlined
-                        color="blue darken-4"
-                    > 
-                    <!-- {{ displayDate(new Date(curr_date+'T00:00')) }}  -->
-                    {{ displayDate(new Date(curr_date)) }} 
-                    <!-- {{ curr_date }}  -->
+                        <v-menu
+                            ref="dropdown_cal"
+                            v-model="dropdown_cal"
+                            :close-on-content-click="false"
+                            transition="scale-transition"
+                            offset-y
+                            max-width="590px"
+                            min-width="auto"
+                        >
+                            <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                                v-bind="attrs"
+                                v-on="on"
+                                min-width="200px"
+                                outlined
+                                color="blue darken-4"
+                            > 
+                            {{ displayDate(new Date(curr_date)) }} 
+                            </v-btn>
+                            </template>
+                            <v-date-picker
+                            v-model="curr_date"
+                            no-title
+                            @input="dropdown_cal = false"
+                            ></v-date-picker>
+                        </v-menu>
+
+                        <v-btn icon text medium color="blue darken-4" @click="next">
+                            <v-icon>mdi-chevron-right</v-icon>
+                        </v-btn>
+                        </div>
+                    </v-app-bar>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col>
+                    <div v-if="fullScreen==false" class="flex text-center mx-8" 
+                        v-bind:style="[($vuetify.breakpoint.name == 'xs' || $vuetify.breakpoint.name == 'sm') ? { 
+                            position: 'relative', left: 24 + 'px'
+                        } : { position: 'relative', right: 18 + 'px'
+                        }]">
+                    <v-btn-toggle background-color="" color="" class="mx-6 mb-2" v-model="scheduleView" rounded dense mandatory btn-toggle-btn-height="170px">
+                        <v-btn text color="rgb(51,104,153)"
+                        >1-8</v-btn>
+                        <v-btn text color="rgb(51,104,153)"
+                        >9-17</v-btn>
+                    </v-btn-toggle>
+                    </div>
+                </v-col>
+            </v-row>
+        </v-col>
+        <v-col cols="2" class="pa-0 ma-0" v-if="($vuetify.breakpoint.name != 'xs' && $vuetify.breakpoint.name != 'sm')">
+            <h5 class="pa-0 ma-0 ml-5">
+                Categories
+                <v-btn class="pa-0 ma-0" v-if="!newCategoryListItem" small icon @click="newCategoryListItem = true">
+                    <v-icon class="pa-0 ma-0" small>mdi-plus-circle-outline</v-icon>
+                </v-btn></h5>
+            <v-row 
+                v-for="(item,ind) in method_type" :key="item.id" 
+                @mouseover="method_type[ind].active = 1"
+                @mouseleave="method_type[ind].active = 0"
+                class="pa-0 ma-0 clickable"
+                :class="{ list_item_active: item.active, list_item_selected: item.selected }"
+                align="center" justify="center"
+            >
+                <v-col cols="2" max-width="300px" align="center" class="pa-0 ma-0 categories_style" style="justify-content: center;">
+                    <v-menu v-model="method_type[ind].selected" left :offset-x="true" :close-on-content-click="false">
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-avatar
+                                v-bind="attrs" v-on="on"
+                                size=18
+                                :color="color_options[method_type[ind].color]"
+                                class="pa-0 ma-0 rounded clickable"
+                                @click="selectedColor=method_type[ind].color; method_type[ind].selected=1;"
+                            ></v-avatar>
+                        </template>
+                        <v-card
+                            color="grey lighten-4"
+                            class="pa-2 ma-0"
+                            min-width="150px"
+                            max-width="200px"
+                            v-model="method_type[ind].color"
+                        >
+                            <v-row>
+                                <v-col align="center" justify="center">
+                                    <h5>Pick Color</h5>
+                                </v-col>
+                            </v-row>
+                            <v-row v-for="i in 4" :key="i" align="center" justify="center" class="py-1 ma-0" style="height: 36px">
+                                <v-col v-for="j in 3" :key="j" align="center" justify="center" class="pa-0 ma-0" cols="4">
+                                    <v-avatar
+                                        v-if="(i*3+j-4)==selectedColor"
+                                        size=28
+                                        :color="color_options[(i*3+j-4)]"
+                                        class="pa-0 ma-0 rounded clickable"
+                                        @click="selectedColor = (i*3+j-4)"
+                                    ></v-avatar>
+                                    <v-avatar
+                                        v-else
+                                        size=18
+                                        :color="color_options[(i*3+j-4)]"
+                                        class="pa-0 ma-0 rounded clickable"
+                                        @click="selectedColor = (i*3+j-4)"
+                                    ></v-avatar>
+                                </v-col>
+                            </v-row>
+                            <v-row class="py-2">
+                                <v-col align="center" justify="center" >
+                                    <v-btn @click="method_type[ind].selected=0" style="text-transform: none;" outlined depressed small>Cancel</v-btn>
+                                </v-col>
+                                <v-col align="center" justify="center">
+                                    <v-btn @click="updateCat(item.id, selectedColor)" style="text-transform: none;" small depressed color="primary">Apply</v-btn>
+                                </v-col>
+                            </v-row>
+                        </v-card>
+                    </v-menu>
+                </v-col>
+                <v-col class="pa-0 ma-0 categories_style">
+                    {{method_type[ind].name}}
+                </v-col>
+                <v-col cols="2" align="left" class="pa-0 ma-0">
+                    <v-menu offset-y left>
+                        <template v-slot:activator="{ on, attrs }">
+                        <v-btn
+                            small icon class="pa-0 ma-0"
+                            v-bind="attrs"
+                            v-on="on"
+                        >
+                            <v-icon small class="pa-0 ma-0">
+                            mdi-dots-vertical
+                            </v-icon>
+                        </v-btn>
+                        </template>
+                        <v-list class="pa-0 ma-0">
+                        <v-list-item dense link @click="deleteCategory(item.id)">
+                            <v-list-item-title dense>Delete Category</v-list-item-title>
+                        </v-list-item>
+                        </v-list>
+                    </v-menu>
+                </v-col>
+            </v-row>
+            <v-row
+                v-if="newCategoryListItem"
+                class="pa-0 ma-0"
+                align="center" justify="center"
+            >
+                <v-col class="pa-0 ma-0">
+                    <v-text-field
+                        v-model="category_new"
+                        label="New Category"
+                        dense
+                        class="pt-4 pb-0 pl-2 pr-0 ma-0"
+                    >
+                    </v-text-field>
+                </v-col>
+                <v-col cols="2" align="left" class="pa-0 ma-0">
+                    <v-btn @click="newCategoryListItem=false" small icon class="pa-0 ma-0">
+                        <v-icon small class="pa-0 ma-0">
+                            mdi-close
+                        </v-icon>
                     </v-btn>
-                    </template>
-                    <v-date-picker
-                    v-model="curr_date"
-                    no-title
-                    @input="dropdown_cal = false"
-                    ></v-date-picker>
-                </v-menu>
-
-                <v-btn icon text medium color="blue darken-4" @click="next">
-                    <v-icon>mdi-chevron-right</v-icon>
-                </v-btn>
-                </div>
-            </v-app-bar>
+                </v-col>
+            </v-row>
+            <v-row
+                v-if="newCategoryListItem"
+                class="pa-0 ma-0 mb-2"
+                align="center" justify="center"
+            >
+                <v-col align="center" justify="center" class="pa-0 ma-0">
+                    <v-btn @click="addNewCategory()" style="text-transform: none;" class="px-2 py-0 ma-0" small depressed color="primary">Add Category</v-btn>
+                </v-col>
+            </v-row>
+            
         </v-col>
     </v-row>
-    <v-row>
-        <v-col align="center" class="mb-2">
-            <div v-if="fullScreen==false">
-            <v-btn-toggle style="position: relative; left: 24px;" class="mx-6" v-model="scheduleView" rounded dense mandatory btn-toggle-btn-height="170px">
-                <v-btn
-                >1-8</v-btn>
-                <v-btn
-                >9-17</v-btn>
-            </v-btn-toggle>
-            </div>
-        </v-col>
-    </v-row>
-    <v-row class="pl-15 pr-4 pt-2 pb-2 blue darken-4 text-white">
+    
+    <!-- <v-row class="pl-15 pr-4 pt-2 pb-2 blue darken-4 text-white"> -->
+    <v-row class="pl-15 pr-4 pt-2 pb-2 text-white" style="background-color: rgb(51,104,153)">
         <v-col v-for="n in computedCategories" v-bind:key="n" align="center" class="pa-0 ma-0">
             <!-- <div v-if="n%2==0" style="background-color:tomato;">{{ n }}</div>
             <div v-else style="background-color:orange;">{{ n }}</div> -->
@@ -73,6 +222,7 @@
     <v-col>
         <v-sheet>
         <v-calendar
+            v-if="cal_loaded"
             ref="calendar"
             v-model="curr_date"
             color="primary"
@@ -114,7 +264,10 @@
              
             <v-toolbar v-if="selectedEvent" class="mb-3" :color="getEventColor(selectedEvent)" dark >
                 <v-card-title>{{ selectedEvent.name }}</v-card-title>
+                
                 <v-spacer></v-spacer>
+                <div v-if="selectedEvent.reoccur_id!=null">
+                        (Reoccuring Event)</div>
                 <v-menu
                 left
                 bottom
@@ -131,12 +284,22 @@
                 </template>
         
                 <v-list>
-                    <v-list-item @click="areyousure=true">
-                        <v-list-item-title>Delete Event</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item @click="repeat_dialog=true">
-                        <v-list-item-title>Repeat Event</v-list-item-title>
-                    </v-list-item>
+                    <div v-if="selectedEvent.reoccur_id==null">
+                        <v-list-item @click="showAreYouSure(0)">
+                            <v-list-item-title>Delete Event</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item @click="repeat_dialog=true">
+                            <v-list-item-title>Repeat Event</v-list-item-title>
+                        </v-list-item>
+                    </div>
+                    <div v-else>
+                        <v-list-item @click="showAreYouSure(0)">
+                            <v-list-item-title>Delete This Event Only</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item @click="showAreYouSure(1)">
+                            <v-list-item-title>Delete This Event and Following Events</v-list-item-title>
+                        </v-list-item>
+                    </div>
                 </v-list>
                 </v-menu>
             </v-toolbar>
@@ -175,9 +338,13 @@
             <v-select
                 v-model="selectedEvent.method"
                 :items="method_type"
+                item-text="name"
+                item-value="name"
+                :menu-props="{ top: false, offsetY: true }"
                 :color="getEventColor(selectedEvent)"
                 label="Reservation Type"
             ></v-select>
+            <v-text-field v-model="selectedEvent.custom" v-if="selectedEvent.method=='Custom'" dense label="'Custom' Type Name"></v-text-field>
             <v-row>
             <v-col cols="7">
             <v-autocomplete
@@ -300,6 +467,26 @@
         </v-dialog>
 
         <v-dialog
+            v-model="areyousure_reoccur"
+            persistent
+            max-width="450"
+        >
+            <v-card>
+                <v-card-title>
+                    Delete Reservations
+                </v-card-title>
+                <v-card-text>
+                    Are you sure you want to delete this reservation and future reoccuring reservations?
+                </v-card-text>
+            <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" text @click="deleteReoccur(true)">Yes</v-btn>
+                <v-btn color="blue darken-1" text @click="deleteReoccur(false)">No</v-btn>
+            </v-card-actions>
+            </v-card>
+        </v-dialog>
+
+        <v-dialog
             v-model="repeat_dialog"
             persistent
             max-width="450"
@@ -310,16 +497,24 @@
                     Repeating Event
                 </v-card-title>
                 <v-select
-                    
                     v-model="repeat_select"
                     :items="repeat_type"
-                    label="Repeat"
+                    :menu-props="{ top: false, offsetY: true }"
                 ></v-select>
+                <div v-if="reoccur_err">
+                <v-alert
+                    dense
+                    outlined
+                    type="error"
+                >
+                    {{reoccur_err_mess}}
+                </v-alert>
+                </div>
                 </div>
             <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="repeat_event">Save</v-btn>
-                <v-btn color="blue darken-1" text @click="repeat_dialog=false">Cancel</v-btn>
+                <v-btn color="blue darken-1" text @click="repeat_event(true)">Save</v-btn>
+                <v-btn color="blue darken-1" text @click="repeat_event(false)">Cancel</v-btn>
             </v-card-actions>
             </v-card>
         </v-dialog>
@@ -349,17 +544,70 @@
 
 <script>
 export default {
-    props: ['reservations','users','session_data'],
+    props: ['reservations','users','session_data', 'categories'],
 
     data: () => ({
         curr_date: new Date().toISOString().substr(0, 10),
         dropdown_cal: false,
         events: [],
-        method_type: ['Admin Event', 'Call', 'Walk-In', 'Tennis Pro', 'USTA', 'Member'],
-        repeat_type: ['Repeat Event Daily', 'Repeat Event Weekly', 'Repeat Event Monthly'],
-        repeat_select: 'Repeat Event Weekly',
+        members: [],
+        method_type: [],
+        cal_loaded: false,
+        // method_type: ['Admin Event', 'Call', 'Walk-In', 'Tennis Pro', 'USTA', 'Member', 'Custom'],
+        // repeat_type: ['Repeat Event Weekly', 'Repeat Event Monthly'],
+        repeat_select: 0,
+        // {   display: 'Repeat Event Weekly',
+        //     value: 0
+        // },
+        repeat_type: [{
+            text: 'Repeat Event Weekly',
+            value: 0
+        },{
+            text: 'Repeat Event Monthly',
+            value: 1
+        }],
+        // repeat_select: 'Repeat Event Weekly',
         repeat_dialog: false,
-        colors: ['#0196F3', '#3F51B5', '#00BCD4', '#4CAF50', '#FF9800', '#757575'],        // names: ['Meeting', 'Holiday', 'PTO', 'Travel', 'Event', 'Birthday', 'Conference', 'Party'],
+        // color_options: ['#0196F3', '#3F51B5', '#00BCD4', '#4CAF50', '#FF9800', '#723575', '#550725', '#752302', '#014575','#515075', '#753021', '#145715'],
+        
+        color_options: [
+            '#064b9a',
+            '#f0da16',
+            '#548e66',
+
+            '#f68324',
+            '#f2618f',
+            '#7c7c7c',
+            
+            '#db4c4b',
+            '#a5e3f6',
+            '#167d9f',
+
+            '#b6e95f',
+            '#6478f7',
+            '#8e6a6b',
+        ],
+        // color_options: [
+        //     'rgb(6, 74, 154)',
+        //     'rgb(239, 229, 142)',
+        //     'rgb(84, 142, 102)',
+
+        //     'rgb(246, 129, 36)',
+        //     'rgb(242, 97, 143)',
+        //     'rgb(124, 124, 124)',
+            
+        //     'rgb(219, 76, 75)',
+        //     'rgb(165, 227, 246)',
+        //     'rgb(22, 124, 159)',
+
+        //     'rgb(182, 233, 95)',
+        //     'rgb(100, 119, 247)',
+        //     'rgb(142, 106, 107)', 
+        // ],
+        selectedColor: null,
+        newCategoryListItem: false,
+        category_new: null,
+        // colors: ['#0196F3', '#3F51B5', '#00BCD4', '#4CAF50', '#FF9800', '#757575'],        // names: ['Meeting', 'Holiday', 'PTO', 'Travel', 'Event', 'Birthday', 'Conference', 'Party'],
         scheduleView: 0,
         searchInput: null,
         fullScreen: false,
@@ -379,10 +627,13 @@ export default {
         dialog_verify_update: false,
         selectedEvent: null,
         areyousure: false,
+        areyousure_reoccur: false,
 
         message: false,
         message_text: '',
         timeout: 3000,
+        reoccur_err: false,
+        reoccur_err_mess: null,
 
         newCompTimePayload: [],
         // test: [ 
@@ -407,10 +658,12 @@ export default {
 
     }),
     created () {
-        console.log("first")
+        console.log(this.$vuetify.breakpoint.name)
         this.refreshLoad = true
-        this.$emit('refresh-schedule')
         this.$emit('refresh-users')
+        this.$emit('refresh-categories')
+        this.$emit('refresh-schedule')
+
         
     },
     watch: {
@@ -421,6 +674,14 @@ export default {
         },
         users (val) {
             this.members=val
+        },
+        categories (val) {
+            if(!this.cal_loaded){
+                console.log("cats loaded")
+                this.method_type=val
+                this.cal_loaded = true
+            }
+            // var members_no_host = JSON.parse(JSON.stringify(this.method_type))
         },
     },
     computed: {
@@ -448,6 +709,9 @@ export default {
                 // console.log(members_no_host)
                 return members_no_host
             }
+        },
+        computedMethods(){
+            return this.method_type;
         },
         computedCategories(){
             var categories = []
@@ -484,9 +748,54 @@ export default {
         },
     },
     methods: {
-        repeat_event() {
-            console.log(this.selectedEvent)
-            console.log(this.repeat_select)
+        repeat_event(bool) {
+            if(bool){
+                if(this.repeat_select == 0){//weekly
+                    let item = JSON.parse(JSON.stringify(this.selectedEvent))
+                    this.newCompTimePayload = {
+                        item
+                    }
+                    item.reoccur_type = "weekly"
+                    // new event
+                    this.refreshLoad = true
+                    axios.post('api/reservation/storeReoccur', this.newCompTimePayload)
+                    .then((response) => {
+                        console.log(response);
+                        if(response.data["status"]=="success"){
+                            this.repeat_dialog = false
+                            this.saveEvent(false)
+                            this.message_text = response.data["message"]
+                            this.message = true
+                        } else if(response.data["status"]=="error"){
+                            this.reoccur_err_mess = response.data["message"]
+                            this.reoccur_err = true
+                            // console.log("POOP")
+                        } 
+                        // if(response.data=="error"){
+                        //     this.message_text = "Time Conflict"
+                        //     this.message = true
+                        // } else {
+                        //     this.message_text = "Event Created"
+                        //     this.message = true
+                        //     this.selectedEvent.id = response.data.id
+                        //     this.getParticipants()
+                        //     // this.dialog_edit = true
+                        // }
+                        // this.refreshLoad = true
+                        // this.$emit('refresh-schedule')
+                    }, (error) => {
+                        console.log(error);
+                    });
+                } else if(this.repeat_select == 1){//monthly
+                    console.log("hi")
+                }
+                console.log(this.selectedEvent)
+                console.log(this.repeat_select)
+                // console.log(this.reoccur_id)
+            } else{
+                this.repeat_dialog = false
+                this.reoccur_err = false
+            }
         },
         saveEvent(save) {
             if(save){
@@ -535,9 +844,118 @@ export default {
             this.dialog_edit = false
             this.areyousure = false
         },
+        deleteReoccur(del_event){
+            if(del_event){
+                axios.delete('api/reservation/deleteReoccur/'+this.selectedEvent.id)
+                .then((response) => {
+                    console.log(response);
+                    this.message_text = "Event Deleted"
+                    this.message = true
+                    this.refreshLoad = true
+                    this.$emit('refresh-schedule')
+                }, (error) => {
+                    console.log(error);
+                });
+            } else {
+                this.refreshLoad = true
+                this.$emit('refresh-schedule')
+            }
+            this.dialog_edit = false
+            this.areyousure_reoccur = false
+        },
+        addNewCategory(){
+            // console.log(this.category_new,"this.category_new")
+            let item = JSON.parse(JSON.stringify(this.category_new))
+
+            this.newCompTimePayload = {
+                item
+            }
+            axios.post('api/categories/store', this.newCompTimePayload)
+            .then((response) => {
+                // console.log(response);
+                if(response.data.status=="error"){
+                    this.message_text = response.data.message
+                    this.message = true
+                } else if(response.data.status=="success"){
+                    this.message_text = response.data.message
+                    this.message = true
+                    this.newCategoryListItem=false
+                } 
+                else {
+                    console.log("unknown repsonse")
+                }
+                this.cal_loaded=false
+                this.$emit('refresh-categories')
+            }, (error) => {
+                console.log(error);
+            });
+        },
+        updateCat(id, color){
+            var categoryInfo = {
+                id: id,
+                color: color
+            }
+            let item = JSON.parse(JSON.stringify(categoryInfo))
+            this.newCompTimePayload = {
+                item
+            }
+            axios.put('api/categories/update', this.newCompTimePayload)
+            .then((response) => {
+                if(response.data.status=="error"){
+                    this.message_text = response.data.message
+                    this.message = true
+                } else if(response.data.status=="success"){
+                    this.message_text = response.data.message
+                    this.message = true
+                    this.newCategoryListItem=false
+                } 
+                else {
+                    console.log("unknown repsonse")
+                }
+                this.cal_loaded=false
+                this.$emit('refresh-categories')
+            }, (error) => {
+                console.log(error);
+            });
+            // method_type[ind].color=selectedColor; 
+            // method_type[ind].selected=0
+        },
+        deleteCategory(id){
+            axios.delete('api/categories/'+id)
+            .then((response) => {
+                if(response.data.status=="error"){
+                    this.message_text = response.data.message
+                    this.message = true
+                } else if(response.data.status=="success"){
+                    this.message_text = response.data.message
+                    this.message = true
+                    this.newCategoryListItem=false
+                } 
+                else {
+                    console.log("unknown repsonse")
+                }
+                this.cal_loaded=false
+                this.$emit('refresh-categories')
+            }, (error) => {
+                console.log(error);
+            });
+        },
+        showAreYouSure(num){
+            if(num==1){
+                console.log(this.selectedEvent)
+                this.areyousure_reoccur=true;
+            } else if(num==0){
+                this.areyousure=true;
+                // deleteFinal(true)
+            }
+            
+        },
         updateEvent(edit) {
             if(edit){
                 console.log(this.newCompTimePayload)
+                if(this.newCompTimePayload.item.method=="Custom"){
+                    this.newCompTimePayload.item.method=this.newCompTimePayload.item.custom
+                }
                 // this.newCompTimePayload.ordered_participants_ids = ""
                 axios.put('api/reservation/update', this.newCompTimePayload)
                 .then((response) => {
@@ -599,6 +1017,7 @@ export default {
                     num_of_members: 0,
                     num_of_guests: 0,
                     host_id: null,
+                    reoccur_id: null,
                     timed: 1
                 }
 
@@ -696,6 +1115,11 @@ export default {
                     this.dialog_verify_update = true
                     // console.log("slide date!")
                 } else {
+                    // console.log(this.checkForCustomMethod(this.selectedEvent.method))
+                    if(!this.checkForCustomMethod(this.selectedEvent.method)){
+                        this.selectedEvent.custom = this.selectedEvent.method
+                        this.selectedEvent.method = "Custom"
+                    }
                     this.getParticipants()
                     // this.dialog_edit = true
                 }
@@ -787,6 +1211,27 @@ export default {
                 console.log(error)
             })
         },
+        checkForCustomMethod (method){
+            var return_val = false
+            this.method_type.forEach(function (item) {
+                // console.log(method,item.name)
+                if(method==item.name){
+                    console.log("return true true")
+                    return_val = true
+                }
+            })
+            return return_val ? true : false
+            // return false
+            // if(method=="temp function") {
+            //     return true
+            // } else {
+            //     return true
+            // }
+        },
+        plzwork(){
+            console.log("idk the issue ",this.method_type[0].active)
+            this.method_type[0].active = true
+        },
         roundTime (time, down = true) {
             const roundTo = 30 // minutes
             const roundDownTime = roundTo * 60 * 1000
@@ -799,11 +1244,18 @@ export default {
             return new Date(tms.year, tms.month - 1, tms.day, tms.hour, tms.minute).getTime()
         },
         getEventColor (event) {
-            if(event.method == "Admin Event"){ event.color = this.colors[0] }
-            else if(event.method == "Call" || event.method == "Walk-In"){ event.color = this.colors[1] }
-            else if(event.method == "Tennis Pro"){ event.color = this.colors[2] }
-            else if(event.method == "USTA"){ event.color = this.colors[3] }
-            else{ event.color = this.colors[4] }
+            const colors = this.color_options;
+            event.color = colors[6]
+
+            this.method_type.forEach(function (item, index) {
+                if(event.method==item.name){
+                    // console.log("i be damned",colors[item.color])
+                    event.color = colors[item.color]
+                    // return colors[item.color]
+                }
+                // console.log(colors[0], index);
+            });
+
             const rgb = parseInt(event.color.substring(1), 16)
             const r = (rgb >> 16) & 0xFF
             const g = (rgb >> 8) & 0xFF
@@ -814,6 +1266,8 @@ export default {
                 : event === this.createEvent
                 ? `rgba(${r}, ${g}, ${b}, 0.7)`
                 : event.color
+            // .indexOf(this.selectedEvent.host_id)
+            // return colors[0];
         },
         rnd (a, b) {
             return Math.floor((b - a + 1) * Math.random()) + a
@@ -890,17 +1344,32 @@ export default {
 </script>
 
 
-<style lang="scss">
-//   @import '~vuetify/src/components/VStepper/_variables.scss';
-    // @import '~vuetify/src/resources/sass/_variables.scss';
-    @import 'resources/sass/_variables.scss';
-    $calendar-event-right-empty: 0px;
-</style>
+
 
 <style>
+/* Categories CSS */
+.list_item_active {
+    background-color:rgb(228, 228, 228);
+}
+.list_item_selected {
+    background-color:rgb(228, 228, 228);
+}
+.categories_style {
+    display: inline-block;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.clickable {
+    cursor: pointer;
+}
+
+
+/* Calendar css */
+/* SASS variable not working ... */
 /* $calendar-event-right-empty 0px  */
 .v-event-draggable {
-padding-left: 6px;
+    padding-left: 6px;
 }
 
 .v-event-timed {

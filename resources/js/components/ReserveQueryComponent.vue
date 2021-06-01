@@ -1,7 +1,7 @@
 <template>
     <div class="pa-6 ma-auto" fluid>
         <div class="pb-5 row justify-content-center">
-            <img src="../../images/TennisCourtMap.png" alt="Map of the Tennis Courts" style="width:80%; border: 5px solid #333;"/>
+            <img src="../../images/TennisCourtMap.png" alt="Map of the Tennis Courts" style="max-width: 100%; height: auto; border: 5px solid #333;"/>
         </div>
         <v-card>
             <v-toolbar class="mb-3">

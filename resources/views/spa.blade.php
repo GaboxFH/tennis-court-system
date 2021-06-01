@@ -7,7 +7,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'Racquet Club') }}</title>
 
     <!-- Scripts + pass user info into bootstrap/app script-->
     @if(Auth::user()->access == "Admin")
