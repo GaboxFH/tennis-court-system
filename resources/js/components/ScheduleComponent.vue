@@ -1,204 +1,216 @@
 <template>
 <v-container fluid class="pa-0 ma-0">
-    <v-row class="fill-height pt-6">
-        <v-col cols="3" v-if="($vuetify.breakpoint.name != 'xs' && $vuetify.breakpoint.name != 'sm')">
-            Today
+    <v-row class="fill-height pt-6 pb-3">
+        <v-col cols="3" align="center" v-if="($vuetify.breakpoint.name != 'xs' && $vuetify.breakpoint.name != 'sm')">
+            <v-btn outlined class="ml-4 mr-2" color="blue darken-4" @click="setToday">Today</v-btn>
         </v-col>
-        <v-col style="display: flex;
-            align-items: center; 
-            justify-content: center;"
-        >
-            wow
+        <v-col>
+            <!-- <div class="flex text-center mx-8" 
+                v-bind:style="[($vuetify.breakpoint.name == 'xs' || $vuetify.breakpoint.name == 'sm') ? { 
+                    position: 'relative', left: 24 + 'px'
+                } : { position: 'relative', right: 18 + 'px'
+                }]"> -->
+            <v-row>
+                <v-col>
+                    <div class="flex text-center mx-8" 
+                        v-bind:style="[($vuetify.breakpoint.name == 'xs' || $vuetify.breakpoint.name == 'sm') ? { 
+                            position: 'relative', left: 24 + 'px'
+                        } : { position: 'relative', right: 18 + 'px'
+                        }]">
+                    <h1>Racquet Club Schedule</h1>
+                    </div>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col>
+                    <v-app-bar flat dense color="white">
+                        <div class="flex text-center mx-8" 
+                        v-bind:style="[($vuetify.breakpoint.name == 'xs' || $vuetify.breakpoint.name == 'sm') ? { 
+                            position: 'relative', left: 24 + 'px'
+                        } : { position: 'relative', right: 18 + 'px'
+                        }]">
+                        <v-btn icon text medium color="blue darken-4" @click="prev">
+                            <v-icon>mdi-chevron-left</v-icon>
+                        </v-btn>
+
+                        <v-menu
+                            ref="dropdown_cal"
+                            v-model="dropdown_cal"
+                            :close-on-content-click="false"
+                            transition="scale-transition"
+                            offset-y
+                            max-width="590px"
+                            min-width="auto"
+                        >
+                            <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                                v-bind="attrs"
+                                v-on="on"
+                                min-width="200px"
+                                outlined
+                                color="blue darken-4"
+                            > 
+                            {{ displayDate(new Date(curr_date)) }} 
+                            </v-btn>
+                            </template>
+                            <v-date-picker
+                            v-model="curr_date"
+                            no-title
+                            @input="dropdown_cal = false"
+                            ></v-date-picker>
+                        </v-menu>
+
+                        <v-btn icon text medium color="blue darken-4" @click="next">
+                            <v-icon>mdi-chevron-right</v-icon>
+                        </v-btn>
+                        </div>
+                    </v-app-bar>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col>
+                    <div v-if="fullScreen==false" class="flex text-center mx-8" 
+                        v-bind:style="[($vuetify.breakpoint.name == 'xs' || $vuetify.breakpoint.name == 'sm') ? { 
+                            position: 'relative', left: 24 + 'px'
+                        } : { position: 'relative', right: 18 + 'px'
+                        }]">
+                    <v-btn-toggle background-color="" color="" class="mx-6 mb-2" v-model="scheduleView" rounded dense mandatory btn-toggle-btn-height="170px">
+                        <v-btn text color="rgb(51,104,153)"
+                        >1-8</v-btn>
+                        <v-btn text color="rgb(51,104,153)"
+                        >9-17</v-btn>
+                    </v-btn-toggle>
+                    </div>
+                </v-col>
+            </v-row>
         </v-col>
-        <v-col cols="3" v-if="($vuetify.breakpoint.name != 'xs' && $vuetify.breakpoint.name != 'sm')">
-            <h5 class="pa-0 ma-0">
+        <v-col cols="2" class="pa-0 ma-0" v-if="($vuetify.breakpoint.name != 'xs' && $vuetify.breakpoint.name != 'sm')">
+            <h5 class="pa-0 ma-0 ml-5">
                 Categories
-                <v-btn small icon @click="method_type[0].name = 'whattheheck'">
-                    <v-icon small color="grey lighten-1">mdi-plus-circle-outline</v-icon>
+                <v-btn class="pa-0 ma-0" v-if="!newCategoryListItem" small icon @click="newCategoryListItem = true">
+                    <v-icon class="pa-0 ma-0" small>mdi-plus-circle-outline</v-icon>
                 </v-btn></h5>
             <v-row 
                 v-for="(item,ind) in method_type" :key="item.id" 
                 @mouseover="method_type[ind].active = 1"
                 @mouseleave="method_type[ind].active = 0"
-                align="center"
-                justify="center"
-                class="pa-0 ma-0 categories_row"
-                :class="{ list_item_active: item.active }"
+                class="pa-0 ma-0 clickable"
+                :class="{ list_item_active: item.active, list_item_selected: item.selected }"
+                align="center" justify="center"
             >
-                <v-col cols="1" class="pa-0 ma-0 categories_style">
-                    <v-avatar
-                            size=16
-                            :color="color_options[method_type[ind].color]"
-                            class="pa-0 ma-0 rounded"
-                    ></v-avatar>
-                </v-col>
-                <v-col class="pa-0 ma-0 categories_style">
-                    {{method_type[ind].name}}
-                </v-col>
-                <v-col cols="2" class="pa-0 ma-0 categories_style">
-                    <v-menu
-                        top
-                        left
-                        :offset-x="true"
-                    >
+                <v-col cols="2" max-width="300px" align="center" class="pa-0 ma-0 categories_style" style="justify-content: center;">
+                    <v-menu v-model="method_type[ind].selected" left :offset-x="true" :close-on-content-click="false">
                         <template v-slot:activator="{ on, attrs }">
-                        <v-btn small icon 
-                            class="pa-0 ma-0"
-                            v-bind="attrs" v-on="on"
-                        >
-                            <v-icon small class="pa-0 ma-0" color="grey lighten-1">
-                                mdi-dots-vertical
-                            </v-icon>
-                        </v-btn>
+                            <v-avatar
+                                v-bind="attrs" v-on="on"
+                                size=18
+                                :color="color_options[method_type[ind].color]"
+                                class="pa-0 ma-0 rounded clickable"
+                                @click="selectedColor=method_type[ind].color; method_type[ind].selected=1;"
+                            ></v-avatar>
                         </template>
                         <v-card
                             color="grey lighten-4"
+                            class="pa-2 ma-0"
                             min-width="150px"
                             max-width="200px"
-                            height="150px"
-                            flat
+                            v-model="method_type[ind].color"
                         >
-                            <v-row v-for="i in 4" :key="i" align="center" justify="center">
-                                <v-col v-for="j in 3" :key="j" align="center" justify="center" cols="4">
+                            <v-row>
+                                <v-col align="center" justify="center">
+                                    <h5>Pick Color</h5>
+                                </v-col>
+                            </v-row>
+                            <v-row v-for="i in 4" :key="i" align="center" justify="center" class="py-1 ma-0" style="height: 36px">
+                                <v-col v-for="j in 3" :key="j" align="center" justify="center" class="pa-0 ma-0" cols="4">
                                     <v-avatar
-                                        size=16
+                                        v-if="(i*3+j-4)==selectedColor"
+                                        size=28
                                         :color="color_options[(i*3+j-4)]"
-                                        class="pa-0 ma-0 rounded"
+                                        class="pa-0 ma-0 rounded clickable"
+                                        @click="selectedColor = (i*3+j-4)"
                                     ></v-avatar>
+                                    <v-avatar
+                                        v-else
+                                        size=18
+                                        :color="color_options[(i*3+j-4)]"
+                                        class="pa-0 ma-0 rounded clickable"
+                                        @click="selectedColor = (i*3+j-4)"
+                                    ></v-avatar>
+                                </v-col>
+                            </v-row>
+                            <v-row class="py-2">
+                                <v-col align="center" justify="center" >
+                                    <v-btn @click="method_type[ind].selected=0" style="text-transform: none;" outlined depressed small>Cancel</v-btn>
+                                </v-col>
+                                <v-col align="center" justify="center">
+                                    <v-btn @click="updateCat(item.id, selectedColor)" style="text-transform: none;" small depressed color="primary">Apply</v-btn>
                                 </v-col>
                             </v-row>
                         </v-card>
                     </v-menu>
-                    <!-- <v-btn :ref="item.id" small icon class="pa-0 ma-0">
-                        <v-icon small class="pa-0 ma-0" color="grey lighten-1" @click="open_colors=true">
-                            mdi-dots-vertical
-                        </v-icon>
-                    </v-btn>
-                    <v-menu
-                        top
-                        left
-                        :offset-x="true"
-                        :activator="item.id"
-                    >
-                        <v-card
-                            color="grey lighten-4"
-                            min-width="250px"
-                            max-width="350px"
-                            flat
+                </v-col>
+                <v-col class="pa-0 ma-0 categories_style">
+                    {{method_type[ind].name}}
+                </v-col>
+                <v-col cols="2" align="left" class="pa-0 ma-0">
+                    <v-menu offset-y left>
+                        <template v-slot:activator="{ on, attrs }">
+                        <v-btn
+                            small icon class="pa-0 ma-0"
+                            v-bind="attrs"
+                            v-on="on"
                         >
-                            testing
-                        </v-card>
-                    </v-menu> -->
+                            <v-icon small class="pa-0 ma-0">
+                            mdi-dots-vertical
+                            </v-icon>
+                        </v-btn>
+                        </template>
+                        <v-list class="pa-0 ma-0">
+                        <v-list-item dense link @click="deleteCategory(item.id)">
+                            <v-list-item-title dense>Delete Category</v-list-item-title>
+                        </v-list-item>
+                        </v-list>
+                    </v-menu>
                 </v-col>
             </v-row>
-        </v-col>
-    </v-row>
-    <!-- <v-row v-if="cal_loaded" class="fill-height pt-6">
-        <v-col cols="3" v-if="($vuetify.breakpoint.name != 'xs' && $vuetify.breakpoint.name != 'sm')">
-            {{method_type}}
-        </v-col>
-        <v-col class="flex text-center">
-            {{computedMethods}} 
-        </v-col>
-        <v-col cols="3" class="pa-0 ma-0" v-if="($vuetify.breakpoint.name != 'xs' && $vuetify.breakpoint.name != 'sm')">
-            <h5 class="pa-0 ma-0">
-                Categories
-                <v-btn small icon @click="method_type[0].name = 'whattheheck'">
-                    <v-icon small color="grey lighten-1">mdi-plus-circle-outline</v-icon>
-                </v-btn>
-                <v-btn small icon @click="plzwork()">
-                    <v-icon small color="grey lighten-1">mdi-plus-box</v-icon>
-                </v-btn></h5>
-            <v-row 
-                v-for="item in method_type" 
-                :key="item.id" 
-                @mouseover="item.active = true"
-                @mouseleave="item.active = false"
+            <v-row
+                v-if="newCategoryListItem"
                 class="pa-0 ma-0"
-                :class="{ list_item_active: !item.active }"
+                align="center" justify="center"
             >
-                <v-col cols="1" class="pa-0 ma-0">
-                    <v-avatar
-                            size=16
-                            :color="color_options[item.color]"
-                            class="pa-0 ma-0 rounded"
-                    ></v-avatar>
-                    
-                </v-col>
                 <v-col class="pa-0 ma-0">
-                    {{item.name}} {{item.active}} 
+                    <v-text-field
+                        v-model="category_new"
+                        label="New Category"
+                        dense
+                        class="pt-4 pb-0 pl-2 pr-0 ma-0"
+                    >
+                    </v-text-field>
                 </v-col>
-                <v-col cols="2" class="pa-0 ma-0">
-                    <v-btn small icon @click="item.active = true">
-                        <v-icon small color="grey lighten-1">mdi-dots-vertical</v-icon>
+                <v-col cols="2" align="left" class="pa-0 ma-0">
+                    <v-btn @click="newCategoryListItem=false" small icon class="pa-0 ma-0">
+                        <v-icon small class="pa-0 ma-0">
+                            mdi-close
+                        </v-icon>
                     </v-btn>
+                </v-col>
+            </v-row>
+            <v-row
+                v-if="newCategoryListItem"
+                class="pa-0 ma-0 mb-2"
+                align="center" justify="center"
+            >
+                <v-col align="center" justify="center" class="pa-0 ma-0">
+                    <v-btn @click="addNewCategory()" style="text-transform: none;" class="px-2 py-0 ma-0" small depressed color="primary">Add Category</v-btn>
                 </v-col>
             </v-row>
             
         </v-col>
-    </v-row> -->
-    <v-row class="fill-height pt-3">
-        <v-col>
-            <v-app-bar flat dense color="white">
-                <v-btn v-if="$vuetify.breakpoint.name != 'xs'" outlined class="ml-4 mr-2" color="blue darken-4" @click="setToday">Today</v-btn>
-                <div class="flex text-center mx-8" 
-                v-bind:style="[$vuetify.breakpoint.name != 'xs' ? { 
-                    position: 'relative', right: 32 + 'px'
-                } : { position: 'relative', left: 24 + 'px'
-                }]">
-                <v-btn icon text medium color="blue darken-4" @click="prev">
-                    <v-icon>mdi-chevron-left</v-icon>
-                </v-btn>
-
-                <v-menu
-                    ref="dropdown_cal"
-                    v-model="dropdown_cal"
-                    :close-on-content-click="false"
-                    transition="scale-transition"
-                    offset-y
-                    max-width="590px"
-                    min-width="auto"
-                >
-                    <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                        v-bind="attrs"
-                        v-on="on"
-                        min-width="200px"
-                        outlined
-                        color="blue darken-4"
-                    > 
-                    <!-- {{ displayDate(new Date(curr_date+'T00:00')) }}  -->
-                    {{ displayDate(new Date(curr_date)) }} 
-                    <!-- {{ curr_date }}  -->
-                    </v-btn>
-                    </template>
-                    <v-date-picker
-                    v-model="curr_date"
-                    no-title
-                    @input="dropdown_cal = false"
-                    ></v-date-picker>
-                </v-menu>
-
-                <v-btn icon text medium color="blue darken-4" @click="next">
-                    <v-icon>mdi-chevron-right</v-icon>
-                </v-btn>
-                </div>
-            </v-app-bar>
-        </v-col>
     </v-row>
-    <v-row>
-        <v-col align="center" class="mb-2">
-            <div v-if="fullScreen==false">
-            <v-btn-toggle style="position: relative; left: 24px;" class="mx-6" v-model="scheduleView" rounded dense mandatory btn-toggle-btn-height="170px">
-                <v-btn
-                >1-8</v-btn>
-                <v-btn
-                >9-17</v-btn>
-            </v-btn-toggle>
-            </div>
-        </v-col>
-    </v-row>
-    <v-row class="pl-15 pr-4 pt-2 pb-2 blue darken-4 text-white">
+    
+    <!-- <v-row class="pl-15 pr-4 pt-2 pb-2 blue darken-4 text-white"> -->
+    <v-row class="pl-15 pr-4 pt-2 pb-2 text-white" style="background-color: rgb(51,104,153)">
         <v-col v-for="n in computedCategories" v-bind:key="n" align="center" class="pa-0 ma-0">
             <!-- <div v-if="n%2==0" style="background-color:tomato;">{{ n }}</div>
             <div v-else style="background-color:orange;">{{ n }}</div> -->
@@ -557,24 +569,44 @@ export default {
         // repeat_select: 'Repeat Event Weekly',
         repeat_dialog: false,
         // color_options: ['#0196F3', '#3F51B5', '#00BCD4', '#4CAF50', '#FF9800', '#723575', '#550725', '#752302', '#014575','#515075', '#753021', '#145715'],
+        
         color_options: [
-            'rgb(6, 74, 154)',
-            'rgb(239, 229, 142)',
-            'rgb(84, 142, 102)',
+            '#064b9a',
+            '#f0da16',
+            '#548e66',
 
-            'rgb(246, 129, 36)',
-            'rgb(242, 97, 143)',
-            'rgb(124, 124, 124)',
+            '#f68324',
+            '#f2618f',
+            '#7c7c7c',
             
-            'rgb(219, 76, 75)',
-            'rgb(165, 227, 246)',
-            'rgb(22, 124, 159)',
+            '#db4c4b',
+            '#a5e3f6',
+            '#167d9f',
 
-            'rgb(182, 233, 95)',
-            'rgb(100, 119, 247)',
-            'rgb(142, 106, 107)',
-            
+            '#b6e95f',
+            '#6478f7',
+            '#8e6a6b',
         ],
+        // color_options: [
+        //     'rgb(6, 74, 154)',
+        //     'rgb(239, 229, 142)',
+        //     'rgb(84, 142, 102)',
+
+        //     'rgb(246, 129, 36)',
+        //     'rgb(242, 97, 143)',
+        //     'rgb(124, 124, 124)',
+            
+        //     'rgb(219, 76, 75)',
+        //     'rgb(165, 227, 246)',
+        //     'rgb(22, 124, 159)',
+
+        //     'rgb(182, 233, 95)',
+        //     'rgb(100, 119, 247)',
+        //     'rgb(142, 106, 107)', 
+        // ],
+        selectedColor: null,
+        newCategoryListItem: false,
+        category_new: null,
         // colors: ['#0196F3', '#3F51B5', '#00BCD4', '#4CAF50', '#FF9800', '#757575'],        // names: ['Meeting', 'Holiday', 'PTO', 'Travel', 'Event', 'Birthday', 'Conference', 'Party'],
         scheduleView: 0,
         searchInput: null,
@@ -626,7 +658,7 @@ export default {
 
     }),
     created () {
-        console.log("first")
+        console.log(this.$vuetify.breakpoint.name)
         this.refreshLoad = true
         this.$emit('refresh-users')
         this.$emit('refresh-categories')
@@ -830,6 +862,83 @@ export default {
             }
             this.dialog_edit = false
             this.areyousure_reoccur = false
+        },
+        addNewCategory(){
+            // console.log(this.category_new,"this.category_new")
+            let item = JSON.parse(JSON.stringify(this.category_new))
+
+            this.newCompTimePayload = {
+                item
+            }
+            axios.post('api/categories/store', this.newCompTimePayload)
+            .then((response) => {
+                // console.log(response);
+                if(response.data.status=="error"){
+                    this.message_text = response.data.message
+                    this.message = true
+                } else if(response.data.status=="success"){
+                    this.message_text = response.data.message
+                    this.message = true
+                    this.newCategoryListItem=false
+                } 
+                else {
+                    console.log("unknown repsonse")
+                }
+                this.cal_loaded=false
+                this.$emit('refresh-categories')
+            }, (error) => {
+                console.log(error);
+            });
+        },
+        updateCat(id, color){
+            var categoryInfo = {
+                id: id,
+                color: color
+            }
+            let item = JSON.parse(JSON.stringify(categoryInfo))
+            this.newCompTimePayload = {
+                item
+            }
+            axios.put('api/categories/update', this.newCompTimePayload)
+            .then((response) => {
+                if(response.data.status=="error"){
+                    this.message_text = response.data.message
+                    this.message = true
+                } else if(response.data.status=="success"){
+                    this.message_text = response.data.message
+                    this.message = true
+                    this.newCategoryListItem=false
+                } 
+                else {
+                    console.log("unknown repsonse")
+                }
+                this.cal_loaded=false
+                this.$emit('refresh-categories')
+            }, (error) => {
+                console.log(error);
+            });
+            // method_type[ind].color=selectedColor; 
+            // method_type[ind].selected=0
+        },
+        deleteCategory(id){
+            axios.delete('api/categories/'+id)
+            .then((response) => {
+                if(response.data.status=="error"){
+                    this.message_text = response.data.message
+                    this.message = true
+                } else if(response.data.status=="success"){
+                    this.message_text = response.data.message
+                    this.message = true
+                    this.newCategoryListItem=false
+                } 
+                else {
+                    console.log("unknown repsonse")
+                }
+                this.cal_loaded=false
+                this.$emit('refresh-categories')
+            }, (error) => {
+                console.log(error);
+            });
         },
         showAreYouSure(num){
             if(num==1){
@@ -1242,13 +1351,16 @@ export default {
 .list_item_active {
     background-color:rgb(228, 228, 228);
 }
+.list_item_selected {
+    background-color:rgb(228, 228, 228);
+}
 .categories_style {
     display: inline-block;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
 }
-.categories_row {
+.clickable {
     cursor: pointer;
 }
 

@@ -18,6 +18,7 @@ class CreateCategoriesTable extends Migration
             $table->string('name');
             $table->integer('color');
             $table->boolean('active')->default(0);
+            $table->boolean('selected')->default(0);
             $table->timestamps();
         });
     }

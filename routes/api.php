@@ -67,4 +67,11 @@ Route::prefix('/user')->group( function() {
 
 Route::get('/rules', [RulesController::class, 'index']);
 
+
 Route::get('/categories', [CategoryController::class, 'index']);
+
+Route::prefix('/categories')->group( function() {
+    Route::post('/store', [CategoryController::class, 'store']);
+    Route::put('/update', [CategoryController::class, 'update']);
+    Route::delete('/{id}', [CategoryController::class, 'destroy']);
+});
