@@ -1,6 +1,7 @@
 <template>
-    <div class="container">
-        <div class="row justify-content-center">
+    
+    <div class="container-fluid" style="margin: 0px; padding: 0px;">
+        <!-- <div class="row justify-content-center">
             <div class="col-md-11">
                 <div class="card">
                     <div class="card-header text-white" style="background-color: rgb(51, 104, 153)">Court Rules</div>
@@ -58,13 +59,31 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
     
 
-    <v-container
-        class="pa-6 ma-auto"
-        fluid
-    >
+    
+        <v-row no-gutters class="pa-0 ma-0" style="background-color:red">
+        <v-col cols="3" class="pa-0 ma-0" align="right">
+test
+        </v-col>
+        <v-col cols="6">
+<v-row class="pa-0 ma-0"> 
+                <v-col class="pa-0 ma-0">
+                    <div class="flex text-center mx-8" 
+                        v-bind:style="[($vuetify.breakpoint.name == 'xs' || $vuetify.breakpoint.name == 'sm') ? { 
+                            position: 'relative', left: 24 + 'px'
+                        } : { position: 'relative', right: 18 + 'px'
+                        }]">
+                    <h1>Racquet Club Schedule</h1>
+                    </div>
+                </v-col>
+            </v-row>
+        </v-col>
+        <v-col cols="3" class="pa-0 ma-0" align="right">
+test
+        </v-col>
+      </v-row>
         <h1>Admin Panel</h1>
         <br><br>
         <v-tooltip top>
@@ -106,7 +125,6 @@
         <div v-else>LOADING</div>
 
 
-    </v-container>
 
 
     </div>

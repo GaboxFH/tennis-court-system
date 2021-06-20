@@ -26,6 +26,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 
 Route::get('/reservations', [ReservationController::class, 'index']);
+Route::get('/getEvents/{date}', [ReservationController::class, 'getEvents']);
+Route::get('/getClosure/{closure_id}', [ReservationController::class, 'getClosure']);
+Route::delete('/deleteClosure/{closure_id}', [ReservationController::class, 'deleteClosure']);
 Route::get('/getUserReservations/{user_id}', [ReservationController::class, 'getUserReservations']);
 Route::get('/daily/{start}/{end}', [ReservationController::class, 'daily']);
 Route::get('/court_play/{time}', [ReservationController::class, 'court_play']);
@@ -41,6 +44,8 @@ Route::prefix('/reservation')->group( function() {
     Route::post('/memberStore', [ReservationController::class, 'memberStore']);
     Route::post('/storeReoccur', [ReservationController::class, 'storeReoccur']);
     Route::post('/resUsers', [ReservationController::class, 'resUsers']);
+    Route::post('/closeOptions', [ReservationController::class, 'closeOptions']);
+    Route::post('/closeCourts', [ReservationController::class, 'closeCourts']);
     Route::put('/adminupdate', [ReservationController::class, 'adminupdate']);
     Route::put('/update', [ReservationController::class, 'update']);
     Route::delete('/{id}', [ReservationController::class, 'destroy']);
