@@ -55,7 +55,10 @@
                     <div class="card-header text-white" style="background-color: rgb(51, 104, 153)">Event Categories</div>
 
                     <div class="card-body">
-                        
+                        Club Activity    include admin activity [ ] [ Club Rules ]
+                        [                                                        ]
+                        Members [ Add Member ]
+                        [                                                        ]
                     </div>
                 </div>
             </div>
@@ -63,7 +66,7 @@
     
 
     
-        <v-row no-gutters class="pa-0 ma-0" style="background-color:red">
+        <!-- <v-row no-gutters class="pa-0 ma-0" style="background-color:red">
         <v-col cols="3" class="pa-0 ma-0" align="right">
 test
         </v-col>
@@ -83,7 +86,7 @@ test
         <v-col cols="3" class="pa-0 ma-0" align="right">
 test
         </v-col>
-      </v-row>
+      </v-row> -->
         <h1>Admin Panel</h1>
         <br><br>
         <v-tooltip top>

@@ -1219,7 +1219,14 @@ export default {
                     item
                 }
                 // new event
-                if(!this.createEvent.id && this.courtOpen){
+                // if(moment(new Date()).valueOf()>this.selectedEvent.orig_start){
+                //     this.snackbar_text = "Start Time"
+                //     this.snackbar_dialog = true
+                // } 
+                if(!this.createEvent.id && this.courtOpen ){
+                    // console.log(moment(new Date()).valueOf())
+                    // console.log(this.selectedEvent.orig_start)
+                    
                     this.dialog_load = false
                     axios.post('api/reservation/store', this.newCompTimePayload)
                     .then((response) => {
