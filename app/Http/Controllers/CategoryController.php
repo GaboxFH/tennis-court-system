@@ -16,10 +16,19 @@ class CategoryController extends Controller
 
     public function store(Request $request)
     {   
+        $limit = 12;
         if(!isset($request->item)){
             return [
                 'status' => 'error',
                 'message' => 'Text Field Blank',
+            ];  
+        }
+
+        $checkMax = Category::get()->count();
+        if($checkMax >= $limit){
+            return [
+                'status' => 'error',
+                'message' => 'Category Limit is ' . $limit,
             ];  
         }
 

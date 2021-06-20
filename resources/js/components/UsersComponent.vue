@@ -7,8 +7,9 @@
 
         <v-container>
             <p>Welcome.</p>
-
-            <p>HI</p>
+            <h3>Notifications</h3>
+            <p>Email notications</p>
+            <p>Phone notications</p>
             <!-- <p>{{ this.users[0].access }}</p> -->
             <!-- <p>{{ this.editedItem[0].access }}</p> -->
 

@@ -21,6 +21,20 @@ class ReservationController extends Controller
         return Reservation::orderBy('created_at', 'DESC')->get();
     }
 
+    public function getClosed(){
+        return Reservation::where('timed',0)->orderBy('created_at', 'DESC')->get();
+    }
+
+    public function getEvents($date){
+        // return "hi";
+        $events = Reservation::where('timed',1)->where('date',$date)->orderBy('created_at', 'DESC')->get();
+        $closed_court_periods = Reservation::where('timed',0)->where('date',$date)->orderBy('created_at', 'DESC')->get();
+        return [
+            'events' => $events,
+            'closed_court_periods' => $closed_court_periods,
+        ];
+    }
+
     public function getUserReservations($user_id)
     {
         // return $user_id;
@@ -73,6 +87,120 @@ class ReservationController extends Controller
     //     $result = $hour + $minute + $sec;
     //     return $result;
     // }
+
+    public function closeOptions(Request $request){
+        if(count($request->item['courts'])==0 || !isset($request->item['start']) || !isset($request->item['end'])){
+            return [
+                'status' => 'error',
+                'message' => 'Missing required fields',
+            ];
+        } 
+        else if($request->item['start'] > $request->item['end']) {
+            return [
+                'status' => 'error',
+                'message' => 'Invalid Time Range',
+            ];
+        }
+
+        $conflictingReservations = Reservation::where('start', '<', $request->item['end'])
+                                                ->where('end', '>', $request->item['start'])
+                                                ->count();
+
+
+        return [
+            'status' => 'success',
+            'message' => null,
+            'reservations' => $conflictingReservations 
+        ];
+    }
+
+    public function closeCourts(Request $request){
+        // duration
+        sleep(2);
+        $datetime1 = $request->item['start']/1000;
+        $datetime2 = $request->item['end']/1000;
+
+        $hours = floor(($datetime2-$datetime1)/60/60);
+        $mins = ($datetime2-$datetime1)/60%60;
+        $secs = ($datetime2-$datetime1)%60;
+
+        $duration = date("H:i:s", mktime($hours, $mins, $secs));
+
+        $groupId = 0;
+        foreach($request->item['courts'] as $courtNum){
+            $conflictingReservations = Reservation::where('start', '<', $request->item['end'])
+            ->where('end', '>', $request->item['start'])
+            ->where('category', $courtNum)
+            ->get();
+
+            
+            foreach($conflictingReservations as $res){
+                $res->delete();
+            }
+
+            $closedRecord = Reservation::create([
+                'name' => $request->item['reason'],
+                'method' => "Closed",
+                'date' => $request->item['date'],
+                'start' => $request->item['start'],
+                'end' => $request->item['end'],
+                'duration' => $duration,
+                'category' => $courtNum,
+                'num_of_members' => 0,
+                'num_of_guests' => 0,
+                // 'host_id' => $request->item["host_id"],
+                'reoccur_id' => $groupId,
+                'timed' => 0,
+            ]);
+            if($groupId==0){
+                Reservation::where('id', $closedRecord->id)->update(['reoccur_id' => $closedRecord->id]);
+                $groupId = $closedRecord->id;
+            }
+        }
+        return [
+            'status' => 'success',
+            'message' => 'Courts Closed',
+        ];
+    }
+
+    public function getClosure($closure_id){
+        $closure_courts = Reservation::where('reoccur_id', $closure_id)->get();
+        
+        $courts = array();
+        if($closure_courts->count() > 0){
+            // return $closure_courts[0].start;
+            $start = $closure_courts[0]->start;
+            $end = $closure_courts[0]->end;
+            foreach($closure_courts as $court){
+                $courts[] = $court->category;
+            }
+        }else {
+            return [
+                'status' => 'error',
+                'message' => 'Closure not found'
+            ];
+        }
+        return [
+            'courts' => $courts,
+            'start' => $start,
+            'end' => $end,
+        ];
+        return $closure_courts;
+    }
+
+    public function deleteClosure($closure_id){
+        $closure_courts = Reservation::where('reoccur_id', $closure_id)->get();
+
+        foreach($closure_courts as $event){
+            // $count += 1;
+            $event->delete();
+        }
+
+        return [
+            'status' => 'success',
+            'message' => 'Courts Re-opened'
+        ];
+    }
 
     public function avail_reservations($search_type,$date,$n)
     {
@@ -221,12 +349,13 @@ class ReservationController extends Controller
 
     public function reservation_users($res_id, $user_id)
     {        
-        $res_host = "";
+        $res_host = null;
         $res_participants = [];
         $i = 0;
         $participants = Reservation_User::where('reservation_id', $res_id)->select('user_id')->get();
         if($participants){
             foreach($participants as $participant){
+
                 if($participant->user_id == $user_id){
                     $res_host = $participant->user_id;
                 } else {
@@ -321,14 +450,12 @@ class ReservationController extends Controller
                 $secs = ($datetime2-$datetime1)%60;
 
                 $duration = date("H:i:s", mktime($hours, $mins, $secs));
-
                 Reservation::create([
                     'name' => $request->item["name"],
                     'method' => $request->item["method"],
+                    'date' => date('Y-m-d', ($st_new/1000)),
                     'start' => $st_new,
                     'end' => $en_new,
-                    // 'start' => $st_weeklater,
-                    // 'end' => $en_weeklater,
                     'duration' => $duration,
                     'category' => $request->item["category"],
                     'num_of_members' => $request->item["num_of_members"],
@@ -376,6 +503,7 @@ class ReservationController extends Controller
         $newEvent = Reservation::create([
             'name' => $request->item["name"],
             'method' => $request->item["method"],
+            'date' => $request->item["date"],
             'start' => $request->item["start"],
             'end' => $request->item["end"],
             'duration' => $duration,
@@ -432,10 +560,12 @@ class ReservationController extends Controller
         $secs = ($datetime2-$datetime1)%60;
 
         $duration = date("H:i:s", mktime($hours, $mins, $secs));
-       
+        
+        // return date('Y-m-d',strtotime($request->item["date"]));
         $newEvent = Reservation::create([
             'name' => $request->item["name"],
             'method' => $request->item["method"],
+            'date' => $request->item["date"],
             'start' => $request->item["start"],
             'end' => $request->item["end"],
             'duration' => $duration,

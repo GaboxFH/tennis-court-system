@@ -1,9 +1,9 @@
 <template>
-    <div class="pa-6 ma-auto" fluid>
+    <div class="pa-6 ma-auto" align="center" fluid>
         <div class="pb-5 row justify-content-center">
-            <img src="../../images/TennisCourtMap.png" alt="Map of the Tennis Courts" style="max-width: 100%; height: auto; border: 5px solid #333;"/>
+            <img src="../../images/TennisCourtMap.png" alt="Map of the Tennis Courts" style="max-width: 1000px; min-width: 100px; height: auto; border: 5px solid #333;"/>
         </div>
-        <v-card>
+        <v-card max-width=1400>
             <v-toolbar class="mb-3">
             <v-card-title>Find Available Courts</v-card-title>
             <v-spacer></v-spacer>
@@ -49,7 +49,7 @@
                         v-on="on"
                         min-width="200px"
                         label="Date"
-                        v-model="date_input_display"
+                        v-model="date_input"
                     ></v-text-field>
                     </template>
                     <v-date-picker
@@ -87,7 +87,7 @@
                 </v-btn>
             </v-col>
         </v-row>
-        <div v-if="results=='start_time'">
+        <div v-if="results=='start_time'" align="left"> 
             <v-divider></v-divider>
             <v-card-title class="pt-0"><p>Showing Available Time Slots for <b>{{selectedEvent.dateShow}}</b> at <b>{{selectedEvent.paramShow}}</b></p></v-card-title>
             <v-card-subtitle class="pb-0">217 results</v-card-subtitle>
@@ -95,7 +95,7 @@
             <div v-if="n[0] || n[1] || n[2] || n[3]">
             <v-divider></v-divider>
             <v-row class="px-3">
-                <v-col cols="auto">
+                <v-col cols="auto" align="left">
                     <v-card-subtitle class="ma-0 pa-0">Court {{ind}}</v-card-subtitle>
                     <v-chip-group
                         column
@@ -118,7 +118,7 @@
             </div>
             </div>
         </div>
-        <div v-else-if="results=='duration'">
+        <div v-else-if="results=='duration'" align="left">
             <v-divider></v-divider>
             <v-card-title class="pt-0"><p>Showing Available <b>{{dur_type[selectedEvent.param-1].show}}</b> Time Slots on <b>{{selectedEvent.dateShow}}</b></p></v-card-title>
             <v-card-subtitle class="pb-0">217 results</v-card-subtitle>
@@ -128,7 +128,7 @@
             || n[20] || n[21] || n[22] || n[23]">
             <v-divider></v-divider>
             <v-row class="px-3">
-                <v-col cols="auto">
+                <v-col cols="auto" align="left">
                     <v-card-subtitle class="ma-0 pa-0">Court {{ind}}</v-card-subtitle>
                     <v-chip-group
                         column
@@ -276,14 +276,16 @@
 </template>
 
 <script>
-    export default {
-        // props: ['reservations','users','session_data'],
-        props: ['users','session_data'],
-            // Showing Available 2 Hr Time Slots on 4/10 
-            // 217 results
+import moment from 'moment-timezone'
 
-            // Available Times Slots for 4/10 @8:00am 
-            // 217 results
+export default {
+    // props: ['reservations','users','session_data'],
+    props: ['users','session_data'],
+        // Showing Available 2 Hr Time Slots on 4/10 
+        // 217 results
+
+        // Available Times Slots for 4/10 @8:00am 
+        // 217 results
     data: () => ({
         members: null,
         searchInput: null,
@@ -299,12 +301,8 @@
         search_input: "Start Time",
         search_type: ["Duration","Start Time"],
         court_input: "Clay Courts",
-        court_type: ["Clay Courts","Hard Courts"],
-        // date_input: new Date().toLocaleString().substr(0, 10),
-        // date_input: new Date().toISOString().substr(0, 10),
-        date_input: "",
-        date_input_display: "",
-        // date_input_display: new Date().toISOString().substr(0, 10),
+        court_type: ["Clay Courts","Hard Courts","Ball Machine"],
+        date_input: null,
         dropdown_cal: false,
         start_input: "08:00:00",
         start_type: [
@@ -347,8 +345,7 @@
         avail_slots: []
     }),
     created () {
-        this.date_input=this.formatDate(new Date())
-        this.date_input_display=this.displayDate(new Date())
+        this.date_input = moment().tz('America/New_York').format('YYYY-MM-DD')
         // console.log("session_data :)")
         // console.log(this.session_data.id)
 
@@ -356,10 +353,6 @@
         this.$emit('refresh-users')
     },
     watch: {
-        date_input(val){
-            console.log(val)
-            this.date_input_display=this.displayDate(new Date(val))
-        },
         users (val) {
             this.members=val
         },
@@ -396,6 +389,7 @@
 
             let item = JSON.parse(JSON.stringify(this.selectedEvent))
             item.ordered_participants_ids = ordered_participants_ids
+            item.date = this.date_input
             this.newCompTimePayload = {
                 item
             }
@@ -455,8 +449,10 @@
             // console.log(this.start_input)
             // console.log(new Date(this.start_input).getTime())
             //4 hours added to account for timezone diff seems sketch
-            const date_input_milliseconds = new Date(this.date_input).getTime()+4*60*60*1000 
-            // const date_input_milliseconds = new Date(this.date_input).getTime() 
+            // const date_input_milliseconds = new Date(this.date_input).getTime()+4*60*60*1000 
+            // console.log(date_input_milliseconds)
+            // console.log(moment(this.date_input).valueOf())
+            const date_input_milliseconds = moment(this.date_input).valueOf()
             // console.log(date_input_milliseconds)
             // console.log(new Date(this.selectedEvent.start))
             var param = ""
@@ -466,7 +462,7 @@
                 this.selectedEvent = { 
                     date: date_input_milliseconds,
                     // dateShow: this.displayDate(new Date()),
-                    dateShow: this.date_input_display,
+                    dateShow: this.formatDate(this.date_input),
                     // dateShow: "hey",
                     // dateShow: this.displayDate(new Date(date_input_milliseconds)),
                     start: (this.hhmmssTomilli(this.start_input)+date_input_milliseconds),
@@ -474,7 +470,7 @@
                     duration: null,
                     category: null,
                     name: "Member Event",
-                    method: "Member",
+                    method: "Members",
                     host_id: this.session_data.id,
                     participants: [],
                     num_of_guests: 0,
@@ -488,7 +484,7 @@
                 search_type = 0
                 this.selectedEvent = { 
                     date: date_input_milliseconds,
-                    dateShow: this.date_input_display,
+                    dateShow: this.formatDate(this.date_input),
                     // dateShow: this.displayDate(new Date(date_input_milliseconds)),
                     start: null,
                     end: null,
@@ -554,17 +550,7 @@
             else if(n==120){ return "2 Hours"}
         },
         formatDate(date){
-            var d = new Date(date),
-                    month = '' + (d.getMonth() + 1),
-                    day = '' + d.getDate(),
-                    year = d.getFullYear();
-
-                if (month.length < 2) 
-                    month = '0' + month;
-                if (day.length < 2) 
-                    day = '0' + day;
-
-                return [year, month, day].join('-');    
+            return moment(date).format('dddd MMMM Do')
         },
         nth (d) {
             return d > 3 && d < 21
