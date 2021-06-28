@@ -449,7 +449,7 @@ letter-spacing: .1566666667em;
             :items="users"
             :color="getEventColor(selectedEvent)"
             label="Host" dense
-            small-chips
+            chips
             hide-selected
             item-text="name"
             item-value="id"
@@ -487,7 +487,7 @@ letter-spacing: .1566666667em;
             :loading="!(participantsLoaded&&participantsLoaded2)"
             :disabled="!(participantsLoaded&&participantsLoaded2)"
             :color="getEventColor(selectedEvent)"
-            small-chips
+            chips
             deletable-chips
             label="Participants" dense
             hide-selected   
@@ -507,7 +507,7 @@ letter-spacing: .1566666667em;
         <template v-slot:activator="{ on, attrs }">
             <v-icon class="pa-0 ml-0 mr-2 my-0" v-bind="attrs" v-on="on">mdi-information-outline</v-icon>
         </template>
-        <span>Guests may only play once per month</span>
+        <span>Guests may only play once per month with a $10 guest fee</span>
         </v-tooltip>
         </v-col></v-row>
         <div v-for="index in 4" :key="index">

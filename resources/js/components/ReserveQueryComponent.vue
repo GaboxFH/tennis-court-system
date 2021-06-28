@@ -246,7 +246,7 @@
                     <template v-slot:activator="{ on, attrs }">
                         <v-icon v-bind="attrs" v-on="on">mdi-information-outline</v-icon>
                     </template>
-                    <span>Guests may only play free once per month</span>
+                    <span>Guests may only play once per month and you are responsible for paying a $10 guest fee</span>
                     </v-tooltip>
                 </v-col>
             </v-row>
