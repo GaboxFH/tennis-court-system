@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Reservation;
 use App\Models\Reservation_User;
+use App\Models\Guests;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\RainoutMessage;
+use Illuminate\Support\Facades\DB;
+
 
 class ReservationController extends Controller
 {
@@ -21,6 +24,162 @@ class ReservationController extends Controller
         return Reservation::orderBy('created_at', 'DESC')->get();
     }
 
+    public function guests(){
+        return Guests::orderBy('created_at', 'DESC')->get();
+    }
+
+    public function curr_reservations($time){
+        // return $time;
+        sleep(1);
+        $previous = Reservation::where('timed',1)
+            ->where('end','<', $time)
+            ->orderBy('date', 'DESC')
+            ->orderBy('end', 'DESC')
+            ->orderBy('category')
+            ->get();
+
+        for($x = 0; $x < count($previous); $x++){
+            $sql = "select users.name
+            from users 
+            INNER JOIN reservation_user ON users.id=reservation_user.user_id
+            where reservation_id = " . $previous[$x]->id;
+            $names = DB::select($sql);
+            $List = array_column($names,'name');
+            $previous[$x]->ppts = implode(', ', $List);
+        }    
+
+
+        $current = Reservation::where('timed',1)
+            ->where('start','<=', $time)
+            ->where('end','>=', $time)
+            ->orderBy('start', 'DESC')
+            ->get();
+        for($x = 0; $x < count($current); $x++){
+            $sql = "select users.name
+            from users 
+            INNER JOIN reservation_user ON users.id=reservation_user.user_id
+            where reservation_id = " . $current[$x]->id;
+            $names = DB::select($sql);
+            $List = array_column($names,'name');
+            $current[$x]->ppts = implode(', ', $List);
+        }    
+
+        $future = Reservation::where('timed',1)
+            ->where('start','>', $time)
+            ->orderBy('date')
+            ->orderBy('start')
+            ->get();
+
+        for($x = 0; $x < count($future); $x++){
+            // $previous = Reservation_User::where('reservation_id',$test_res->id)->select('user_id')->get();
+            $sql = "select users.name
+            from users 
+            INNER JOIN reservation_user ON users.id=reservation_user.user_id
+            where reservation_id = " . $future[$x]->id;
+            $names = DB::select($sql);
+            $List = array_column($names,'name');
+            $future[$x]->ppts = implode(', ', $List);
+        }    
+
+
+        return [
+            "previous" => $previous,
+            "current" => $current,
+            "future" => $future
+        ];
+    }
+
+    public function getUserReservations($user_id,$time)
+    {
+        $sql = "SELECT reservations.*
+                FROM (
+                    SELECT
+                        reservation_user.reservation_id,
+                        reservation_user.user_id
+                    FROM
+                        users
+                        INNER JOIN reservation_user ON users.id = reservation_user.user_id
+                    WHERE
+                        reservation_user.user_id = " . $user_id . "
+                    ) AS T
+                    INNER JOIN reservations ON T.reservation_id = reservations.id
+                    WHERE
+                    END < " . $time . "
+                    ORDER BY
+                        date DESC,
+                        END DESC, 
+                        category";
+
+        $previous = DB::select($sql);
+        // $previous = Reservation::where('timed',1)
+        // ->where('host_id', $user_id)
+        // ->where('end','<', $time)
+        //     ->orderBy('date', 'DESC')
+        //     ->orderBy('end', 'DESC')
+        //     ->orderBy('category')
+        //     ->get();
+        for($x = 0; $x < count($previous); $x++){
+            $sql = "select users.name
+            from users 
+            INNER JOIN reservation_user ON users.id=reservation_user.user_id
+            where reservation_id = " . $previous[$x]->id;
+            $names = DB::select($sql);
+            $List = array_column($names,'name');
+            $previous[$x]->ppts = implode(', ', $List);
+        }
+
+
+        $sql = "SELECT reservations.*
+                FROM (
+                    SELECT
+                        reservation_user.reservation_id,
+                        reservation_user.user_id
+                    FROM
+                        users
+                        INNER JOIN reservation_user ON users.id = reservation_user.user_id
+                    WHERE
+                        reservation_user.user_id = " . $user_id . "
+                    ) AS T
+                    INNER JOIN reservations ON T.reservation_id = reservations.id
+                    WHERE
+                    END >= " . $time . "
+                    ORDER BY
+                        date,
+                        END, 
+                        category";
+
+        $future = DB::select($sql);
+
+        // $future = Reservation::where('timed',1)
+        //     ->where('host_id', $user_id)
+        //     ->where('end','>', $time)
+        //         ->orderBy('date')
+        //         ->orderBy('start')
+        //         ->orderBy('category')
+        //         ->get();
+        for($x = 0; $x < count($future); $x++){
+            $sql = "select users.name
+            from users 
+            INNER JOIN reservation_user ON users.id=reservation_user.user_id
+            where reservation_id = " . $future[$x]->id;
+            $names = DB::select($sql);
+            $List = array_column($names,'name');
+            $future[$x]->ppts = implode(', ', $List);
+        }    
+
+        return [
+            "previous" => $previous,
+            "future" => $future     
+        ];
+        // return $user_id;
+        // $reservations = Reservation::orderBy('created_at', 'DESC')->get();
+        // $reservations = Reservation::where('host_id',$user_id)->orderBy('start', 'DESC')->get();
+        // return $reservations;
+        // $participants = Reservation_User::where('reservation_id', $res_id)->select('user_id')->get();
+        // $participants = Reservation_User::where('reservation_id', $res_id)->select('user_id')->get();
+
+    }
+    
     public function getClosed(){
         return Reservation::where('timed',0)->orderBy('created_at', 'DESC')->get();
     }
@@ -35,15 +194,12 @@ class ReservationController extends Controller
         ];
     }
 
-    public function getUserReservations($user_id)
-    {
-        // return $user_id;
-        // $reservations = Reservation::orderBy('created_at', 'DESC')->get();
-        $reservations = Reservation::where('host_id',$user_id)->orderBy('start', 'DESC')->get();
-        return $reservations;
-        // $participants = Reservation_User::where('reservation_id', $res_id)->select('user_id')->get();
-        // $participants = Reservation_User::where('reservation_id', $res_id)->select('user_id')->get();
+    public function getGuests($id){
+        return Guests::where('user_id',$id)->get();
+    }
 
+    public function reservation_guests($res_id){
+        return Guests::where('reservation_id',$res_id)->select('name')->get();
     }
 
     public function daily($start, $end)
@@ -101,22 +257,39 @@ class ReservationController extends Controller
                 'message' => 'Invalid Time Range',
             ];
         }
+        // return count($request->item['courts']);
+        if(count($request->item['courts']) > 1){
+            $sql = "select * from reservations where category IN (". implode(', ', $request->item['courts']) .")  
+            and (reoccur_id is null or reoccur_id!=0)
+            and timed = 1
+            and start < ". $request->item['end'] . "
+            and end > ". $request->item['start'];
 
-        $conflictingReservations = Reservation::where('start', '<', $request->item['end'])
-                                                ->where('end', '>', $request->item['start'])
-                                                ->count();
+        } else {
+            $sql = "select * from reservations where category IN (". $request->item['courts'][0] .")  
+            and (reoccur_id is null or reoccur_id!=0)
+            and timed = 1
+            and start < ". $request->item['end'] . "
+            and end > ". $request->item['start'];
+        }
+        // return $sql;
+        $conflictingReservations = DB::select($sql);
+
+        // $conflictingReservations = Reservation::where('start', '<', $request->item['end'])
+        //                                         ->where('end', '>', $request->item['start'])
+        //                                         ->count();
 
 
         return [
             'status' => 'success',
             'message' => null,
-            'reservations' => $conflictingReservations 
+            'reservations' => count($conflictingReservations)
         ];
     }
 
     public function closeCourts(Request $request){
         // duration
-        sleep(2);
+        // sleep(2);
         $datetime1 = $request->item['start']/1000;
         $datetime2 = $request->item['end']/1000;
 
@@ -131,12 +304,11 @@ class ReservationController extends Controller
             $conflictingReservations = Reservation::where('start', '<', $request->item['end'])
             ->where('end', '>', $request->item['start'])
             ->where('category', $courtNum)
+            ->where('timed', 1)
             ->get();
 
             
-            foreach($conflictingReservations as $res){
-                $res->delete();
-            }
+            
 
             $closedRecord = Reservation::create([
                 'name' => $request->item['reason'],
@@ -155,6 +327,13 @@ class ReservationController extends Controller
             if($groupId==0){
                 Reservation::where('id', $closedRecord->id)->update(['reoccur_id' => $closedRecord->id]);
                 $groupId = $closedRecord->id;
+            }
+
+            foreach($conflictingReservations as $res){
+                $res->reoccur_id = 0;
+                // $res->reoccur_id = $groupId;
+                $res->save();
+                // $res->delete();
             }
         }
         return [
@@ -185,16 +364,94 @@ class ReservationController extends Controller
             'start' => $start,
             'end' => $end,
         ];
-        return $closure_courts;
     }
 
-    public function deleteClosure($closure_id){
-        $closure_courts = Reservation::where('reoccur_id', $closure_id)->get();
+    public function deleteClosure($closure_id){        
+        $closure_period = Reservation::where('reoccur_id', $closure_id)->get();
+        $courts = array();
+        if($closure_period->count() > 0){
+            $start = $closure_period[0]->start;
+            $end = $closure_period[0]->end;
+            foreach($closure_period as $court){
+                $courts[] = $court->category;
+            }
+        } else {
+            return [
+                'status' => 'error',
+                'message' => 'Closure not found'
+            ];
+        }
+        $closure_info = [
+            'courts' => $courts,
+            'start' => $start,
+            'end' => $end,
+        ];
+        // return $closure_info['courts'];
+        // return implode(', ', $closure_info['courts']);
+        if(count($closure_info['courts']) > 1){
+            $sql = "select * from reservations where category IN (". implode(', ', $closure_info['courts']) .")  
+            and reoccur_id=0 and start
+            and start < ". $closure_info['end'] . "
+            and end > ". $closure_info['start'];
+        } else {
+            $sql = "select * from reservations where category IN (". $closure_info['courts'][0] .")  
+            and reoccur_id=0 and start
+            and start < ". $closure_info['end'] . "
+            and end > ". $closure_info['start']; 
+        }
 
-        foreach($closure_courts as $event){
+        // $sql = "select * from reservations";
+        // $closed_courts = Reservation::selectRaw('price * ? as price_with_tax', [1.0825])
+        // $closed_courts = DB::select('select * from reservations where reoccur_id = ?', [0]);
+        // $closed_courts = DB::select('select * from reservations where reoccur_id = ?', [0]);
+        // $closed_courts = DB::select('select * from reservations');
+        $closed_courts = DB::select($sql);
+        
+        // return [
+        //     'noah' => $closed_courts[0],
+        //     'status' => 'success',
+        //     'message' => 'Courts Re-opened'
+        // ];
+
+        $closed_court_periods = Reservation::where('timed', 0)
+        ->where('reoccur_id','!=', $closure_id)
+        ->get();
+
+        // return $closed_courts;
+        foreach($closed_courts as $res){
+            $reopen = true;
+            foreach($closed_court_periods as $check){
+                
+                if($res->category == $check->category 
+                && $res->start < $check->end
+                && $res->end > $check->start){
+                    // return [
+                    //     'status' => $res,
+                    //     'message' => $check
+                    // ];
+                    $reopen = false;
+                }
+            }
+            if($reopen){
+                $res_update = Reservation::where('id', $res->id)->update(['reoccur_id' => null]);
+            }
+        }
+        // $closed_courts = Reservation::where('reoccur_id',0)
+        // ->where('start','<',$closure_info['end'])
+        // ->where('end','>',$closure_info['start'])
+        // ->get();
+
+        // return $closed_courts;
+        // $closure_info = getClosure($closure_id);
+        // return $closure_info;
+        // $reopen = Reservation::where('reoccur_id', 0)->where('start','<',$closure_info->end)
+        // SQL category for item is equal to any element in array 'courts'
+
+        foreach($closure_period as $event){
             // $count += 1;
             $event->delete();
         }
+        
 
         return [
             'status' => 'success',
@@ -482,13 +739,35 @@ class ReservationController extends Controller
 
     public function memberStore(Request $request)
     {
+        // return $request;
+        $num_of_guests = 0;
+        $guest_list = $request->item["guests"];
+        if(count($guest_list)>0){
+            $num_of_guests = count($guest_list);
+            for($i=0; $i<count($guest_list); $i++){
+                if(is_null($guest_list[$i])){
+                    return [
+                        'status' => 'error',
+                        'message' => 'All Fields Required',
+                    ];
+                } else{
+                    if(isset($guest_list[$i]["name"])){
+                        $guest_list[$i] = $guest_list[$i]["name"];
+                    }
+                }
+            }
+        }
+        
         $conflictingReservations = Reservation::where('start', '<', $request->item["end"])
                                             ->where('end', '>', $request->item["start"])
                                             ->where('category', $request->item["category"])
                                             ->count();
         
         if($conflictingReservations){
-            return "error";
+            return [
+                'status' => 'error',
+                'message' => 'Time Conflict',
+            ];
         } 
 
         $datetime1 = $request->item["start"]/1000;
@@ -500,8 +779,21 @@ class ReservationController extends Controller
 
         $duration = date("H:i:s", mktime($hours, $mins, $secs));
        
+        $eventTitle = null;
+        if(isset($request->item["host_id"])){
+            $host = User::where('id', $request->item["host_id"])->first();
+            if($host->access == "Single" || $host->access == "Family"){
+                $eventTitle = $host->name . "'s Event";
+            } else {
+                $eventTitle = $request->item["method"];
+            }
+        } else {
+            $eventTitle = $request->item["method"];
+        }
+
         $newEvent = Reservation::create([
-            'name' => $request->item["name"],
+            // 'name' => $request->item["name"],
+            'name' => $eventTitle,
             'method' => $request->item["method"],
             'date' => $request->item["date"],
             'start' => $request->item["start"],
@@ -509,11 +801,12 @@ class ReservationController extends Controller
             'duration' => $duration,
             'category' => $request->item["category"],
             'num_of_members' => $request->item["num_of_members"],
-            'num_of_guests' => $request->item["num_of_guests"],
+            'num_of_guests' => $num_of_guests,
             'host_id' => $request->item["host_id"],
             'timed' => $request->item["timed"],
         ]);
         
+        // add rows to reservation_users (participants (members))
         if(isset($request->item["ordered_participants_ids"])){
             foreach($request->item["ordered_participants_ids"] as $id){
                 Reservation_User::create([
@@ -523,11 +816,127 @@ class ReservationController extends Controller
             }
         }
 
-        return $newEvent;
+        // add rows to guests (guests (non-member))
+        if(count($guest_list)>0){
+            foreach($guest_list as $fields){
+                Guests::create([
+                    'name' => $fields,
+                    'user_id' => $request->item["host_id"],
+                    'reservation_id' => $newEvent->id
+                ]);
+            }
+        }
+        return [
+            'status' => 'success',
+            'message' => 'Reservation Created',
+        ];
     }
    
+    public function adminStore(Request $request)
+    {
+        if(!isset($requ)){
+            return [
+                'status' => 'error',
+                'message' => 'Missing Fields',
+            ];
+        }
+        // return $request;
+        $num_of_guests = 0;
+        $guest_list = $request->item["guests"];
+        if(count($guest_list)>0){
+            $num_of_guests = count($guest_list);
+            for($i=0; $i<count($guest_list); $i++){
+                if(is_null($guest_list[$i])){
+                    return [
+                        'status' => 'error',
+                        'message' => 'All Fields Required',
+                    ];
+                } else{
+                    if(isset($guest_list[$i]["name"])){
+                        $guest_list[$i] = $guest_list[$i]["name"];
+                    }
+                }
+            }
+        }
+        
+        $conflictingReservations = Reservation::where('start', '<', $request->item["end"])
+                                            ->where('end', '>', $request->item["start"])
+                                            ->where('category', $request->item["category"])
+                                            ->count();
+        
+        if($conflictingReservations){
+            return [
+                'status' => 'error',
+                'message' => 'Time Conflict',
+            ];
+        } 
+
+        $datetime1 = $request->item["start"]/1000;
+        $datetime2 = $request->item["end"]/1000;
+
+        $hours = floor(($datetime2-$datetime1)/60/60);
+        $mins = ($datetime2-$datetime1)/60%60;
+        $secs = ($datetime2-$datetime1)%60;
+
+        $duration = date("H:i:s", mktime($hours, $mins, $secs));
+       
+        $eventTitle = null;
+        if(isset($request->item["host_id"])){
+            $host = User::where('id', $request->item["host_id"])->first();
+            if($host->access == "Single" || $host->access == "Family"){
+                $eventTitle = $host->name . "'s Event";
+            } else {
+                $eventTitle = $request->item["method"];
+            }
+        } else {
+            $eventTitle = $request->item["method"];
+        }
+
+        $newEvent = Reservation::create([
+            // 'name' => $request->item["name"],
+            'name' => $eventTitle,
+            'method' => $request->item["method"],
+            'date' => $request->item["date"],
+            'start' => $request->item["start"],
+            'end' => $request->item["end"],
+            'duration' => $duration,
+            'category' => $request->item["category"],
+            'num_of_members' => $request->item["num_of_members"],
+            'num_of_guests' => $num_of_guests,
+            'host_id' => $request->item["host_id"],
+            'timed' => $request->item["timed"],
+        ]);
+        
+        // add rows to reservation_users (participants (members))
+        if(isset($request->item["ordered_participants_ids"])){
+            foreach($request->item["ordered_participants_ids"] as $id){
+                Reservation_User::create([
+                    'reservation_id' => $newEvent->id,
+                    'user_id' => $id
+                ]);
+            }
+        }
+
+        // add rows to guests (guests (non-member))
+        if(count($guest_list)>0){
+            foreach($guest_list as $fields){
+                Guests::create([
+                    'name' => $fields,
+                    'user_id' => $request->item["host_id"],
+                    'reservation_id' => $newEvent->id
+                ]);
+            }
+        }
+        return [
+            'status' => 'success',
+            'message' => 'Reservation Created',
+        ];
+    }
+   
+
     public function store(Request $request)
     {
+        
         $conflictingReservations = Reservation::where('start', '<', $request->item["end"])
                                             ->where('end', '>', $request->item["start"])
                                             ->where('category', $request->item["category"])
@@ -562,8 +971,22 @@ class ReservationController extends Controller
         $duration = date("H:i:s", mktime($hours, $mins, $secs));
         
         // return date('Y-m-d',strtotime($request->item["date"]));
+        // if host is member (single / family)
+        // Event title = category unless host is member
+        $eventTitle = null;
+        if(isset($request->item["host_id"])){
+            $host = User::where('id', $request->item["host_id"])->first();
+            if($host->access == "Single" || $host->access == "Family"){
+                $eventTitle = $host->name . "'s Event";
+            } else {
+                $eventTitle = $request->item["method"];
+            }
+        } else {
+            $eventTitle = $request->item["method"];
+        }
+
         $newEvent = Reservation::create([
-            'name' => $request->item["name"],
+            'name' => $eventTitle,
             'method' => $request->item["method"],
             'date' => $request->item["date"],
             'start' => $request->item["start"],
@@ -579,9 +1002,16 @@ class ReservationController extends Controller
         return $newEvent;
     }
 
+    // public function storeFresh(Request $request)
+    // {
+        
+        
+    // }
+
     
     public function update(Request $request)
     {
+
         // id is not passed in for created events so we must use start and court for this button to work correctly 
         // if (!isset($request->item["id"])){
         //     $existingItem = Reservation::where('start_datetime', $request->item["start"])->where('court', $request->item["category"])->first();
@@ -593,14 +1023,93 @@ class ReservationController extends Controller
         ->count();
         // $conflictingReservations = Reservation::where('start', '<', $request->item["start"])
         //                             ->count();
-        if($conflictingReservations){
+        if($conflictingReservations || $request->item["start"]>$request->item["end"]){
             return "error";
         } 
+        if(!isset($request->item["method"])){
+            return "error2";
+        }
 
         $existingItem = Reservation::find($request->item["id"]);
         // }
-        
+
         if($existingItem) {
+            // update algorithm for guests
+            // $guestDataIndex = 0;
+            // $guestFormIndex = 0;
+            $guest_host_id = 0;
+            if(isset($request['host_id'])){
+                $guest_host_id = $request['host_id'];
+            }
+
+
+            $existingGuests = Guests::where('reservation_id', $existingItem->id)->orderBy('name')->get();
+            $checkGuests = true;
+            
+            foreach($existingGuests as $guest){
+                $guest->delete();
+            }
+            if(isset($request->item["guest_names"])){
+                foreach($request->item["guest_names"] as $guest_name){
+                    if(is_null($guest_name)){
+                        return "error2";
+                    } else{
+                        if(isset($guest_name["name"])){
+                            $guest_name = $guest_name["name"];
+                        }
+                    }
+                    Guests::create([
+                        'name' => $guest_name,
+                        'user_id' => $guest_host_id,
+                        'reservation_id' => $existingItem->id
+                    ]);
+                }
+            }
+
+            // if(isset($request->item["guest_names"])){
+            //     // if($request->item["ordered_participants_ids"] == -1){
+            //     $checkGuests = false;
+            //     // } else {
+            //     $formGuests = $request->item["ordered_participants_ids"];
+            //     $existingItem->num_of_guests = count($formGuests); 
+            // } else {
+            //     $formGuests = [];
+            // } 
+
+            // if($checkGuests){
+            //     // participant replacement algorithm for the Reservation_User table
+            //     while($guestDataIndex != count($existingGuests) || $guestFormIndex != count($formGuests)){
+            //         if($guestFormIndex == count($formGuests)) {
+            //             $existingGuests[$guestDataIndex]->delete();
+            //             $guestDataIndex++;
+            //         }
+            //         else if($guestDataIndex == count($existingGuests)) {
+            //             Guests::create([
+            //                 'reservation_id' => $existingItem->id,
+            //                 'user_id' => $formGuests[$guestFormIndex]
+            //             ]);
+            //             $guestFormIndex++;
+            //         }
+            //         else if($existingGuests[$guestDataIndex]->user_id < $formGuests[$guestFormIndex]) {
+            //             $existingGuests[$guestDataIndex]->delete();
+            //             $guestDataIndex++;
+            //         }
+            //         else if($existingGuests[$guestDataIndex]->user_id > $formGuests[$guestFormIndex]){
+            //             Guests::create([
+            //                 'reservation_id' => $existingItem->id,
+            //                 'user_id' => $formGuests[$guestFormIndex]
+            //             ]);
+            //             $guestFormIndex++;
+            //         }
+            //         else{
+            //             $guestDataIndex++;
+            //             $guestFormIndex++;
+            //         }
+            //     }
+            // }
+
+
+            // update algorithm for participants
             $dataIndex = 0;
             $formIndex = 0;
             
@@ -617,11 +1126,9 @@ class ReservationController extends Controller
             } else {
                 $formParticipants = [];
             } 
-            // return "here";
-            // return count($formParticipants);
-            // return "here";
+
             if($checkParticipants){
-                    // participant replacement algorithm for the Reservation_User table
+                // participant replacement algorithm for the Reservation_User table
                 while($dataIndex != count($existingParticipants) || $formIndex != count($formParticipants)){
                     if($formIndex == count($formParticipants)) {
                         $existingParticipants[$dataIndex]->delete();
@@ -650,7 +1157,7 @@ class ReservationController extends Controller
                         $formIndex++;
                     }
                 }
-            }    
+            }
             
 
             $datetime1 = $request->item["start"]/1000;
@@ -662,7 +1169,23 @@ class ReservationController extends Controller
 
             $duration = date("H:i:s", mktime($hours, $mins, $secs));
 
-            $existingItem->name = $request->item["name"];
+            $eventTitle = null;
+            if(isset($request->item["host_id"])){
+                $host = User::where('id', $request->item["host_id"])->first();
+                if($host->access == "Single" || $host->access == "Family"){
+                    $eventTitle = $host->name . "'s Event";
+                } else {
+                    $eventTitle = $request->item["method"];
+                }
+            } else {
+                $eventTitle = $request->item["method"];
+            }
+            if($existingItem->reoccur_id == 0){
+                $existingItem->reoccur_id = null;
+            }
+
+            // $existingItem->name = $request->item["method"];
+            $existingItem->name = $eventTitle;
             $existingItem->method = $request->item["method"];
             $existingItem->start = $request->item["start"];
             $existingItem->end = $request->item["end"];

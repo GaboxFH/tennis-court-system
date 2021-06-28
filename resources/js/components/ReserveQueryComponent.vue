@@ -1,13 +1,13 @@
 <template>
-    <div class="pa-6 ma-auto" align="center" fluid>
-        <div class="pb-5 row justify-content-center">
+    <div class="pa-0 ma-0" align="center" fluid>
+        <div class="ma-3 row justify-content-center">
             <img src="../../images/TennisCourtMap.png" alt="Map of the Tennis Courts" style="max-width: 1000px; min-width: 100px; height: auto; border: 5px solid #333;"/>
         </div>
-        <v-card max-width=1400>
-            <v-toolbar class="mb-3">
-            <v-card-title>Find Available Courts</v-card-title>
+        <v-card max-width=1000 class="mb-10 px-0">
+            <v-toolbar flat class="mb-3">
+            <v-card-title class="pl-1">Find Courts</v-card-title>
             <v-spacer></v-spacer>
-            <v-col cols="3">
+            <div style="width:134px; justify-content: center; align-items: center; display: flex;" class="pa-0 ma-0">
             <v-select
                 v-model="search_input"
                 :items="search_type"
@@ -16,7 +16,7 @@
                 dense
                 style="margin-top:25px;"
             ></v-select>
-            </v-col>
+            </div>
             </v-toolbar>
             <v-progress-linear
             :active="loading"
@@ -44,12 +44,16 @@
                     min-width="auto"
                 >
                     <template v-slot:activator="{ on, attrs }">
-                    <v-text-field
+                        <!-- v-select -->
+                    <v-text-field 
                         v-bind="attrs"
                         v-on="on"
                         min-width="200px"
+                        append-icon="mdi-menu-down"
+                        @click:append="dropdown_cal = true"
                         label="Date"
-                        v-model="date_input"
+                        readonly
+                        :value="formatDate(date_input)"
                     ></v-text-field>
                     </template>
                     <v-date-picker
@@ -154,11 +158,32 @@
                 <v-col>
                     <v-divider></v-divider>
                     <v-card-title class="pt-0">Reservation Rules:</v-card-title>
-                    <v-card-text>
+                    <v-card-text align="left">
                     <!-- Members may only host up to 2 hours per day.<br> -->
-                    Reservations may be made up to 48 hours in advance.<br>
-                    Please see the front desk for guests who have played more than once in a caledar month<br>
+                    <div v-for="(rule, ind) in club_rules" v-bind:key="rule.id">
+                        <div v-if="rule.active">
+                            <!-- <div v-if="ind==0">
+                                Max Duration of each event is {{rule.value}} Hours
+                            </div> -->
+                            <div v-if="ind==1">
+                                Max Number of events per day is {{rule.value}}
+                            </div>
+                            <div v-if="ind==2">
+                                Reservations may be made up to {{rule.value}} Hours in advance
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Reservations may be made up to 48 hours in advance.<br> -->
+                    Please include who you are playing with to help with court management and reporting.<br>
+                    <!-- If you are playing with a guest (non-member) please see the front desk before play. <br>
+                    If the Guest has already played in the current calendar month, then the system will reject the reservation. -->
+                    <br><br><br><br><br><br><br><br><br>
                     </v-card-text>
+                    
+                    <!-- <v-card-text v-if="load1">
+                        {{ club_rules }}
+                        
+                    </v-card-text> -->
                 </v-col>
             </v-row>
         </div>
@@ -175,46 +200,23 @@
         <v-dialog v-model="dialog_edit" persistent max-width="600px"
         >
         <v-card>
-            <v-toolbar v-if="selectedEvent" class="mb-3 headline grey lighten-2">
-                <v-card-title>{{ selectedEvent.name }}</v-card-title>
-                <v-spacer></v-spacer>
-                <v-menu
-                left
-                bottom
-                offset-y
-                >
-                <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                    icon
-                    v-bind="attrs"
-                    v-on="on"
-                    >
-                    <v-icon>mdi-dots-vertical</v-icon>
-                    </v-btn>
-                </template>
-        
-                <v-list>
-                    <v-list-item @click="areyousure=true">
-                        <v-list-item-title>Delete Event</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item @click="repeat_dialog=true">
-                        <v-list-item-title>Repeat Event</v-list-item-title>
-                    </v-list-item>
-                </v-list>
-                </v-menu>
+
+            <v-toolbar v-if="selectedEvent" class="mb-3 headline primary darken-1" dark>
+                <v-card-title color="white">{{ selectedEvent.name }}</v-card-title>
             </v-toolbar>
 
-            <div v-if="selectedEvent" class="mx-5">
-            <v-row>
-            <v-col>
+            <div v-if="selectedEvent" class="pa-0 ma-0">
+            <v-row class="px-0 pt-3 pb-0 ma-0">
+            <v-col cols="5" class="pa-0 ma-0">
             <v-text-field
-              label="Date"
-              v-model="selectedEvent.dateShow"
-              outlined
-              readonly
+                class="ml-5"    
+                label="Date"
+                v-model="selectedEvent.dateShow"
+                outlined
+                readonly
             ></v-text-field>
             </v-col>
-            <v-col>
+            <v-col class="py-0 ma-0">
             <v-text-field
               label="Start Time"
               v-model="selectedEvent.startDisplay"
@@ -222,24 +224,41 @@
               readonly
             ></v-text-field>
             </v-col>
-            <v-col>
+            <v-col class="pa-0 ma-0">
             <v-text-field
-              label="End Time"
-              v-model="selectedEvent.endDisplay"
-              outlined
-              readonly
+                class="mr-5" 
+                label="End Time"
+                v-model="selectedEvent.endDisplay"
+                outlined
+                readonly
             ></v-text-field>
             </v-col>
             </v-row>
-            <v-text-field v-model="selectedEvent.name" label="Event Title"></v-text-field>
-            <v-row>
-                <v-col cols="7">
+            <v-row align="center" class="pa-0 ma-0">
+                <v-col cols="8" class="pa-0 ma-0">
+                    <v-text-field class="ml-5" :value="session_data.name" outlined readonly label="Event Host"></v-text-field>
+                </v-col>
+                <v-col cols="4" class="px-0 pt-0 pb-8 ma-0" align="center">
+                    <v-btn style="text-transform: unset !important;" height="6px" color="primary darken-1" class="px-2 py-5 mr-3 white--text" @click="addGuest(-1)">
+                        Add Guest <br>
+                        (non-member)</v-btn>
+                    <v-tooltip top>
+                    <template v-slot:activator="{ on, attrs }">
+                        <v-icon v-bind="attrs" v-on="on">mdi-information-outline</v-icon>
+                    </template>
+                    <span>Guests may only play free once per month</span>
+                    </v-tooltip>
+                </v-col>
+            </v-row>
+            <v-row class="pa-0 ma-0">
+            <v-col class="pa-0 ma-0">
             <v-autocomplete
+                class="mx-5"
                 v-model="selectedEvent.participants"
                 :items="computedMembers"
                 chips
                 deletable-chips
-                label="Participants"
+                label="Participants (members)"
                 hide-selected   
                 multiple
                 item-text="name"
@@ -248,20 +267,35 @@
                 @input="searchInput=null"
                 :search-input.sync="searchInput"
             >
-            
             </v-autocomplete>
             </v-col>
-            <v-spacer></v-spacer>
-            <v-col cols="4">
-                <v-text-field height=42 readonly v-model="selectedEvent.num_of_guests" type="number" label="# of Guests" append-outer-icon="mdi-plus" @click:append-outer="selectedEvent.num_of_guests = parseInt(selectedEvent.num_of_guests,10) + 1" prepend-icon="mdi-minus" @click:prepend="selectedEvent.num_of_guests = parseInt(selectedEvent.num_of_guests,10) - 1"></v-text-field>
-            </v-col>
             </v-row>
-
+            <div v-for="index in 4" :key="index">
+                <v-row v-if="selectedGuest.length>=index" class="pa-0 ma-0">
+                    <v-col cols="11" class="pl-5 pr-0 py-0 ma-0">
+                        <v-combobox
+                        v-model="selectedGuest[index-1]"
+                        :items="guests"
+                        :label="'Guest '+ index +' (non-member)'" 
+                        dense
+                        item-text="name"
+                        item-value="name"
+                        ></v-combobox>
+                    </v-col>
+                    <v-col cols="1" align="right" class="pa-0 ma-0">
+                        <v-btn icon @click="addGuest(index-1)">
+                            <v-icon>
+                                mdi-close
+                            </v-icon>
+                        </v-btn>
+                    </v-col>
+                </v-row>
+            </div>
             </div>
             <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn color="blue darken-1" text @click="saveEvent">Save</v-btn>
-                <v-btn color="blue darken-1" text @click="dialog_edit=false">Close</v-btn>
+                <v-btn color="blue darken-1" text @click="dialog_edit=false; selectedGuest=[]">Close</v-btn>
             </v-card-actions>        
         </v-card>
         </v-dialog>
@@ -273,6 +307,7 @@
         </template>
     </v-snackbar>
     </div>
+    
 </template>
 
 <script>
@@ -288,9 +323,19 @@ export default {
         // 217 results
     data: () => ({
         members: null,
+        guests: null,
         searchInput: null,
         member_id: null,
         selectedEvent: null,
+        selectedGuest: [],
+        club_rules: [],
+        load1: false,
+        // guests: [
+        //     { name: },
+        //     {  },
+        //     {  },
+        //     {  }
+        // ],
         dialog_edit: false,
         results: "onload",
         message: false,
@@ -346,9 +391,10 @@ export default {
     }),
     created () {
         this.date_input = moment().tz('America/New_York').format('YYYY-MM-DD')
+        this.getRules()
         // console.log("session_data :)")
         // console.log(this.session_data.id)
-
+        // this.getGuests(this.session_data.id);
         // this.$emit('refresh-schedule')
         this.$emit('refresh-users')
     },
@@ -377,6 +423,20 @@ export default {
         }
     },
     methods: {
+        getGuests(id){
+            // this.load3 = false
+            axios.get('api/getGuests/'+id)
+            .then(response => {
+                console.log("response.data")
+                console.log(response.data)
+                this.guests = response.data
+                // this.guests = response.data
+                // this.load3 = true
+            })
+            .catch(error => {
+                console.log(error);
+            })
+        },
         saveEvent(){
             var ordered_participants_ids = JSON.parse(JSON.stringify(this.selectedEvent.participants))
             if(this.selectedEvent.host_id==''){ 
@@ -390,6 +450,19 @@ export default {
             let item = JSON.parse(JSON.stringify(this.selectedEvent))
             item.ordered_participants_ids = ordered_participants_ids
             item.date = this.date_input
+            item.guests = JSON.parse(JSON.stringify(this.selectedGuest))
+            // for(var n in item.guests){
+            //     // console.log("length:", item.guests[n].length)
+            //     if(item.guests[n].hasOwnProperty('name')){
+            //         // console.log("item.guests[n]")
+            //         // console.log(item.guests[n].name)
+            //         item.guests[n] = item.guests[n].name
+            //     }
+            //     // console.log(item.guests[n])
+            // }
+            console.log("store")
+            // console.log(item.guests)
+            console.log(this.selectedGuest)
             this.newCompTimePayload = {
                 item
             }
@@ -398,13 +471,13 @@ export default {
             axios.post('api/reservation/memberStore', this.newCompTimePayload)
             .then((response) => {
                 console.log(response);
-                if(response.data == "error"){
-                    this.message_text = "Time Conflict"
+                if(response.data.status == "error"){
+                    this.message_text = response.data.message 
                     this.message = true
-                } else{
-                    this.message_text = "Reservation Created"
+                } else if(response.data.status == "success"){
+                    this.message_text = response.data.message
                     this.message = true
-                    this.$router.push({ name: 'reservations' });
+                    this.$router.push({ name: 'my_reservations' });
                     // window.location.href = 'http://localhost:3000/home#/';
                 }
             }, (error) => {
@@ -414,6 +487,7 @@ export default {
         },
         open_reservation_dialog(n,court){
             console.log(n)
+            this.getGuests(this.session_data.id);
             if(n<=4){
                 this.selectedEvent.category=court;
                 this.selectedEvent.end=this.selectedEvent.start+n*30*60*1000;
@@ -445,11 +519,6 @@ export default {
             this.loading = true
             this.results="loading"
             this.avail_slots = ''
-            // console.log("Input: ")
-            // console.log(this.start_input)
-            // console.log(new Date(this.start_input).getTime())
-            //4 hours added to account for timezone diff seems sketch
-            // const date_input_milliseconds = new Date(this.date_input).getTime()+4*60*60*1000 
             // console.log(date_input_milliseconds)
             // console.log(moment(this.date_input).valueOf())
             const date_input_milliseconds = moment(this.date_input).valueOf()
@@ -461,10 +530,7 @@ export default {
                 search_type = 1
                 this.selectedEvent = { 
                     date: date_input_milliseconds,
-                    // dateShow: this.displayDate(new Date()),
                     dateShow: this.formatDate(this.date_input),
-                    // dateShow: "hey",
-                    // dateShow: this.displayDate(new Date(date_input_milliseconds)),
                     start: (this.hhmmssTomilli(this.start_input)+date_input_milliseconds),
                     end: null,
                     duration: null,
@@ -485,7 +551,6 @@ export default {
                 this.selectedEvent = { 
                     date: date_input_milliseconds,
                     dateShow: this.formatDate(this.date_input),
-                    // dateShow: this.displayDate(new Date(date_input_milliseconds)),
                     start: null,
                     end: null,
                     duration: this.dur_type[this.dur_input-1].data,
@@ -549,6 +614,15 @@ export default {
             else if(n==90){ return "1.5 Hours"}
             else if(n==120){ return "2 Hours"}
         },
+        addGuest(num){
+            if(num==-1 && this.selectedGuest.length<4){
+                this.selectedGuest.push(null);
+            } else if(num!=-1){
+                this.selectedGuest.splice(num,1);
+            }
+            console.log(this.selectedGuest)
+        },
+        
         formatDate(date){
             return moment(date).format('dddd MMMM Do')
         },
@@ -556,6 +630,19 @@ export default {
             return d > 3 && d < 21
             ? 'th'
             : ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'][d % 10]
+        },
+        getRules() {
+            this.load1 = false
+            axios.get('api/rules')
+            .then(response => {
+                console.log(response)
+                this.club_rules = response.data
+                this.default_rules = JSON.parse(JSON.stringify(response.data))
+                this.load1 = true
+            })
+            .catch(error => {
+                console.log(error);
+            })
         },
         getTimes (datetime) {
             var hour = new Date(datetime).toString().substr(16,2)
@@ -571,28 +658,6 @@ export default {
             }
             hour = parseInt(hour)
             return hour+ ":"+min+" "+amOrPm
-        },
-        displayDate (calDate) {
-
-            if(calDate==null){
-                calDate = new Date()
-            }
-            var months, days
-            if(this.$vuetify.breakpoint.name == 'xs' || this.$vuetify.breakpoint.name == 'sm') {
-                months = ['Jan','Feb','Mar','Apr','May','June','July','Aug','Sept','Oct','Nov','Dec']
-                days = ['Mon','Tue','Wed','Thur','Fri','Sat','Sun']
-            } else {
-                months = ['January','February','March','April','May','June','July','August','September','October','November','December']
-                days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
-            }
-            // const days = ['Mon','Tue','Wed','Thur','Fri','Sat','Sun']
-            const monthTitle = months[calDate.getMonth()]
-            const dayTitle = days[calDate.getDay()]
-            const dateTitle = calDate.getUTCDate()
-            const dateNthTitle = this.nth(calDate.getUTCDate())
-            const yearTitle = calDate.getFullYear()
-            return dayTitle+' '+monthTitle+' '+dateTitle+dateNthTitle+' '+yearTitle
-            // return monthTitle+' '+dateTitle+dateNthTitle+' '+yearTitle
         },
     }
 

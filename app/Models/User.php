@@ -31,6 +31,8 @@ class User extends Authenticatable
         'membership_id',
         'access',
         'name',
+        'f_name',
+        'l_name',
         'phone',
         'email',
         'num_of_notos',

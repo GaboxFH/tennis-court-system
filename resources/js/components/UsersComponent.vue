@@ -1,493 +1,414 @@
 <template>
-
-    <v-container
-        class="pa-6 ma-auto"
-        fluid
+<v-container fluid>
+    <!-- <div class="mx-auto" style="background-color:yellow; max-width:600px" > -->
+    <v-card
+        class="mx-auto"
+        max-width="800px"
+        outlined
     >
+    <v-list-item three-line>
+        <v-list-item-content>
+            <div class="text-overline mb-4">
+                Admin Panel
+            </div>
+            <v-list-item-title class="text-h5 mb-1">
+                Members
+            </v-list-item-title>
+        </v-list-item-content>
 
-        <v-container>
-            <p>Welcome.</p>
-            <h3>Notifications</h3>
-            <p>Email notications</p>
-            <p>Phone notications</p>
-            <!-- <p>{{ this.users[0].access }}</p> -->
-            <!-- <p>{{ this.editedItem[0].access }}</p> -->
+        <v-btn @click="club_settings_dialog=true" color="#757575" class="px-2" outlined small>
+            Club Rules
+            <v-icon color="#757575" class="pl-1">mdi-cog</v-icon>
+        </v-btn>
+        <!-- <v-list-item-avatar>
+        <v-icon @click="club_settings_dialog=true">mdi-cog</v-icon>
+        </v-list-item-avatar> -->
+    </v-list-item>
+    <v-row class="pa-0 ma-0">
+        <v-col class="pa-0 mb-4">
+            <v-text-field v-model="search" append-icon="mdi-magnify" label="Search"
+                single-line hide-details class="mx-4"
+            ></v-text-field>
+        </v-col>
+        <div style="width:130px; justify-content: center; align-items: center; display: flex;" class="pa-0 ma-0">
+            <v-btn dense small color="primary" class="mr-4" @click="new_user_dialog=true">Add Member</v-btn>
+        </div>
+    </v-row>
 
-
-        </v-container>
-        <v-select
-          :items="membership_types"
-          label="Group Selected"
-          dense
-          offset-y
-          outlined
-        ></v-select>
-    
     <v-data-table
-        :headers="computedHeaders"
-        :items="users"
-        :footer-props="{
-            'items-per-page-options': [25, 50, 75, 100, 125, 150]
-        }"
-        :items-per-page="50"
-        :search="search"
-        :mobile-breakpoint="0"
-        dense
-        sort-by="updated_at"
-        sort-desc
-        class="elevation-1"
+    v-if="load1"
+    multi-sort
+    :headers="computedHeaders"
+    :search="search"
+    :items="users"
+    :items-per-page="15"
+    :footer-props="{ 'items-per-page-options': [15, 30, 45, 60, 75, 100] }"
+    dense
+    no-data-text="No Active Reservations"
+    mobile-breakpoint="0"
     >
-        <template v-slot:top>
-            <v-toolbar
-                flat
-                color="grey lighten-2"
-            >
-                <v-toolbar-title>Club Members</v-toolbar-title>
-                <v-divider
-                    class="mx-4"
-                    inset
-                    vertical
-                ></v-divider>
-                <v-text-field
-                    v-model="search"
-                    class="pr-7"
-                    append-icon="mdi-magnify"
-                    label="Search"
-                    single-line
-                    hide-details
-                ></v-text-field>
-                <v-dialog
-                    v-model="dialog"
-                    max-width="600px"
-                >
-                    <template v-slot:activator="{ on, attrs }">
-                        <v-btn
-                            color="primary"
-                            dark
-                            class="mb-2"
-                            v-bind="attrs"
-                            v-on="on"
-                        >
-                            New User
-                        </v-btn>
-                    </template>
-                    <v-form
-                        ref="form"
-                        v-model="valid"
-                        lazy-validation
-                    >
-                    <v-card>
-                        <v-card-title>
-                            <span class="headline">{{ formTitle }}</span>
-                            <v-spacer></v-spacer>
-                            <v-overflow-btn
-                                v-if="editedIndex==-1"
-                                class="t-5"
-                                :items="membership_types"
-                                messages="Access Level"
-                                v-model="editedItem[0].access"
-                                dense
-                            ></v-overflow-btn>
-                        </v-card-title>
-                        
-                        <v-card-text>
-                            <v-container 
-                            fluid
-                            >
-                                <h4>Member 1</h4>
-                                <v-row no-gutters>
-                                    <v-col>
-                                        <v-text-field
-                                            :error-messages="nameRules"
-                                            v-model="editedItem[0].name"
-                                            @keydown="nameMsg(0)"
-                                            label="Name"
-                                        ></v-text-field>
-                                    </v-col>
-                                </v-row>
-                                <v-row no-gutters>
-                                    <v-col>
-                                        <v-text-field
-                                            :error-messages="emailRules"
-                                            v-model="editedItem[0].email"
-                                            @keydown="emailMsg(0)"
-                                            label="Email"
-                                        ></v-text-field>
-                                    </v-col>
-                                </v-row>
-                                <v-row no-gutters>
-                                    <v-col>
-                                        <v-text-field
-                                          :error-messages="phoneRules"
-                                          v-model="editedItem[0].phone"
-                                          @keydown="phoneMsg(0)"
-                                          label="Phone (optional)"
-                                        ></v-text-field>
-                                    </v-col>
-                                </v-row>
-                                <div v-if="editedItem[0].access==='Family'">
-                                <h4>Member 2</h4>
-                                <v-row no-gutters>
-                                    <v-col>
-                                        <v-text-field
-                                            :error-messages="nameRules1"
-                                            v-model="editedItem[1].name"
-                                            @keydown="nameMsg(1)"
-                                            label="Name"
-                                        ></v-text-field>
-                                    </v-col>
-                                </v-row>
-                                <v-row no-gutters>
-                                    <v-col>
-                                        <v-text-field
-                                            :error-messages="emailRules1"
-                                            v-model="editedItem[1].email"
-                                            @keydown="emailMsg(1)"
-                                            label="Email"
-                                        ></v-text-field>
-                                    </v-col>
-                                </v-row>
-                                <v-row no-gutters>
-                                    <v-col>
-                                        <v-text-field
-                                          :error-messages="phoneRules1"
-                                          v-model="editedItem[1].phone"
-                                          @keydown="phoneMsg(1)"
-                                          label="Phone (optional)"
-                                        ></v-text-field>
-                                    </v-col>
-                                </v-row>
-                                </div>
-
-                            </v-container>
-                        </v-card-text>
-
-                        <v-card-actions class="pb-5">
-                            <v-spacer></v-spacer>
-                            <v-btn
-                                color="blue darken-1"
-                                text
-                                @click="close"
-                            >
-                                Cancel
-                            </v-btn>
-                            <v-btn
-                                :disabled="!valid"
-                                color="primary"
-                                class="mr-4 px-6"   
-                                @click="validateForm"
-                            >
-                                Save
-                            </v-btn>
-                        </v-card-actions>
-                        
-                        
-                    </v-card>
-                    </v-form>
-                </v-dialog>
-                <v-dialog v-model="dialogDelete" max-width="500px">
-                    <v-card>
-                        <v-card-title class="headline">Are you sure you want to delete this item?</v-card-title>
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
-                            <v-btn color="blue darken-1" text @click="deleteItemConfirm">OK</v-btn>
-                            <v-spacer></v-spacer>
-                        </v-card-actions>
-                    </v-card>
-                </v-dialog>
-            </v-toolbar>
-        </template>
-        <template v-slot:item.actions="{ item }">
-            <v-icon
-                small
-                class="mr-2"
-                @click="editItem(item)"
-            >
-                mdi-pencil
-            </v-icon>
-            <v-icon
-                small
-                @click="deleteItem(item)"
-            >
-                mdi-delete
-            </v-icon>
-        </template>
-        <template v-slot:no-data>
-            <v-btn
-                class="my-5"
-                color="primary"
-                @click="reload"
-            >
-                Load Table
-            </v-btn>
-        </template>
+    <template v-slot:item.actions="{ item }">
+        <v-icon
+        small
+        class="mr-2"
+        @click="selectedUser=JSON.parse(JSON.stringify(item)); edit_user_dialog=true"
+        >
+        mdi-pencil
+        </v-icon>
+        <v-icon
+        small
+        @click="selectedUser=JSON.parse(JSON.stringify(item)); delete_user_dialog=true"
+        >
+        mdi-delete
+        </v-icon>
+    </template>
     </v-data-table>
-    </v-container>
+        
+    </v-card>
+
+
+
+    <!--   DIALOGS  -->
+
+    <v-dialog v-model="club_settings_dialog" content-class="custom-dialog" max-width="400px">
+    <v-card class="mx-auto" v-if="load2">
+        <v-progress-linear :active="dialog_load" color="grey lighten-2" height="5" indeterminate></v-progress-linear>
+        <v-card-title class="grey lighten-2">Club Rules</v-card-title>
+        <div class="mx-2 pt-1">
+        <v-row v-for="(rule, index) in club_rules" v-bind:key="rule.id">
+            <v-col>
+                <v-text-field v-model="club_rules[index].value" :label="labels[index]"
+                    :hint="hints[index]" :disabled="!club_rules[index].active"></v-text-field>
+            </v-col>
+            <div style="width:80px; justify-content: center; align-items: center; display: flex;" class="pa-0 ma-0">
+                <v-switch v-model="club_rules[index].active" @click="club_rules[index].value=default_rules[index].value"></v-switch>
+            </div>
+        </v-row>
+        </div>
+
+        <v-divider class="pa-0 ma-0"></v-divider>
+        <v-card-actions><v-spacer></v-spacer>
+            <v-btn color="primary" @click="updateClubRules(club_rules)" :disabled="dialog_load">Update</v-btn>
+            <v-btn color="primary" text @click="club_settings_dialog=false">Cancel</v-btn>
+        </v-card-actions>
+    </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="delete_user_dialog" content-class="custom-dialog" max-width="300px">
+    <v-card class="mx-auto" v-if="selectedUser">
+        <v-progress-linear :active="dialog_load" color="grey lighten-2" height="5" indeterminate></v-progress-linear>
+        <v-card-title class="grey lighten-2">Delete Member</v-card-title>
+
+        <v-card-text class="mt-5">
+        Are you sure you want to delete <b>{{ selectedUser.name }}</b>?
+        </v-card-text>
+
+        <v-divider class="pa-0 ma-0"></v-divider>
+        <v-card-actions><v-spacer></v-spacer>
+            <v-btn color="primary" @click="deleteItem(selectedUser.id)" :disabled="dialog_load">Yes</v-btn>
+            <v-btn color="primary" text @click="delete_user_dialog=false">No</v-btn>
+        </v-card-actions>
+    </v-card>
+    </v-dialog>
+
+
+    <v-dialog v-model="edit_user_dialog" persistent max-width="600px" class="pa-0 ma-0" content-class="custom-dialog">
+    <v-card class="pa-0 ma-0" v-if="selectedUser">
+        <v-progress-linear :active="dialog_load" color="primary" height="5" indeterminate></v-progress-linear>
+        <v-toolbar v-if="selectedUser" class="mb-3" color="primary" dark flat>
+            <v-card-title class="categories_style">Edit Information</v-card-title>
+        </v-toolbar>
+        <div class="mx-2 pt-1">
+        <v-row class="pa-0 ma-0">
+            <v-col class="pa-0 ma-0">
+                <v-text-field v-model="selectedUser.f_name" label="First Name" dense class="pr-1"></v-text-field>
+            </v-col>
+            <v-col class="pa-0 ma-0">
+                <v-text-field v-model="selectedUser.l_name" label="Last Name" dense class="pl-1"></v-text-field>
+            </v-col>
+        </v-row>
+        <v-row class="pa-0 ma-0">
+            <v-col cols="6" class="pa-0 ma-0">
+                <v-select v-model="selectedUser.access" label="Membership Type" dense class="pr-1"
+                :items="membership_types" :menu-props="{ top: false, offsetY: true }" >
+                </v-select>
+            </v-col>
+            <v-col cols="6" class="pa-0 ma-0">
+                <v-text-field v-model="selectedUser.membership_id" label="Membership ID" dense class="pl-1"></v-text-field>
+            </v-col>
+        </v-row>
+        <v-row class="pa-0 ma-0">
+            <v-col class="pa-0 ma-0">
+                <v-text-field v-model="selectedUser.email" label="Email" dense></v-text-field>
+            </v-col>
+        </v-row>
+        <v-row class="pa-0 ma-0">
+            <v-col class="pa-0 ma-0">
+                <v-text-field v-model="selectedUser.phone" label="Phone (optional)" dense></v-text-field>
+            </v-col>
+        </v-row>
+        </div>
+        <v-card-actions><v-spacer></v-spacer>
+            <v-btn color="primary" @click="editItem(selectedUser)" :disabled="dialog_load">Update</v-btn>
+            <v-btn color="primary" text @click="edit_user_dialog=false">Cancel</v-btn>
+        </v-card-actions>     
+    </v-card>
+    </v-dialog>
+
+
+    <v-dialog v-model="new_user_dialog" persistent max-width="600px" class="pa-0 ma-0" content-class="custom-dialog">
+    <v-card class="pa-0 ma-0">
+        <v-progress-linear :active="dialog_load" color="primary" height="5" indeterminate></v-progress-linear>
+        <v-toolbar class="mb-3" color="primary" dark flat>
+            <v-card-title class="categories_style">New Member</v-card-title>
+        </v-toolbar>
+        <div class="mx-2 pt-1">
+        <v-row class="pa-0 ma-0">
+            <v-col class="pa-0 ma-0">
+                <v-text-field v-model="newUser.f_name" label="First Name" dense class="pr-1"></v-text-field>
+            </v-col>
+            <v-col class="pa-0 ma-0">
+                <v-text-field v-model="newUser.l_name" label="Last Name" dense class="pl-1"></v-text-field>
+            </v-col>
+        </v-row>
+        <v-row class="pa-0 ma-0">
+            <v-col cols="6" class="pa-0 ma-0">
+                <v-select v-model="newUser.access" label="Membership Type" dense class="pr-1"
+                :items="membership_types" :menu-props="{ top: false, offsetY: true }" >
+                </v-select>
+            </v-col>
+            <v-col cols="6" class="pa-0 ma-0">
+                <v-text-field v-model="newUser.membership_id" label="Membership ID" dense class="pl-1"></v-text-field>
+            </v-col>
+        </v-row>
+        <v-row class="pa-0 ma-0">
+            <v-col class="pa-0 ma-0">
+                <v-text-field v-model="newUser.email" label="Email" dense></v-text-field>
+            </v-col>
+        </v-row>
+        <v-row class="pa-0 ma-0">
+            <v-col class="pa-0 ma-0">
+                <v-text-field v-model="newUser.phone" label="Phone (optional)" dense></v-text-field>
+            </v-col>
+        </v-row>
+        </div>
+        <v-card-actions><v-spacer></v-spacer>
+            <v-btn color="primary" @click="addItem(newUser)" :disabled="dialog_load">Add</v-btn>
+            <v-btn color="primary" text @click="new_user_dialog=false; 
+            newUser = { f_name: '', l_name: '', access: 'Single', membership_id: '', email: '', phone: '' }">
+            Cancel</v-btn>
+        </v-card-actions>     
+    </v-card>
+    </v-dialog>
+
+
+<v-snackbar v-model="snackbar_dialog" :timeout="3000" top>
+    {{ snackbar_text }}
+    <template v-slot:action="{ attrs }">
+        <v-btn color="blue" text v-bind="attrs" @click="snackbar_dialog = false"> Close</v-btn>
+    </template>
+</v-snackbar>
+
+    <v-overlay :value="!(load1&&load2)">
+        <v-progress-circular indeterminate size="64"></v-progress-circular>
+    </v-overlay>
+
+</v-container>
 </template>
 
 <script>
+import moment from 'moment-timezone'
+
 export default {
-
-    props: ['users'],
-
     data: () => ({
-        club_list: [],
-        membership_types: ['Single', 'Family', 'Tennis Pro', 'Admin'],
-        dialog: false,
-        dialogDelete: false,
-        valid: true,
+        users: null,
+        club_rules: null,
+        default_rules: null,
         search: '',
-        headers: [
-            {
-                text: 'Name',
-                align: 'start',
-                sortable: true,
-                value: 'name',
-            },
+        user_headers: [
+            { text: 'ID', value: 'membership_id' },
+            { text: 'Access', value: 'access' },
+            { text: 'First Name', value: 'f_name' },
+            { text: 'Last Name', value: 'l_name' },
             { text: 'Phone', value: 'phone' },
             { text: 'Email', value: 'email' },
             { text: 'Actions', value: 'actions', sortable: false },
         ],
-        editedIndex: -1,
-        submitForm: true,
-        editedItem: [{
-            name: '',
-            phone: '',
-            email: '',
-            access: 'Single',
-            nameError: undefined,
-            phoneError: undefined,
-            emailError: undefined,
-        },
-        {
-            name: '',
-            phone: '',
-            email: '',
-            access: 'Single',
-            nameError: undefined,
-            phoneError: undefined,
-            emailError: undefined,
-        }],
-        defaultItem: [{
-            name: '',
-            phone: '',
-            email: '',
-            access: 'Single',
-            nameError: undefined,
-            phoneError: undefined,
-            emailError: undefined,
-        },
-        {
-            name: '',
-            phone: '',
-            email: '',
-            access: 'Single',
-            nameError: undefined,
-            phoneError: undefined,
-            emailError: undefined,
-        }],
-    }),
+        membership_types: ['Single', 'Family', 'Tennis Pro', 'Admin'],
+        labels: [
+            "Max duration (hours)", 
+            "Max number of reservations", 
+            "Time in Advance (hours)", 
+            "Guest Policy (days)", 
+            "Guest Price (price)", 
+        ],
+        hints: [
+            "Increments of 0.5", 
+            "Whole Numbers Only", 
+            "Increments of 0.5", 
+            "Whole Numbers Only", 
+            "Increments of 0.01", 
+        ],
 
+        load1: false,
+        load2: false,
+        dialog_load: false,
+
+        new_user_dialog: false,
+        edit_user_dialog: false,
+        delete_user_dialog: false,
+        club_settings_dialog: false,
+        snackbar_dialog: false,
+        snackbar_text: null,
+
+        selectedUser: null,
+        newUser: {
+            f_name: '',
+            l_name: '',
+            access: 'Single',
+            membership_id: '',
+            email: '',
+            phone: '',
+        }
+
+
+    }),
+    created(){
+        this.loadPage()    
+    },
     computed: {
-        formTitle () {
-            return this.editedIndex === -1 ? 'Add a Member' : 'Edit Member Info'
-        },
-        //computed cant accecpt parameters :(
-        nameRules () { return this.editedItem[0].nameError },
-        nameRules1 () { return this.editedItem[1].nameError },
-        phoneRules () { return this.editedItem[0].phoneError },
-        phoneRules1 () { return this.editedItem[1].phoneError },
-        emailRules () { return this.editedItem[0].emailError },
-        emailRules1 () { return this.editedItem[1].emailError },
-        computedHeaders () {
-            // logic for hiding columns
-            var headers = [
-            { text: 'Member ID', value: 'membership_id' },
-            { text: 'Type', value: 'access' },
-            {
-                text: 'Name',
-                align: 'start',
-                sortable: true,
-                value: 'name',
-            },
-            { text: 'Phone', value: 'phone' },
-            { text: 'Email', value: 'email' },
-            { text: 'Last Active', value: 'updated_at'},
-            { text: 'Actions', value: 'actions', sortable: false },
-            ]
-            var xsHeader = [headers[2],headers[6]]
-            var smHeader = [headers[2],headers[3],headers[4],headers[6]]
-            switch (this.$vuetify.breakpoint.name) {
-                case 'xs': return xsHeader
-                case 'sm': return smHeader
-                case 'md': return headers
-                case 'lg': return headers
-                case 'xl': return headers
-            }
-            // return this.headers
-            // return headers
+        computedHeaders(){
+            return this.user_headers;
         }
     },
-
-    watch: {
-        dialog (val) {
-            val || this.close()
-        },
-        dialogDelete (val) {
-            val || this.closeDelete()
-        },
-    },
-
-    created () {
-        this.getUsers();
-        // this.$emit('refresh-users')
-    },
-
     methods: {
-        validateForm() {
-            this.submitForm = true
-            var numOfFields = this.editedItem[0].access === 'Family' ? 2 : 1
-            for(var i=0; i<numOfFields; i++){
-                // check name
-                if(!this.editedItem[i].name){
-                    this.editedItem[i].nameError = "Field is required"
-                    this.submitForm = false
-                }
-                // check phone
-                if(this.editedItem[i].phone){
-                    const validNumRegExp = new RegExp('^[0-9]*$')
-                    if(!validNumRegExp.test(this.editedItem[i].phone)){
-                        this.editedItem[i].phoneError = "Invalid phone"
-                        this.submitForm = false
-                    }
-                }
-                // check email is valid and unique
-                if(this.editedItem[i].email){
-                    const validEmailRegExp = new RegExp('@.*?\.')
-                    if(!validEmailRegExp.test(this.editedItem[i].email)){
-                        this.editedItem[i].emailError = "Invalid email"
-                        this.submitForm = false
-                    }
-                    else if(this.editedIndex > -1){// edit
-                        for (var j = 0; j< this.users.length; j++) {
-                            if(this.users[j].email === this.editedItem[i].email && j!=this.editedIndex){
-                                this.editedItem[i].emailError = "Email already exists"
-                                this.submitForm = false
-                            }
-                        }                    
-                    } else{//new email
-                        for (var j = 0; j < this.users.length; j++) {
-                            if(this.users[j].email === this.editedItem[i].email){
-                                this.editedItem[i].emailError = "Email already exists"
-                                this.submitForm = false
-                            }
-                        }   
-                    }
-                }
-                else{
-                    this.editedItem[i].emailError = "Field is required"
-                    this.submitForm = false
-                }
-                if(i==1 && this.editedItem[0].email === this.editedItem[1].email){
-                    this.editedItem[0].emailError = "Email must be unique"
-                    this.editedItem[1].emailError = "Email must be unique"
-                    this.submitForm = false
-                }
+        loadPage(){
+            this.newUser = {
+                f_name: '',
+                l_name: '',
+                access: 'Single',
+                membership_id: '',
+                email: '',
+                phone: '',
             }
-            if(!this.submitForm){return}
-            // save if no errors
-            this.save()
+            this.new_user_dialog = false
+            this.edit_user_dialog = false
+            this.delete_user_dialog = false
+            this.club_settings_dialog = false
+            this.getUsers()
+            this.getRules()
         },
-        nameMsg(x) { this.editedItem[x].nameError = undefined },
-        phoneMsg(x) { this.editedItem[x].phoneError = undefined },
-        emailMsg(x) { this.editedItem[x].emailError = undefined },
-        getUsers() {
+        updateClubRules(newRules){
+            this.dialog_load=true
+            let item = JSON.parse(JSON.stringify(newRules))
+            let editUserPayload = { item }
+            axios.put('api/updateRules', editUserPayload)
+            .then(response => {
+                console.log(response.data)
+                if(response.data.status=="error"){
+                    this.snackbar_text = response.data.message
+                    this.snackbar_dialog = true
+                } else if(response.data.status=="success"){
+                    this.snackbar_text = response.data.message
+                    this.snackbar_dialog = true
+                    this.loadPage()
+                }
+                this.dialog_load=false
+            })
+            .catch(error => {
+                console.log(error);
+                this.dialog_load=false
+            })  
+        },
+        addItem(user){
+            this.dialog_load=true
+            let item = JSON.parse(JSON.stringify(user))
+            let newCompTimePayload = { item }
+            axios.post('api/user/store', newCompTimePayload)
+            .then(response => {
+                console.log(response.data)
+                if(response.data.status=="error"){
+                    this.snackbar_text = response.data.message
+                    this.snackbar_dialog = true
+                } else if(response.data.status=="success"){
+                    this.snackbar_text = response.data.message
+                    this.snackbar_dialog = true
+                    this.loadPage()
+                }
+                this.dialog_load=false
+            })
+            .catch(error => {
+                console.log(error);
+                this.dialog_load=false
+            })      
+        },
+        editItem(user){
+            this.dialog_load=true
+            let item = JSON.parse(JSON.stringify(user))
+            let editUserPayload = { item }
+            axios.put('api/user/' + item.id, editUserPayload)
+            .then(response => {
+                console.log(response.data)
+                if(response.data.status=="error"){
+                    this.snackbar_text = response.data.message
+                    this.snackbar_dialog = true
+                } else if(response.data.status=="success"){
+                    this.snackbar_text = response.data.message
+                    this.snackbar_dialog = true
+                    this.loadPage()
+                }
+                this.dialog_load=false
+            })
+            .catch(error => {
+                console.log(error);
+                this.dialog_load=false
+            })            
+        },
+        deleteItem(id){
+            this.dialog_load=true
+            axios.delete('api/user/' + id)
+            .then(response => {
+                console.log(response.data)
+                if(response.data.status=="error"){
+                    this.snackbar_text = response.data.message
+                    this.snackbar_dialog = true
+                } else if(response.data.status=="success"){
+                    this.snackbar_text = response.data.message
+                    this.snackbar_dialog = true
+                    this.loadPage()
+                }
+                this.dialog_load=false
+            })
+            .catch(error => {
+                console.log(error);
+                this.dialog_load=false
+            })  
+        },
+        getUsers(){
+            this.load1 = false
             axios.get('api/users')
-                .then(response => {
-                    this.users = response.data
-                })
-                .catch(error => {
-                    console.log(error);
-                })
-        },
-        reload() {
-            this.$emit('refresh-users')
-        },
-        editItem (item) {
-            this.editedIndex = this.users.indexOf(item)
-            this.editedItem[0] = Object.assign({}, item)
-            this.dialog = true
-        },
-
-        deleteItem (item) {
-            this.editedIndex = this.users.indexOf(item)
-            this.editedItem[0] = Object.assign({}, item)
-            // console.log(this.editedIndex)
-            // console.log(item.id)
-            this.dialogDelete = true
-        },
-
-        deleteItemConfirm () {
-            this.users.splice(this.editedIndex, 1)
-            axios.delete('api/user/' + this.editedItem[0].id)
-            this.closeDelete()
-        },
-
-        close () {
-            this.dialog = false
-            this.$nextTick(() => {
-                this.editedItem = Object.assign({}, this.defaultItem)
-                this.editedIndex = -1
+            .then(response => {
+                console.log(response.data)
+                this.users = response.data
+                this.load1 = true
             })
-            this.$emit('refresh-users')
-        },
-
-        closeDelete () {
-            this.dialogDelete = false
-            this.$nextTick(() => {
-                this.editedItem = Object.assign({}, this.defaultItem)
-                this.editedIndex = -1
+            .catch(error => {
+                console.log(error);
             })
         },
-
-        save() {
-            if (this.editedIndex > -1) { //edit
-                Object.assign(this.users[this.editedIndex], this.editedItem[0])
-                let item = JSON.parse(JSON.stringify(this.editedItem[0]))
-                let editUserPayload = {
-                    item
-                }
-                axios.put('api/user/' + item.id, editUserPayload)
-            } else { //new user(s)
-                //random unique member_id
-                var numIsNew = false
-                var randNum = 0
-                while(!numIsNew){
-                    numIsNew = true
-                    randNum = Math.floor(Math.random() * Math.floor(100000)) + 1   
-                    for (var i = 0; i< this.users.length; i++) {
-                        if(this.users[i].membership_id==randNum){
-                            numIsNew = false
-                        }
-                    }
-                }
-                var numOfFields = this.editedItem[0].access === 'Family' ? 2 : 1
-                for(var i=0; i<numOfFields; i++){
-                    let item = JSON.parse(JSON.stringify(this.editedItem[i]))
-                    item.membership_id = randNum
-                    item.password = "password123"
-                    item.access = this.editedItem[0].access
-                    let newCompTimePayload = {
-                        item
-                    }
-                    console.log(newCompTimePayload)
-
-                    axios.post('api/user/store', newCompTimePayload)
-                }
-            }
-            this.close()
+        getRules() {
+            this.load2 = false
+            axios.get('api/rules')
+            .then(response => {
+                console.log(response)
+                this.club_rules = response.data
+                this.default_rules = JSON.parse(JSON.stringify(response.data))
+                this.load2 = true
+            })
+            .catch(error => {
+                console.log(error);
+            })
         },
-    },
+    }
 }
-</script>
+    </script>
