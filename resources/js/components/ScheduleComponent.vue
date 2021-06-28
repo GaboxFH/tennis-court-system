@@ -1601,6 +1601,7 @@ export default {
                     this.snackbar_dialog = true
                     this.edit_event_dialog = false
                     this.areyousure_dialog = false
+                    this.selectedGuest = []
                     this.reloadPage()
                 }, (error) => {
                     console.log(error);
