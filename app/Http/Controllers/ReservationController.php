@@ -39,11 +39,37 @@ class ReservationController extends Controller
             ->get();
 
         for($x = 0; $x < count($previous); $x++){
-            $sql = "select users.name
-            from users 
-            INNER JOIN reservation_user ON users.id=reservation_user.user_id
-            where reservation_id = " . $previous[$x]->id;
+            // $sql = "select users.name
+            // from users 
+            // INNER JOIN reservation_user ON users.id=reservation_user.user_id
+            // where reservation_id = " . $previous[$x]->id;
+            // $names = DB::select($sql);
+            $sql = "SELECT
+                users.name,
+                users.id
+            FROM
+                users
+                INNER JOIN reservation_user ON users.id = reservation_user.user_id
+            WHERE
+                reservation_id = " . $previous[$x]->id . "
+            UNION
+            SELECT
+                name,
+                0 AS id
+            FROM
+                guests
+            WHERE
+                reservation_id = " . $previous[$x]->id;
             $names = DB::select($sql);
+            for($i=0; $i<count($names); $i++){
+                if($names[$i]->id == 0){
+                    $names[$i]->name = $names[$i]->name . "**";
+                } else if($names[$i]->id == $previous[$x]->host_id){
+                    $host = $names[$i];
+                    unset($names[$i]);
+                    array_unshift($names,$host);
+                }
+            }
             $List = array_column($names,'name');
             $previous[$x]->ppts = implode(', ', $List);
         }    
@@ -55,12 +81,37 @@ class ReservationController extends Controller
             ->orderBy('start', 'DESC')
             ->get();
         for($x = 0; $x < count($current); $x++){
-            $sql = "select users.name
-            from users 
-            INNER JOIN reservation_user ON users.id=reservation_user.user_id
-            where reservation_id = " . $current[$x]->id;
-            
+            // $sql = "select users.name
+            // from users 
+            // INNER JOIN reservation_user ON users.id=reservation_user.user_id
+            // where reservation_id = " . $current[$x]->id;
+            $sql = "SELECT
+                users.name,
+                users.id
+            FROM
+                users
+                INNER JOIN reservation_user ON users.id = reservation_user.user_id
+            WHERE
+                reservation_id = " . $current[$x]->id . "
+            UNION
+            SELECT
+                name,
+                0 AS id
+            FROM
+                guests
+            WHERE
+                reservation_id = " . $current[$x]->id;
             $names = DB::select($sql);
+            for($i=0; $i<count($names); $i++){
+                if($names[$i]->id == 0){
+                    $names[$i]->name = $names[$i]->name . "**";
+                } else if($names[$i]->id == $current[$x]->host_id){
+                    $host = $names[$i];
+                    unset($names[$i]);
+                    array_unshift($names,$host);
+                }
+            }
+            // $names = DB::select($sql);
             $List = array_column($names,'name');
             $current[$x]->ppts = implode(', ', $List);
         }    
@@ -93,18 +144,15 @@ class ReservationController extends Controller
                 guests
             WHERE
                 reservation_id = " . $future[$x]->id;
-
-
             $names = DB::select($sql);
-            // $future[$x]->ppts
             for($i=0; $i<count($names); $i++){
-                if($names[$i]->id == $future[$x]->host_id){
+                if($names[$i]->id == 0){
+                    $names[$i]->name = $names[$i]->name . "**";
+                } else if($names[$i]->id == $future[$x]->host_id){
                     $host = $names[$i];
                     unset($names[$i]);
                     array_unshift($names,$host);
-                } else if($names[$i]->id == 0){
-                    $names[$i]->name = $names[$i]->name . "**";
-                }
+                } 
             }
 
             $List = array_column($names,'name');
