@@ -26,14 +26,18 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 
 Route::get('/reservations', [ReservationController::class, 'index']);
+Route::get('/guests', [ReservationController::class, 'guests']);
+Route::get('/curr_reservations/{time}', [ReservationController::class, 'curr_reservations']);
+Route::get('/getGuests/{id}', [ReservationController::class, 'getGuests']);
 Route::get('/getEvents/{date}', [ReservationController::class, 'getEvents']);
 Route::get('/getClosure/{closure_id}', [ReservationController::class, 'getClosure']);
-Route::delete('/deleteClosure/{closure_id}', [ReservationController::class, 'deleteClosure']);
-Route::get('/getUserReservations/{user_id}', [ReservationController::class, 'getUserReservations']);
+Route::post('/deleteClosure/{closure_id}', [ReservationController::class, 'deleteClosure']);
+Route::get('/getUserReservations/{user_id}/{time}', [ReservationController::class, 'getUserReservations']);
 Route::get('/daily/{start}/{end}', [ReservationController::class, 'daily']);
 Route::get('/court_play/{time}', [ReservationController::class, 'court_play']);
 Route::get('/member_play/{time}', [ReservationController::class, 'member_play']);
 Route::get('/rainout/{start}/{end}', [ReservationController::class, 'rainout']);
+Route::get('/reservation_guests/{id}', [ReservationController::class, 'reservation_guests']);
 Route::get('/reservation_users/{id}/{user_id}', [ReservationController::class, 'reservation_users']);
 Route::get('/avail_reservations/{date_input_milliseconds}/{findType}', [ReservationController::class, 'avail_reservations']);
 Route::get('/avail_reservations/{search_type}/{date_input_milliseconds}/{findType}', [ReservationController::class, 'avail_reservations']);
@@ -41,6 +45,7 @@ Route::get('/avail_reservations/{search_type}/{date_input_milliseconds}/{findTyp
 Route::prefix('/reservation')->group( function() {
     // Route::get('/{id}', [ReservationController::class, 'reservation_users']);
     Route::post('/store', [ReservationController::class, 'store']);
+    Route::post('/adminStore', [ReservationController::class, 'adminStore']);
     Route::post('/memberStore', [ReservationController::class, 'memberStore']);
     Route::post('/storeReoccur', [ReservationController::class, 'storeReoccur']);
     Route::post('/resUsers', [ReservationController::class, 'resUsers']);
@@ -66,11 +71,13 @@ Route::get('/users', [UserController::class, 'index']);
 
 Route::prefix('/user')->group( function() {
     Route::post('/store', [UserController::class, 'store']);
+    Route::post('/updatePass', [UserController::class, 'updatePass']);
     Route::put('/{id}', [UserController::class, 'update']);
     Route::delete('/{id}', [UserController::class, 'destroy']);
 });
 
 Route::get('/rules', [RulesController::class, 'index']);
+Route::put('/updateRules', [RulesController::class, 'updateRules']);
 
 
 Route::get('/categories', [CategoryController::class, 'index']);

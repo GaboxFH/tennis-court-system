@@ -5,6 +5,7 @@ import VueRouter from 'vue-router';
 Vue.use(VueRouter)
 
 import ReserveACourt from "../components/ReserveQueryComponent"
+import MyReservations from "../components/MyReservationsComponent"
 import Reservations from "../components/ReservationsComponent"
 import Schedule from "../components/ScheduleComponent"
 import Users from "../components/UsersComponent"
@@ -13,8 +14,8 @@ import Report from "../components/ReportComponent"
 
 let routes = [
     {
-        component: Reservations,
-        name: "reservations",
+        component: MyReservations,
+        name: "my_reservations",
         path: "/",
         meta: {
             authRequired: 'true'
@@ -24,6 +25,11 @@ let routes = [
         component: ReserveACourt,
         name: "reserve_a_court",
         path: "/reserve_a_court"
+    },
+    {
+        component: Reservations,
+        name: "reservations",
+        path: "/reservations"
     },
     {
         component: Schedule,

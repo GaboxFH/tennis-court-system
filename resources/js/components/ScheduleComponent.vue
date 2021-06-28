@@ -5,7 +5,7 @@
         <p>{{ closed_court_periods }}</p>
     </v-col>
 </v-row> -->
-<v-row no-gutters class="fill-height pb-3" :class="{ cal_header: ($vuetify.breakpoint.name != 'xs' && $vuetify.breakpoint.name != 'sm')}">
+<v-row no-gutters class="fill-height pb-3 pt-4" :class="{ cal_header: ($vuetify.breakpoint.name != 'xs' && $vuetify.breakpoint.name != 'sm')}">
     <v-col cols="3" class="pa-0 ma-0" v-if="($vuetify.breakpoint.name != 'xs' && $vuetify.breakpoint.name != 'sm')">
         <v-row class="pa-0 ma-0">
             <v-col class="pa-0 ma-0" align="left">
@@ -15,7 +15,7 @@
                 </v-btn> 
             </v-col>
         </v-row>
-        <v-row class="px-0 pt-12 pb-0 ma-0">
+        <v-row class="px-0 pt-9 pb-0 ma-0">
             <v-col class="pa-0 ma-0" align="left">
                 <v-btn outlined color="blue darken-4" @click="setScheduleDate(0)">Today</v-btn>
             </v-col>
@@ -29,8 +29,26 @@
                         position: 'relative', right: '0px'
                     } : { position: 'relative', right: '7.1%',
                     }]">
-                <h1>Racquet Club Schedule</h1>
-                <!-- <h1>Schedule</h1> -->
+                <!-- <h1>Racquet Club Schedule</h1>
+                <h1 class="text-overline">Racquet Club Schedule</h1> -->
+                <!-- <h1 style="
+font-family: 'Roboto', sans-serif;
+font-size: 28px;
+font-weight: 300;
+letter-spacing: .1666666667em;
+">RACQUET CLUB SCHEDULE</h1> -->
+<h1 style="
+font-family: 'Roboto', sans-serif;
+font-size: 28px;
+font-weight: 300;
+letter-spacing: .1566666667em;
+">CLUB SCHEDULE</h1>
+<!-- <h1 style="
+font-family: 'Roboto', sans-serif;
+font-size: 28px;
+font-weight: 400;
+letter-spacing: .1566666667em;
+">RACQUET CLUB SCHEDULE</h1> -->
                 <v-btn outlined small v-if="!($vuetify.breakpoint.name != 'xs' && $vuetify.breakpoint.name != 'sm')" color="blue darken-4" @click="court_close_dialog=true">
                     Close Courts
                     <!-- <v-icon>mdi-cancel</v-icon> -->
@@ -67,7 +85,12 @@
                             outlined
                             color="blue darken-4"
                         > 
-                        {{ formatDate(schedule_date) }}
+                        <div v-if="!($vuetify.breakpoint.name != 'xs' && $vuetify.breakpoint.name != 'sm')">
+                            {{ shortFormatDate(schedule_date) }}
+                        </div>
+                        <div v-else>
+                            {{ formatDate(schedule_date) }}
+                        </div>
                         </v-btn>
                         </template>
                         <v-date-picker
@@ -116,91 +139,94 @@
             </v-btn></h5>
             </v-col>
         </v-row>
-        <div v-if="categories_dialog">
-        <v-row 
-            v-for="(item,ind) in categories" :key="item.id" 
-            @mouseover="categories[ind].active = 1"
-            @mouseleave="categories[ind].active = 0"
-            class="pa-0 ma-0 clickable" no-gutters
-            :class="{ list_item_active: item.active, list_item_selected: item.selected }"
-            align="center" justify="center"
-        >
-            <v-col cols="2" max-width="300px" align="center" class="pa-0 ma-0 categories_style" style="justify-content: center;">
-                <v-menu v-model="categories[ind].selected" left :offset-x="true" :close-on-content-click="false">
-                    <template v-slot:activator="{ on, attrs }">
-                        <v-avatar
-                            v-bind="attrs" v-on="on"
-                            size=18
-                            :color="color_options[categories[ind].color]"
-                            class="pa-0 ma-0 rounded clickable"
-                            @click="selected_color=categories[ind].color; categories[ind].selected=1;"
-                        ></v-avatar>
-                    </template>
-                    <v-card
-                        color="grey lighten-4"
-                        class="pa-2 ma-0"
-                        min-width="150px"
-                        max-width="200px"
-                        v-model="categories[ind].color"
-                    >
-                        <v-row no-gutters>
-                            <v-col align="center" justify="center">
-                                <h5>Pick Color</h5>
-                            </v-col>
-                        </v-row>
-                        <v-row v-for="i in 4" :key="i" align="center" justify="center" no-gutters class="py-1 ma-0" style="height: 36px">
-                            <v-col v-for="j in 3" :key="j" align="center" justify="center" class="pa-0 ma-0" cols="4">
-                                <v-avatar
-                                    v-if="(i*3+j-4)==selected_color"
-                                    size=28
-                                    :color="color_options[(i*3+j-4)]"
-                                    class="pa-0 ma-0 rounded clickable"
-                                    @click="selected_color = (i*3+j-4)"
-                                ></v-avatar>
-                                <v-avatar
-                                    v-else
-                                    size=18
-                                    :color="color_options[(i*3+j-4)]"
-                                    class="pa-0 ma-0 rounded clickable"
-                                    @click="selected_color = (i*3+j-4)"
-                                ></v-avatar>
-                            </v-col>
-                        </v-row>
-                        <v-row no-gutters class="py-2">
-                            <v-col align="center" justify="center" class="pr-1">
-                                <v-btn @click="categories[ind].selected=0" style="text-transform: none;" outlined depressed small>Cancel</v-btn>
-                            </v-col>
-                            <v-col align="center" justify="center" class="pl-1">
-                                <v-btn @click="updateCategory(item.id, selected_color); categories[ind].selected=0" style="text-transform: none;" small depressed color="primary">Apply</v-btn>
-                            </v-col>
-                        </v-row>
-                    </v-card>
-                </v-menu>
-            </v-col>
-            <v-col class="pa-0 ma-0 categories_style">
-                {{categories[ind].name}}
-            </v-col>
-            <v-col cols="2" align="center" class="pa-0 ma-0">
-                <v-menu offset-y left>
-                    <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                        small icon class="pa-0 ma-0"
-                        v-bind="attrs"
-                        v-on="on"
-                    >
-                        <v-icon small class="pa-0 ma-0">
-                        mdi-dots-vertical
-                        </v-icon>
-                    </v-btn>
-                    </template>
-                    <v-list class="pa-0 ma-0">
-                    <v-list-item dense link @click="deleteCategory(item.id)">
-                        <v-list-item-title dense>Delete Category</v-list-item-title>
-                    </v-list-item>
-                    </v-list>
-                </v-menu>
-            </v-col>
-        </v-row>
+        <div v-if="categories_dialog && load2">
+            <v-row 
+                v-for="(item,ind) in categories" :key="item.id" 
+                @mouseover="categories[ind].active = 1"
+                @mouseleave="categories[ind].active = 0"
+                class="pa-0 ma-0 clickable" no-gutters
+                :class="{ list_item_active: item.active, list_item_selected: item.selected }"
+                align="center" justify="center"
+            >
+                <v-col cols="2" max-width="300px" align="center" class="pa-0 ma-0 categories_style" style="justify-content: center;">
+                    <v-menu v-model="categories[ind].selected" left :offset-x="true" :close-on-content-click="false">
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-avatar
+                                v-bind="attrs" v-on="on"
+                                size=18
+                                :color="color_options[categories[(categories.length-1)-ind].color]"
+                                class="pa-0 ma-0 rounded clickable"
+                                @click="selected_color=categories[(categories.length-1)-ind].color; categories[ind].selected=1;"
+                            ></v-avatar>
+                        </template>
+                        <v-card
+                            color="grey lighten-4"
+                            class="pa-2 ma-0"
+                            min-width="150px"
+                            max-width="200px"
+                            v-model="categories[(categories.length-1)-ind].color"
+                        >
+                            <v-row no-gutters>
+                                <v-col align="center" justify="center">
+                                    <h5>Pick Color</h5>
+                                </v-col>
+                            </v-row>
+                            <v-row v-for="i in 4" :key="i" align="center" justify="center" no-gutters class="py-1 ma-0" style="height: 36px">
+                                <v-col v-for="j in 3" :key="j" align="center" justify="center" class="pa-0 ma-0" cols="4">
+                                    <v-avatar
+                                        v-if="(i*3+j-4)==selected_color"
+                                        size=28
+                                        :color="color_options[(i*3+j-4)]"
+                                        class="pa-0 ma-0 rounded clickable"
+                                        @click="selected_color = (i*3+j-4)"
+                                    ></v-avatar>
+                                    <v-avatar
+                                        v-else
+                                        size=18
+                                        :color="color_options[(i*3+j-4)]"
+                                        class="pa-0 ma-0 rounded clickable"
+                                        @click="selected_color = (i*3+j-4)"
+                                    ></v-avatar>
+                                </v-col>
+                            </v-row>
+                            <v-row no-gutters class="py-2">
+                                <v-col align="center" justify="center" class="pr-1">
+                                    <v-btn @click="categories[ind].selected=0" style="text-transform: none;" outlined depressed small>Cancel</v-btn>
+                                </v-col>
+                                <v-col align="center" justify="center" class="pl-1">
+                                    <v-btn @click="updateCategory(categories[(categories.length-1)-ind].id, selected_color); categories[ind].selected=0" style="text-transform: none;" small depressed color="primary">Apply</v-btn>
+                                </v-col>
+                            </v-row>
+                        </v-card>
+                    </v-menu>
+                </v-col>
+                <v-col class="pa-0 ma-0 categories_style">
+                    {{categories[(categories.length-1)-ind].name}}
+                </v-col>
+                <v-col cols="2" align="center" class="pa-0 ma-0">
+                    <v-menu offset-y left>
+                        <template v-slot:activator="{ on, attrs }">
+                        <v-btn
+                            small icon class="pa-0 ma-0"
+                            v-bind="attrs"
+                            v-on="on"
+                        >
+                            <v-icon small class="pa-0 ma-0">
+                            mdi-dots-vertical
+                            </v-icon>
+                        </v-btn>
+                        </template>
+                        <v-list class="pa-0 ma-0">
+                        <v-list-item v-if="ind!=(categories.length-1) && ind!=(categories.length-2)" dense link @click="deleteCategory(categories[(categories.length-1)-ind].id)">
+                            <v-list-item-title dense>Delete Category</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item v-else dense>
+                            <v-list-item-title dense>No Delete Option</v-list-item-title>
+                        </v-list-item>
+                        </v-list>
+                    </v-menu>
+                </v-col>
+            </v-row>
         </div>
         <v-row
             v-if="new_text_field"
@@ -243,7 +269,7 @@
     <v-sheet>
         <!-- {{events}} -->
         <v-calendar
-            v-if="(load1&&load2&&load3)"
+            v-if="(load1&&load2&&load3&&load4)"
             ref="calendar"
             v-model="schedule_date"
             color="primary"
@@ -283,12 +309,11 @@
 </v-col>
 </v-row>
 
-<v-dialog v-model="edit_event_dialog" persistent max-width="600px"
-    >
-    <v-card>
+<v-dialog v-model="edit_event_dialog" persistent max-width="600px" class="pa-0 ma-0" content-class="custom-dialog">
+    <v-card class="pa-0 ma-0">
             
-        <v-toolbar v-if="selectedEvent" class="mb-3" :color="getEventColor(selectedEvent)" dark >
-            <v-card-title>{{ selectedEvent.name }}</v-card-title>
+        <v-toolbar v-if="selectedEvent" class="mb-3" :color="getEventColor(selectedEvent)" dark flat>
+            <v-card-title class="categories_style">{{ selectedEvent.name }}</v-card-title>
             
             <v-spacer></v-spacer>
             <div v-if="selectedEvent.reoccur_id!=null">
@@ -329,37 +354,83 @@
             </v-menu>
         </v-toolbar>
 
-        <div v-if="selectedEvent" class="mx-5">
-        <v-row>
-        <v-col>
+        <div v-if="selectedEvent" class="mx-2 pt-1">
+        <v-row class="pa-0 ma-0">
+            <!-- dragEvent{{ extendOriginal }}<br>
+            selectedEvent{{ selectedEvent }}<br>
+            {{ selectedEvent.start }}<br> -->
+            <!-- {{ selectedEvent.date }}<br>             -->
+
+            <!-- {{ dateToMilli(selectedEvent.date)+times_ranges[0].val }}<br>
+            {{ dateToMilli(selectedEvent.date) }}<br>
+            {{ times_ranges[0].val }} <br> -->
+
+        <v-col class="pa-0 ma-0">
         <v-text-field
-            label="Date"
+            class="pr-2"
+            label="Date" dense
             :color="getEventColor(selectedEvent)"
-            v-model="schedule_date"
-            outlined
+            :value="formatDate(schedule_date)"
             readonly
         ></v-text-field>
         </v-col>
-        <v-col>
-        <v-text-field
+        <v-col cols="4" class="pa-0 ma-0">
+        <v-select
+        label="Court" dense
+        v-model="selectedEvent.category"
+        :color="getEventColor(selectedEvent)"
+        :item-color="getEventColor(selectedEvent)"
+        :items="all_courts"
+        :menu-props="{ top: false, offsetY: true }"
+        >
+        </v-select>
+        </v-col>
+        </v-row>
+        <v-row class="pa-0 ma-0">
+        <v-col cols="6" class="pa-0 ma-0">
+        <!-- <v-text-field
             label="Start Time"
             :color="getEventColor(selectedEvent)"
             v-model="computedTimes"
             outlined
             readonly
-        ></v-text-field>
+        ></v-text-field> -->
+        <v-select
+        class="pr-1"
+        label="Start Time" dense
+        v-model="selectedEvent.startTime"
+        :color="getEventColor(selectedEvent)"
+        :item-color="getEventColor(selectedEvent)"
+        :items="times_ranges"
+        item-text="show"
+        item-value="val"
+        :menu-props="{ top: false, offsetY: true }"
+        >
+        </v-select>
         </v-col>
-        <v-col>
-        <v-text-field
+        <v-col cols="6" class="pa-0 ma-0">
+        <!-- <v-text-field
             label="End Time"
             :color="getEventColor(selectedEvent)"
             v-model="computedTimes2"
             outlined
             readonly
-        ></v-text-field>
+        ></v-text-field> -->
+        <v-select
+        label="End Time" dense
+        v-model="selectedEvent.endTime"
+        class="pl-1"
+        :color="getEventColor(selectedEvent)"
+        :item-color="getEventColor(selectedEvent)"
+        :items="times_ranges"
+        item-text="show"
+        item-value="val"
+        :menu-props="{ top: false, offsetY: true }"
+        >
+        </v-select>
         </v-col>
         </v-row>
-        <v-text-field v-model="selectedEvent.name" :color="getEventColor(selectedEvent)" label="Event Title"></v-text-field>
+        <!-- <v-text-field v-model="selectedEvent.name" :color="getEventColor(selectedEvent)" label="Event Title"></v-text-field> -->
         <v-select
             v-model="selectedEvent.method"
             :items="categories"
@@ -367,22 +438,23 @@
             item-value="name"
             :menu-props="{ top: false, offsetY: true }"
             :color="getEventColor(selectedEvent)"
-            label="Reservation Type"
+            :item-color="getEventColor(selectedEvent)"
+            label="Reservation Type" dense
         ></v-select>
-        <v-text-field v-model="selectedEvent.custom" v-if="selectedEvent.method=='Custom'" dense label="'Custom' Type Name"></v-text-field>
-        <v-row>
-        <v-col cols="7">
+        <v-text-field v-model="selectedEvent.custom" v-if="selectedEvent.method=='Custom'" :color="getEventColor(selectedEvent)" dense label="'Custom' Type Name"></v-text-field>
+        <v-row class="pa-0 ma-0">
+        <v-col class="pa-0 ma-0">
         <v-autocomplete
             v-model="selectedEvent.host_id"
             :items="users"
             :color="getEventColor(selectedEvent)"
-            label="Host"
-            chips
+            label="Host" dense
+            small-chips
             hide-selected
             item-text="name"
             item-value="id"
         >                    
-        <template v-slot:selection="data">
+        <!-- <template v-slot:selection="data">
         <v-chip
             v-bind="data.attrs"
             :input-value="data.selected"
@@ -393,25 +465,31 @@
         </template>
         <template v-slot:item="data">
             <v-list-item-content v-text="data.item.name"></v-list-item-content>
-        </template>
+        </template> -->
         </v-autocomplete>
         </v-col>
-        <v-spacer></v-spacer>
-        <v-col cols="4">
-            <v-text-field :color="getEventColor(selectedEvent)" height=42 readonly v-model="selectedEvent.num_of_guests" type="number" label="Number of Guests" append-outer-icon="mdi-plus" @click:append-outer="selectedEvent.num_of_guests = parseInt(selectedEvent.num_of_guests,10) + 1" prepend-icon="mdi-minus" @click:prepend="selectedEvent.num_of_guests = parseInt(selectedEvent.num_of_guests,10) - 1"></v-text-field>
-        </v-col>
+        <!-- <v-col cols="6" class="px-0 pt-8 pb-0 ma-0" align="right">
+                <v-btn style="text-transform: unset !important;" height="6px" :color="getEventColor(selectedEvent)" class="px-2 py-5 mr-1 white--text small_btn_text" @click="addGuest(-1)">
+                    Add Guest <br>
+                    (non-member)</v-btn>
+                <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
+                    <v-icon class="pa-0 ml-0 mr-2 my-0" v-bind="attrs" v-on="on">mdi-information-outline</v-icon>
+                </template>
+                <span>Guests may only play free once per month</span>
+                </v-tooltip>
+        </v-col> -->
         </v-row>
 
         <v-autocomplete
             v-model="selectedEvent.participants"
             :items="computedMembers"
-            :key="participantsLoaded"
-            :loading="!participantsLoaded"
-            :disabled="!participantsLoaded"
+            :loading="!(participantsLoaded&&participantsLoaded2)"
+            :disabled="!(participantsLoaded&&participantsLoaded2)"
             :color="getEventColor(selectedEvent)"
-            chips
+            small-chips
             deletable-chips
-            label="Participants"
+            label="Participants" dense
             hide-selected   
             multiple
             item-text="name"
@@ -421,11 +499,42 @@
             :search-input.sync="searchInput"
         >
         </v-autocomplete>
-
-        
+        <v-row class="px-0 pt-0 pb-4 ma-0"><v-col class="pa-0 ma-0">
+        <v-btn style="text-transform: unset !important;" height="6px" :color="getEventColor(selectedEvent)" depressed class="px-2 py-5 mr-1 white--text small_btn_text" @click="addGuest(-1)">
+            Add Guest <br>
+            (non-member)</v-btn>
+        <v-tooltip top>
+        <template v-slot:activator="{ on, attrs }">
+            <v-icon class="pa-0 ml-0 mr-2 my-0" v-bind="attrs" v-on="on">mdi-information-outline</v-icon>
+        </template>
+        <span>Guests may only play once per month</span>
+        </v-tooltip>
+        </v-col></v-row>
+        <div v-for="index in 4" :key="index">
+            <v-row v-if="selectedGuest.length>=index" class="pa-0 ma-0">
+                <v-col cols="11" class="px-0 py-0 ma-0">
+                    <v-combobox
+                    v-model="selectedGuest[index-1]"
+                    :items="guests"
+                    :label="'Guest '+ index +' (non-member)'" 
+                    :color="getEventColor(selectedEvent)"
+                    dense
+                    item-text="name"
+                    item-value="name"
+                    ></v-combobox>
+                </v-col>
+                <v-col cols="1" align="right" class="pa-0 ma-0">
+                    <v-btn icon plain @click="addGuest(index-1)">
+                        <v-icon>
+                            mdi-close
+                        </v-icon>
+                    </v-btn>
+                </v-col>
+            </v-row>
+        </div>
         <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn :color="getEventColor(selectedEvent)" text @click="saveEvent(true)">Save</v-btn>
+            <v-btn :color="getEventColor(selectedEvent)" :disabled="selectedEvent.reoccur_id == 0" text @click="saveEvent(true)">Save</v-btn>
             <v-btn :color="getEventColor(selectedEvent)" text @click="saveEvent(false)">Close</v-btn>
         </v-card-actions>     
         </div>   
@@ -833,7 +942,7 @@
     </template>
 </v-snackbar>
 
-<v-overlay :value="!(load1&&load2&&load3) || !dialog_load">
+<v-overlay :value="!(load1&&load2&&load3&&load4) || !dialog_load">
     <v-progress-circular indeterminate size="64"></v-progress-circular>
 </v-overlay>
 
@@ -864,14 +973,16 @@ export default {
         dragOriginalEnd: null,
         dragOriginalCategory: null,
         selectedEvent: null,
+        selectedGuest: [],
         searchInput: null,
-        courtOpen: null,
+        courtOpen: true,
 
         // database values
         events: null,
         closed_court_periods: null,
         categories: null,
         users: null,
+        guests: null,
         // newCompTimePayload: null,
         newCompTimePayload: null,
         
@@ -880,6 +991,7 @@ export default {
         load1: false,
         load2: false,
         load3: false,
+        load4: false,
         dialog_load: true,
 
         // dialogs
@@ -888,12 +1000,13 @@ export default {
             field_active: false,
             new_text_field: false,
             selected_color: null,
-            color_options: [ '#064b9a', '#f0da16', '#548e66', '#f68324', '#f2618f', '#7c7c7c', '#db4c4b', '#a5e3f6', '#167d9f', '#b6e95f', '#6478f7', '#8e6a6b' ],
+            color_options: [ '#064b9a', '#f0da16', '#548e66', '#f68324', '#f2618f', '#7c7c7c', '#db4c4b', '#a5e3f6', '#167d9f', '#90DF68', '#B266FF', '#8e6a6b' ],
             new_category: null,
         snackbar_dialog: false,
             snackbar_text: null,
         edit_event_dialog: false,
             participantsLoaded: false,
+            participantsLoaded2: false,
         verify_update_dialog: false,
         areyousure_dialog: false,
         reoccur_dialog: false,
@@ -931,31 +1044,31 @@ export default {
         cancellation_reason_options: ['Rainout','Other'],
         all_courts: ['1', '2', '3','4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17'],
         times_ranges: [
-            {show:"8:00 am", val: 8.0, ind: 0},
-            {show:"8:30 am", val: 8.5, ind: 1},
-            {show:"9:00 am", val: 9.0, ind: 2},
-            {show:"9:30 am", val: 9.5, ind: 3},
-            {show:"10:00 am",val: 10.0, ind: 4},
-            {show:"10:30 am",val: 10.5, ind: 5},
-            {show:"11:00 am",val: 11.0, ind: 6},
-            {show:"11:30 am",val: 11.5, ind: 7},
-            {show:"12:00 pm",val: 12.0, ind: 8},
-            {show:"12:30 pm",val: 12.5, ind: 9},
-            {show:"1:00 pm", val: 13.0, ind: 10},
-            {show:"1:30 pm", val: 13.5, ind: 11},
-            {show:"2:00 pm", val: 14.0, ind: 12},
-            {show:"2:30 pm", val: 14.5, ind: 13},
-            {show:"3:00 pm", val: 15.0, ind: 14},
-            {show:"3:30 pm", val: 15.5, ind: 15},
-            {show:"4:00 pm", val: 16.0, ind: 16},
-            {show:"4:30 pm", val: 16.5, ind: 17},
-            {show:"5:00 pm", val: 17.0, ind: 18},
-            {show:"5:30 pm", val: 17.5, ind: 19},
-            {show:"6:00 pm", val: 18.0, ind: 20},
-            {show:"6:30 pm", val: 18.5, ind: 21},
-            {show:"7:00 pm", val: 19.0, ind: 22},
-            {show:"7:30 pm", val: 19.5, ind: 23},
-            {show:"8:00 pm", val: 20.0, ind: 24},
+            {show:"8:00 am", val: 28800000, ind: 0},
+            {show:"8:30 am", val: 30600000, ind: 1},
+            {show:"9:00 am", val: 32400000, ind: 2},
+            {show:"9:30 am", val: 34200000, ind: 3},
+            {show:"10:00 am",val: 36000000, ind: 4},
+            {show:"10:30 am",val: 37800000, ind: 5},
+            {show:"11:00 am",val: 39600000, ind: 6},
+            {show:"11:30 am",val: 41400000, ind: 7},
+            {show:"12:00 pm",val: 43200000, ind: 8},
+            {show:"12:30 pm",val: 45000000, ind: 9},
+            {show:"1:00 pm", val: 46800000, ind: 10},
+            {show:"1:30 pm", val: 48600000, ind: 11},
+            {show:"2:00 pm", val: 50400000, ind: 12},
+            {show:"2:30 pm", val: 52200000, ind: 13},
+            {show:"3:00 pm", val: 54000000, ind: 14},
+            {show:"3:30 pm", val: 55800000, ind: 15},
+            {show:"4:00 pm", val: 57600000, ind: 16},
+            {show:"4:30 pm", val: 59400000, ind: 17},
+            {show:"5:00 pm", val: 61200000, ind: 18},
+            {show:"5:30 pm", val: 63000000, ind: 19},
+            {show:"6:00 pm", val: 64800000, ind: 20},
+            {show:"6:30 pm", val: 66600000, ind: 21},
+            {show:"7:00 pm", val: 68400000, ind: 22},
+            {show:"7:30 pm", val: 70200000, ind: 23},
+            {show:"8:00 pm", val: 72000000, ind: 24},
         ],
         
 
@@ -969,6 +1082,7 @@ export default {
         this.getEvents(this.schedule_date)
         this.getCategories()
         this.getUsers()
+        this.getGuests()
     },
     computed: {
         computedTimes() {
@@ -1071,18 +1185,31 @@ export default {
                 const start = this.dragEvent.start
 
                 this.dragTime = mouse - start
+
+                this.courtOpen = true
+                var closure_id = null
+                // if no time conflict(event)
+                for(var evts in this.closed_court_periods){
+                    if(this.closed_court_periods[evts].start < this.createEvent.end 
+                    && this.closed_court_periods[evts].end > this.createEvent.start 
+                    && this.closed_court_periods[evts].category == this.createEvent.category){
+                        // courts closed
+                        closure_id = this.closed_court_periods[evts].reoccur_id
+                        this.courtOpen = false
+                    }
+                }
             } else {
                 console.log("here 2")
                 // console.log(tms.date)
                 this.createStart = this.roundTime(mouse)
                 this.createEvent = {
-                    name: `New Event`,
+                    name: this.categories[1].name,
                     date: this.schedule_date,
                     start: this.createStart,
                     end: this.createStart+30*1000*60,
                     category: tms.category.categoryName,
                     timed: true,
-                    method: this.categories[0].name,
+                    method: this.categories[1].name,
                     num_of_members: 0,
                     num_of_guests: 0,
                     host_id: null,
@@ -1120,6 +1247,18 @@ export default {
             this.createEvent = event
             this.createStart = event.start
             this.extendOriginal = event.end
+            this.courtOpen = true
+            var closure_id = null
+            // if no time conflict(event)
+            for(var evts in this.closed_court_periods){
+                if(this.closed_court_periods[evts].start < event.end 
+                && this.closed_court_periods[evts].end > event.start 
+                && this.closed_court_periods[evts].category == event.category){
+                    // courts closed
+                    closure_id = this.closed_court_periods[evts].reoccur_id
+                    this.courtOpen = false
+                }
+            }
         },
         mouseMove (tms) {
             const mouse = this.toTime(tms)
@@ -1200,6 +1339,8 @@ export default {
                         this.selectedEvent.custom = this.selectedEvent.method
                         this.selectedEvent.method = "Custom"
                     }
+                    this.selectedEvent.startTime = this.selectedEvent.start-this.dateToMilli(this.selectedEvent.date)
+                    this.selectedEvent.endTime = this.selectedEvent.end-this.dateToMilli(this.selectedEvent.date)
                     this.getParticipants()
                     // this.edit_event_dialog = true
                 }
@@ -1228,6 +1369,8 @@ export default {
                     // console.log(this.selectedEvent.orig_start)
                     
                     this.dialog_load = false
+                    console.log("this.newCompTimePayload")
+                    console.log(this.newCompTimePayload)
                     axios.post('api/reservation/store', this.newCompTimePayload)
                     .then((response) => {
                         console.log(response);
@@ -1241,6 +1384,8 @@ export default {
                             this.snackbar_text = "Event Created"
                             this.snackbar_dialog = true
                             this.selectedEvent.id = response.data.id
+                            this.selectedEvent.startTime = this.selectedEvent.start-this.dateToMilli(this.selectedEvent.date)
+                            this.selectedEvent.endTime = this.selectedEvent.end-this.dateToMilli(this.selectedEvent.date)
                             this.getParticipants()
                             // this.edit_event_dialog = true
                         }
@@ -1292,7 +1437,8 @@ export default {
         },
         getEventColor (event) {
             const colors = this.color_options;
-            event.color = colors[6]
+            // event.color = colors[6]
+            event.color = colors[this.categories[0].color]
             this.categories.forEach(function (item, index) {
                 if(event.method==item.name){
                     event.color = colors[item.color]
@@ -1302,6 +1448,9 @@ export default {
             const r = (rgb >> 16) & 0xFF
             const g = (rgb >> 8) & 0xFF
             const b = (rgb >> 0) & 0xFF
+            if(event.reoccur_id == 0){
+                return `rgba(150, 150, 150,0.6)`;
+            }
             return event === this.dragEvent
                 ? `rgba(${r}, ${g}, ${b}, 0.7)`
                 : event === this.createEvent
@@ -1328,10 +1477,42 @@ export default {
             .catch(error => {
                 console.log(error)
             })
+
+            axios.get('api/reservation_guests/'+this.selectedEvent.id)
+            .then(response => {
+                console.log(response)
+                console.log("response")
+                for(var i=0; i<response.data.length; i++){
+                    this.selectedGuest.push(response.data[i].name);
+                }
+                this.participantsLoaded2 = true
+                // this.selectedEvent.host_id = response.data.res_host
+                // this.selectedEvent.participants = response.data.res_participants
+                // // this.edit_event_dialog = true
+                // this.participantsLoaded = true
+                // this.participantsLoaded = false
+            })
+            .catch(error => {
+                console.log(error)
+            })
+
+
+        },
+        addGuest(num){
+            if(num==-1 && this.selectedGuest.length<4){
+                this.selectedGuest.push(null);
+            } else if(num!=-1){
+                this.selectedGuest.splice(num,1);
+            }
+            console.log(this.selectedGuest)
         },
         saveEvent(save) {
             if(save){
+                // console.log("right HERE!")
                 var ordered_participants_ids = JSON.parse(JSON.stringify(this.selectedEvent.participants))
+                var guest_names = JSON.parse(JSON.stringify(this.selectedGuest))
+                // console.log(guest_names)
+
                 if(this.selectedEvent.host_id==''){ 
                     this.selectedEvent.host_id = null
                 }
@@ -1339,24 +1520,33 @@ export default {
                     ordered_participants_ids.push(this.selectedEvent.host_id)
                 }
                 ordered_participants_ids.sort(function(a, b){return a-b})
+                // guest_names.sort(function(a,b){return a-b})
 
                 let item = JSON.parse(JSON.stringify(this.selectedEvent))
                 item.ordered_participants_ids = ordered_participants_ids
+                item.guest_names = guest_names
                 this.newCompTimePayload = {
                     item
                 }
                 // console.log("this.newCompTimePayload")
                 // console.log(this.selectedEvent.host_id)
                 // console.log(this.newCompTimePayload.item.host_id)
+                this.newCompTimePayload.item.start = this.newCompTimePayload.item.startTime+this.dateToMilli(this.newCompTimePayload.item.date)
+                this.newCompTimePayload.item.end = this.newCompTimePayload.item.endTime+this.dateToMilli(this.newCompTimePayload.item.date)
                 this.participantsLoaded = false
+                this.participantsLoaded2 = false
+                this.selectedGuest = []
                 this.updateEvent(true)
             } else {
                 this.participantsLoaded = false
+                this.participantsLoaded2 = false
+                this.edit_event_dialog = false
+                this.selectedGuest = []
+                this.reloadPage()
                 // this.refreshLoad = true
                 // this.$emit('refresh-schedule')
                 // this.reloadPage()
             }
-            this.edit_event_dialog = false
         },
         updateEvent(edit) {
             if(edit){
@@ -1365,17 +1555,27 @@ export default {
                     this.newCompTimePayload.item.method=this.newCompTimePayload.item.custom
                 }
                 // this.newCompTimePayload.ordered_participants_ids = ""
+                console.log("right here")
+                console.log(this.newCompTimePayload)
+                
                 axios.put('api/reservation/update', this.newCompTimePayload)
                 .then((response) => {
+                    console.log("response update");
                     console.log(response);
                     if(response.data == "error"){
                         this.snackbar_text = "Time Conflict"
                         this.snackbar_dialog = true
+                        this.getParticipants()
                         // this.refreshLoad = true
                         // this.$emit('refresh-schedule')
+                    } else if(response.data == "error2"){
+                        this.snackbar_text = "Empty Field"
+                        this.snackbar_dialog = true
+                        this.getParticipants()
                     } else{
                         this.snackbar_text = "Event Updated"
                         this.snackbar_dialog = true
+                        this.edit_event_dialog = false
                         // this.refreshLoad = true
                         // this.$emit('refresh-schedule')
                     }
@@ -1415,6 +1615,9 @@ export default {
                     let item = JSON.parse(JSON.stringify(this.selectedEvent))
                     this.newCompTimePayload = {
                         item
+                    }
+                    if(this.newCompTimePayload.item.method=="Custom"){
+                        this.newCompTimePayload.item.method=this.newCompTimePayload.item.custom
                     }
                     // item.reoccur_type = this.reoccur_select
                     item.reoccur_type = "weekly"
@@ -1475,12 +1678,14 @@ export default {
         // close court functions
         step1(){
             this.closed_courts.loading = true
-            var d = new Date(this.schedule_date);
-            var n = d.getTime();
+            // var d = new Date(this.schedule_date);
+            // var n = d.getTime();
+            var n = this.dateToMilli(this.schedule_date)
+            
             let item = JSON.parse(JSON.stringify(this.closed_courts))
             if(this.closed_courts.start != null && this.closed_courts.end != null){
-                item.start = n+this.times_ranges[this.closed_courts.start].val*60*60*1000
-                item.end = n+this.times_ranges[this.closed_courts.end].val*60*60*1000
+                item.start = n+this.times_ranges[this.closed_courts.start].val
+                item.end = n+this.times_ranges[this.closed_courts.end].val
             }
             this.newCompTimePayload = {
                 item
@@ -1525,13 +1730,16 @@ export default {
         },
         closeCourts(){
             this.closed_courts.loading = true
-            var d = new Date(this.schedule_date);
-            var n = d.getTime();
+            // var d = new Date(this.schedule_date);
+            // var n = d.getTime();
+            var n = this.dateToMilli(this.schedule_date)
 
             let item = JSON.parse(JSON.stringify(this.closed_courts))
             if(this.closed_courts.start != null && this.closed_courts.end != null){
-                item.start = n+this.times_ranges[this.closed_courts.start].val*60*60*1000+1000*60*60*4
-                item.end = n+this.times_ranges[this.closed_courts.end].val*60*60*1000+1000*60*60*4
+                item.start = n+this.times_ranges[this.closed_courts.start].val
+                // item.start = n+this.times_ranges[this.closed_courts.start].val*60*60*1000+1000*60*60*4
+                // item.end = n+this.times_ranges[this.closed_courts.end].val*60*60*1000+1000*60*60*4
+                item.end = n+this.times_ranges[this.closed_courts.end].val
             }
             item.date = this.schedule_date
             item.reason = this.closed_courts.cancellation_reason
@@ -1604,8 +1812,10 @@ export default {
         },
         deleteClosure(closure_id){
             this.closure_info.loading = true
-            axios.delete('api/deleteClosure/' + closure_id)
+            axios.post('api/deleteClosure/' + closure_id)
             .then((response) => {
+                console.log("deleteClosure")
+                console.log(response)
                 if(response.data.status=="error"){
                     this.snackbar_dialog = true
                     this.snackbar_text = response.data.message
@@ -1719,6 +1929,12 @@ export default {
         formatDate(date){
             return moment(date).format('dddd MMMM Do')
         },
+        shortFormatDate(date){
+            return moment(date).format('ddd MMM Do')
+        },
+        dateToMilli(date){
+            return moment(date).valueOf()
+        },
         toTime (tms) {
             return new Date(tms.year, tms.month - 1, tms.day, tms.hour, tms.minute).getTime()
         },
@@ -1729,6 +1945,7 @@ export default {
                 ? time - time % roundDownTime
                 : time + (roundDownTime - (time % roundDownTime))
         },
+        // fix this
         getTimes (datetime) {
             var hour = new Date(datetime).toString().substr(16,2)
             var min = new Date(datetime).toString().substr(19,2)
@@ -1760,6 +1977,7 @@ export default {
             this.getEvents(this.schedule_date)
             this.getCategories()
             this.getUsers()
+            this.getGuests()
         },
 
         // database functions
@@ -1799,6 +2017,18 @@ export default {
             .catch(error => {
                 console.log(error);
             })
+        },
+        getGuests(){
+            this.load4 = false
+            axios.get('api/guests')
+            .then(response => {
+                console.log(response.data)
+                this.guests = response.data
+                this.load4 = true
+            })
+            .catch(error => {
+                console.log(error);
+            })
         }
     }
 }
@@ -1807,6 +2037,12 @@ export default {
 
 
 <style>
+.custom-dialog.v-dialog{
+    margin: 0px;
+}
+.small_btn_text * {
+   font-size: 10px;
+}
 /* Calendar heading padding */
 .cal_header {
     padding: 24px 0px 12px 48px;

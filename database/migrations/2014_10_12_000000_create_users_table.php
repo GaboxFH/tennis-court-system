@@ -12,16 +12,24 @@ class CreateUsersTable extends Migration
      * @return void
      */
     public function up()
-    {
+    {   
+        // $data = '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcefghijklmnopqrstuvwxyz';
+        // $pass = substr(str_shuffle($data), 0, 32);
+        // 'password' => Hash::make($pass),
+
+        
+
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->integer('membership_id')->default(1);
             $table->string('access')->default('Single');
             $table->string('name');
+            $table->string('f_name');
+            $table->string('l_name');
             $table->string('phone')->nullable();
             $table->string('email')->unique();
             $table->string('num_of_notos')->default(0);
-            $table->string('password');
+            $table->string('password')->default(Hash::make(Hash::make(substr(str_shuffle('1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcefghijklmnopqrstuvwxyz'), 0, 32))));
             $table->rememberToken();
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamps();

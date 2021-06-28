@@ -22,11 +22,11 @@
             >
                 <v-list-item link to="/" style="text-decoration: none;">
                     <v-list-item-icon>
-                        <v-icon>mdi-calendar</v-icon>
+                        <v-icon>mdi-account</v-icon>
                     </v-list-item-icon>
 
                     <v-list-item-content>
-                        <v-list-item-title>My Reservations</v-list-item-title>
+                        <v-list-item-title>{{session_data.name}}</v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
 
@@ -40,7 +40,19 @@
                     </v-list-item-content>
                 </v-list-item>
 
-                <v-list-item link to="/schedule" style="text-decoration: none;">
+                <v-list-item v-if="session_data.access != 'Single' && session_data.access != 'Family'"
+                link to="/reservations" style="text-decoration: none;">
+                    <v-list-item-icon>
+                        <v-icon>mdi-calendar</v-icon>
+                    </v-list-item-icon>
+
+                    <v-list-item-content>
+                        <v-list-item-title>Reservations</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+
+                <v-list-item v-if="session_data.access != 'Single' && session_data.access != 'Family'"
+                link to="/schedule" style="text-decoration: none;">
                     <v-list-item-icon>
                         <v-icon>mdi-calendar-range</v-icon>
                     </v-list-item-icon>
@@ -50,7 +62,7 @@
                     </v-list-item-content>
                 </v-list-item>
 
-                <v-list-item link to="/users" style="text-decoration: none;">
+                <!-- <v-list-item link to="/users" style="text-decoration: none;">
                     <v-list-item-icon>
                         <v-icon>mdi-account</v-icon>
                     </v-list-item-icon>
@@ -58,9 +70,10 @@
                     <v-list-item-content>
                         <v-list-item-title>Members</v-list-item-title>
                     </v-list-item-content>
-                </v-list-item>
+                </v-list-item> -->
 
-                <v-list-item link to="/admin_panel" style="text-decoration: none;">
+                <v-list-item  v-if="session_data.access != 'Single' && session_data.access != 'Family'"
+                link to="/admin_panel" style="text-decoration: none;">
                     <v-list-item-icon>
                         <v-icon>mdi-newspaper-variant-outline</v-icon>
                     </v-list-item-icon>
@@ -70,7 +83,7 @@
                     </v-list-item-content>
                 </v-list-item>
 
-                <v-list-item link to="/report" style="text-decoration: none;">
+                <!-- <v-list-item link to="/report" style="text-decoration: none;">
                     <v-list-item-icon>
                         <v-icon>mdi-file-chart</v-icon>
                     </v-list-item-icon>
@@ -78,7 +91,7 @@
                     <v-list-item-content>
                         <v-list-item-title>Data Report</v-list-item-title>
                     </v-list-item-content>
-                </v-list-item>
+                </v-list-item> -->
 
                 <!-- <v-list-item>
                     <v-list-item-icon>
@@ -92,7 +105,8 @@
 
                 <v-list-item @click="logout" style="text-decoration: none;">
                     <v-list-item-icon>
-                        <v-icon>mdi-power</v-icon>
+                        <!-- <v-icon>mdi-power</v-icon> -->
+                        <v-icon>mdi-exit-to-app</v-icon>
                     </v-list-item-icon>
 
                     <v-list-item-content>
@@ -106,7 +120,7 @@
         <v-app-bar app>
             <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
-            <v-toolbar-title>Reservation System</v-toolbar-title>
+            <v-toolbar-title>Court Reservation System</v-toolbar-title>
         </v-app-bar>
 
         <v-main>
@@ -122,6 +136,11 @@
 
             </router-view>
         </v-main>
+        <v-footer padless>
+            <v-col class="text-center text-overline my-0 py-1" cols="12" >
+                {{ new Date().getFullYear() }}   |   Noah Smith   |   noahred.webdev@gmail.com
+            </v-col>
+        </v-footer>
     </v-app>
 </template>
 
