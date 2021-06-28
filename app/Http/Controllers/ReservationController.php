@@ -59,6 +59,7 @@ class ReservationController extends Controller
             from users 
             INNER JOIN reservation_user ON users.id=reservation_user.user_id
             where reservation_id = " . $current[$x]->id;
+            
             $names = DB::select($sql);
             $List = array_column($names,'name');
             $current[$x]->ppts = implode(', ', $List);
@@ -72,11 +73,40 @@ class ReservationController extends Controller
 
         for($x = 0; $x < count($future); $x++){
             // $previous = Reservation_User::where('reservation_id',$test_res->id)->select('user_id')->get();
-            $sql = "select users.name
-            from users 
-            INNER JOIN reservation_user ON users.id=reservation_user.user_id
-            where reservation_id = " . $future[$x]->id;
+            // $sql = "select users.name
+            // from users 
+            // INNER JOIN reservation_user ON users.id=reservation_user.user_id
+            // where reservation_id = " . $future[$x]->id;
+            $sql = "SELECT
+                users.name,
+                users.id
+            FROM
+                users
+                INNER JOIN reservation_user ON users.id = reservation_user.user_id
+            WHERE
+                reservation_id = " . $future[$x]->id . "
+            UNION
+            SELECT
+                name,
+                0 AS id
+            FROM
+                guests
+            WHERE
+                reservation_id = " . $future[$x]->id;
+
+
             $names = DB::select($sql);
+            // $future[$x]->ppts
+            for($i=0; $i<count($names); $i++){
+                if($names[$i]->id == $future[$x]->host_id){
+                    $host = $names[$i];
+                    unset($names[$i]);
+                    array_unshift($names,$host);
+                } else if($names[$i]->id == 0){
+                    $names[$i]->name = $names[$i]->name . "**";
+                }
+            }
+
             $List = array_column($names,'name');
             $future[$x]->ppts = implode(', ', $List);
         }    
@@ -653,6 +683,15 @@ class ReservationController extends Controller
     public function storeReoccur(Request $request){
         if($request->item["reoccur_type"] == "weekly"){
 
+            $currentTime = (int)(microtime(true)*1000);
+
+            if($currentTime>$request->item["start"]){
+                return 
+                [
+                    'status' => 'error',
+                    'message' => 'Cannot start reoccur from past event',
+                ];
+            }
             $st_seconds = $request->item["start"] / 1000;
             $st_datetime = date("Y-m-d H:i:s", $st_seconds);
             $st_weeklater = $st_datetime;
@@ -661,7 +700,7 @@ class ReservationController extends Controller
             $en_datetime = date("Y-m-d H:i:s", $en_seconds);
             $en_weeklater = $en_datetime;
 
-            $num_of_weeks = 5;
+            $num_of_weeks = 200;
             for ($x = 0; $x < $num_of_weeks; $x++) {
                 $st_weeklater = date("Y-m-d H:i:s", strtotime("+7 day", strtotime($st_weeklater)));
                 $en_weeklater = date("Y-m-d H:i:s", strtotime("+7 day", strtotime($en_weeklater)));
@@ -738,7 +777,15 @@ class ReservationController extends Controller
     }
 
     public function memberStore(Request $request)
-    {
+    {   
+        $currentTime = (int)(microtime(true)*1000);
+
+        if($currentTime>$request->item["start"]){
+            return [
+                'status' => 'error',
+                'message' => 'Invalid Start Time',
+            ];
+        }
         // return $request;
         $num_of_guests = 0;
         $guest_list = $request->item["guests"];
@@ -784,6 +831,8 @@ class ReservationController extends Controller
             $host = User::where('id', $request->item["host_id"])->first();
             if($host->access == "Single" || $host->access == "Family"){
                 $eventTitle = $host->name . "'s Event";
+            } else if($host->access == "Tennis Pro"){
+                $eventTitle = $host->name;
             } else {
                 $eventTitle = $request->item["method"];
             }
@@ -834,10 +883,23 @@ class ReservationController extends Controller
    
     public function adminStore(Request $request)
     {
-        if(!isset($requ)){
+        if(!isset($request->item["category"]) 
+        || !isset($request->item["start"])
+        || !isset($request->item["end"])        
+        ){
             return [
                 'status' => 'error',
                 'message' => 'Missing Fields',
+            ];
+        }
+
+        $currentTime = (int)(microtime(true)*1000);
+
+        if($request->item["start"]>$request->item["end"]
+        || $currentTime>$request->item["start"]){
+            return [
+                'status' => 'error',
+                'message' => 'Invalid Start Time',
             ];
         }
         // return $request;
@@ -885,6 +947,8 @@ class ReservationController extends Controller
             $host = User::where('id', $request->item["host_id"])->first();
             if($host->access == "Single" || $host->access == "Family"){
                 $eventTitle = $host->name . "'s Event";
+            } else if($host->access == "Tennis Pro"){
+                $eventTitle = $host->name;
             } else {
                 $eventTitle = $request->item["method"];
             }
@@ -936,7 +1000,11 @@ class ReservationController extends Controller
 
     public function store(Request $request)
     {
-        
+        $currentTime = (int)(microtime(true)*1000);
+
+        if($currentTime>$request->item["start"]){
+            return "error";
+        }
         $conflictingReservations = Reservation::where('start', '<', $request->item["end"])
                                             ->where('end', '>', $request->item["start"])
                                             ->where('category', $request->item["category"])
@@ -978,6 +1046,8 @@ class ReservationController extends Controller
             $host = User::where('id', $request->item["host_id"])->first();
             if($host->access == "Single" || $host->access == "Family"){
                 $eventTitle = $host->name . "'s Event";
+            } else if($host->access == "Tennis Pro"){
+                $eventTitle = $host->name;
             } else {
                 $eventTitle = $request->item["method"];
             }
@@ -1002,16 +1072,9 @@ class ReservationController extends Controller
         return $newEvent;
     }
 
-    // public function storeFresh(Request $request)
-    // {
-        
-        
-    // }
-
     
     public function update(Request $request)
     {
-
         // id is not passed in for created events so we must use start and court for this button to work correctly 
         // if (!isset($request->item["id"])){
         //     $existingItem = Reservation::where('start_datetime', $request->item["start"])->where('court', $request->item["category"])->first();
@@ -1038,8 +1101,8 @@ class ReservationController extends Controller
             // $guestDataIndex = 0;
             // $guestFormIndex = 0;
             $guest_host_id = 0;
-            if(isset($request['host_id'])){
-                $guest_host_id = $request['host_id'];
+            if(isset($request->item['host_id'])){
+                $guest_host_id = $request->item['host_id'];
             }
 
 
@@ -1174,6 +1237,8 @@ class ReservationController extends Controller
                 $host = User::where('id', $request->item["host_id"])->first();
                 if($host->access == "Single" || $host->access == "Family"){
                     $eventTitle = $host->name . "'s Event";
+                } else if($host->access == "Tennis Pro"){
+                    $eventTitle = $host->name;
                 } else {
                     $eventTitle = $request->item["method"];
                 }

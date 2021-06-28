@@ -15,6 +15,8 @@ class RulesController extends Controller
 
     public function updateRules(Request $request)
     {
+        // $milliseconds = (int)(microtime(true)*1000);
+
         $rules = Rules::orderBy('id')->get();
         
         for ($x = 0; $x < count($request->item); $x++) {

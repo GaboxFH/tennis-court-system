@@ -3,7 +3,7 @@
     <!-- <div class="mx-auto" style="background-color:yellow; max-width:600px" > -->
     <v-card
         class="mx-auto"
-        max-width="800px"
+        max-width="1000px"
         outlined
     >
     <v-list-item three-line>
@@ -142,7 +142,7 @@
         <v-toolbar v-if="selectedUser" class="mb-3" color="primary" dark flat>
             <v-card-title class="categories_style">Edit Information</v-card-title>
             <v-spacer></v-spacer>
-            <v-btn @click="reset_pass_dialog=true">Reset Password</v-btn>
+            <v-btn @click="reset_pass_dialog=true" small>Reset Password</v-btn>
         </v-toolbar>
         <div class="mx-2 pt-1">
         <v-row class="pa-0 ma-0">
@@ -262,8 +262,8 @@ export default {
         ],
         membership_types: ['Single', 'Family', 'Tennis Pro', 'Admin'],
         labels: [
-            "Max duration (hours)", 
-            "Max number of reservations", 
+            "Max duration (hours) / Day", 
+            "Max number of reservations / Day", 
             "Time in Advance (hours)", 
             "Guest Policy (days)", 
             "Guest Price (price)", 

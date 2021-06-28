@@ -218,7 +218,7 @@
           :items="users"
           :color="computedColor"
           label="Host" dense
-          small-chips
+          chips
           hide-selected
           item-text="name"
           item-value="id"
@@ -254,7 +254,7 @@
           v-model="new_event.participants"
           :items="computedMembers"
           :color="computedColor"
-          small-chips
+          chips
           deletable-chips
           label="Participants" dense
           hide-selected   
@@ -636,6 +636,29 @@ export default {
         this.current = response.data.current
         this.future = response.data.future
         console.log(this.future.length)
+
+        // var n = 0
+        // while(n<this.current.length && n<this.future.length && n<this.previous.length){
+        //   if(n<this.current.length){
+        //     this.current[i].timeRemain = moment(this.current[i].end).fromNow(true)
+        //     this.current[i].date = moment(this.current[i].date).format('MMM Do YYYY')
+        //     this.current[i].start = moment(this.current[i].start).format('h:mm a')
+        //     this.current[i].end = moment(this.current[i].end).format('h:mm a')
+        //   }
+        //   if(n<this.future.length){
+        //     this.future[i].timeUntil = moment(this.future[i].start).fromNow(true)
+        //     this.future[i].date = moment(this.future[i].date).format('MMM Do YYYY')
+        //     this.future[i].start = moment(this.future[i].start).format('h:mm a')
+        //     this.future[i].end = moment(this.future[i].end).format('h:mm a')
+        //   }
+        //   if(n<this.previous.length){
+        //     this.previous[i].timeSince = moment(this.previous[i].end).fromNow(true)
+        //     this.previous[i].date = moment(this.previous[i].date).format('MMM Do YYYY')
+        //     this.previous[i].start = moment(this.previous[i].start).format('h:mm a')
+        //     this.previous[i].end = moment(this.previous[i].end).format('h:mm a')
+        //   }
+        //   n+=1;
+        // }
 
         for(var i = 0; i<this.current.length; i++){
           this.current[i].timeRemain = moment(this.current[i].end).fromNow(true)

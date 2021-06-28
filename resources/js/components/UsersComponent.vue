@@ -301,6 +301,11 @@ export default {
         updateClubRules(newRules){
             this.dialog_load=true
             let item = JSON.parse(JSON.stringify(newRules))
+            // let date = moment().tz('America/New_York').format('YYYY-MM-DD')
+            // let date = moment().tz('America/New_York')
+                
+            // let item = moment(date).valueOf()
+            
             let editUserPayload = { item }
             axios.put('api/updateRules', editUserPayload)
             .then(response => {
